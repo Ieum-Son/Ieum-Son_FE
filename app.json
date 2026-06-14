@@ -43,6 +43,16 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "expo": {
+      "plugins": [
+        [
+          "react-native-vision-camera",
+          {
+            "cameraPermissionText": "카메라 권한이 필요합니다."
+          }
+        ]
+      ]
     }
   }
 }
