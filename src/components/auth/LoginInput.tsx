@@ -7,9 +7,16 @@ import styled from "styled-components/native";
 interface LoginInputProps {
   placeholder: string;
   type: "text" | "password";
+  onChangeText: (text: string) => void;
+  value: string;
 }
 
-export default function LoginInput({ placeholder, type }: LoginInputProps) {
+export default function LoginInput({
+  placeholder,
+  type,
+  onChangeText,
+  value,
+}: LoginInputProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -17,6 +24,8 @@ export default function LoginInput({ placeholder, type }: LoginInputProps) {
       <Wrapper
         placeholder={placeholder}
         secureTextEntry={type === "password" && !isVisible}
+        onChangeText={onChangeText}
+        value={value}
       />
       {type === "password" && (
         <TouchableOpacity onPress={() => setIsVisible(!isVisible)}>
