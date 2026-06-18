@@ -3,7 +3,7 @@ import Input from "@/components/auth/LoginInput";
 import { colors } from "@/constants/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import styled from "styled-components/native";
 
 export default function Login() {
@@ -27,41 +27,51 @@ export default function Login() {
   }, [id, password]);
 
   return (
-    <View style={{ flex: 1 }}>
-      <IconWrapper>
-        <Icon>
-          <MaterialIcons name="arrow-back-ios" size={12} color="black" />
-        </Icon>
-      </IconWrapper>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flexGrow: 1 }}
+    >
+      <Container>
+        <IconWrapper>
+          <Icon>
+            <MaterialIcons name="arrow-back-ios" size={12} color="black" />
+          </Icon>
+        </IconWrapper>
 
-      <TitleWrapper>
-        <LineText>
-          <Name>이음손</Name>에 다시 {"\n"}
-        </LineText>
-        <LineText>오신 것을 환영해요!</LineText>
-      </TitleWrapper>
+        <TitleWrapper>
+          <LineText>
+            <Name>이음손</Name>에 다시 {"\n"}
+          </LineText>
+          <LineText>오신 것을 환영해요!</LineText>
+        </TitleWrapper>
 
-      <Wrapper>
-        <InputWrapper>
-          <Input
-            placeholder="아이디를 입력해주세요."
-            type="text"
-            onChangeText={InputId}
-            value={id}
-          />
-          <Input
-            placeholder="비밀번호를 입력해주세요."
-            type="password"
-            onChangeText={InputPassword}
-            value={password}
-          />
-        </InputWrapper>
+        <Wrapper>
+          <InputWrapper>
+            <Input
+              placeholder="아이디를 입력해주세요."
+              type="text"
+              onChangeText={InputId}
+              value={id}
+            />
+            <Input
+              placeholder="비밀번호를 입력해주세요."
+              type="password"
+              onChangeText={InputPassword}
+              value={password}
+            />
+          </InputWrapper>
 
-        <AuthButton text="로그인" isActive={isActive} />
-      </Wrapper>
-    </View>
+          <AuthButton text="로그인" isActive={isActive} />
+        </Wrapper>
+      </Container>
+    </KeyboardAvoidingView>
   );
 }
+
+const Container = styled.View`
+  flex: 1;
+  padding: 10px;
+`;
 
 const Wrapper = styled.View`
   display: flex;
