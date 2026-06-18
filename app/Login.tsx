@@ -35,7 +35,7 @@ export default function Login() {
       <Container>
         <IconWrapper>
           <Icon>
-            <MaterialIcons name="arrow-back-ios" size={12} color="black" />
+            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
           </Icon>
         </IconWrapper>
 
