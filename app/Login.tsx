@@ -84,7 +84,7 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.Text`
+const IconWrapper = styled.View`
   display: flex;
   width: 100%;
   padding: 18px 12px;

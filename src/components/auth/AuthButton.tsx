@@ -20,7 +20,6 @@ const Wrapper = styled.TouchableOpacity<Pick<AuthButtonProps, "isActive">>`
   width: 353px;
   border-radius: 12px;
   align-items: center;
-  text-align: center;
   background-color: ${(props) =>
     props.isActive ? colors.primary300 : colors.neutral400};
 `;
