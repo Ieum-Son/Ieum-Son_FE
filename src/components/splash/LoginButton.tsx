@@ -15,7 +15,6 @@ const Wrapper = styled.TouchableOpacity`
   border-radius: 12px;
   border: 1px solid ${colors.primary300};
   background-color: white;
-  color: ${colors.primary300};
   display: flex;
   justify-content: center;
   align-items: center;
