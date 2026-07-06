@@ -55,7 +55,6 @@ export default function EmailInput() {
             <InputWrapper>
               <Input
                 placeholder="이메일을 입력해주세요."
-                type="text"
                 value={email}
                 onChangeText={InputEmail}
               />

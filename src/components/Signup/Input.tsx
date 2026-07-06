@@ -1,19 +1,17 @@
 import { colors } from "@/constants/colors";
 import styled from "styled-components/native";
 
-interface LoginInputProps {
+interface SignupInputProps {
   placeholder: string;
-  type: "text" | "password";
   onChangeText: (text: string) => void;
   value: string;
 }
 
 export default function Input({
   placeholder,
-  type,
   onChangeText,
   value,
-}: LoginInputProps) {
+}: SignupInputProps) {
   return (
     <Container>
       <Wrapper
