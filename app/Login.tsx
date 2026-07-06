@@ -1,4 +1,4 @@
-import AuthButton from "@/components/auth/AuthButton";
+import AuthButton from "@/components/auth/Button";
 import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
 import { colors } from "@/constants/colors";
