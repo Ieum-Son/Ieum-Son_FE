@@ -17,7 +17,11 @@ export default function ModifyButton({
   onPress,
 }: ModifyButtonProps) {
   return (
-    <ModifyWrapper isActive={isActive} disabled={disabled} onPress={onPress}>
+    <ModifyWrapper
+      isActive={isActive}
+      disabled={disabled || !isActive}
+      onPress={onPress}
+    >
       <Modify>{disabled ? "전송완료" : "인증"}</Modify>
     </ModifyWrapper>
   );
