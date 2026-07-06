@@ -20,12 +20,12 @@ export default function EmailInput() {
   }, [code]);
 
   useEffect(() => {
+    setCode("");
+    setIsActive(false);
+    setIsCodeSent(false);
     if (email.trim()) {
       setIsModifyActive(true);
     } else {
-      setCode("");
-      setIsActive(false);
-      setIsCodeSent(false);
       setIsModifyActive(false);
     }
   }, [email]);
