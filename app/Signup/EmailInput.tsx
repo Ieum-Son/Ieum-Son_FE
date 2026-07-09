@@ -50,12 +50,11 @@ export default function EmailInput() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flexGrow: 1 }}
     >
-      <BackIcon />
       <Container>
+        <BackIcon />
         <TitleWrapper>
           <LineText>이메일을 입력해주세요</LineText>
         </TitleWrapper>
-
         <Wrapper>
           <InputWrapperWrapper>
             <InputWrapper>
@@ -132,8 +131,8 @@ const InputWrapper = styled.View`
   width: 93%;
 `;
 
-const TitleWrapper = styled.Text`
-  margin: 30px 0px 30px 15px;
+const TitleWrapper = styled.View`
+  margin: 30px 0 30px 15px;
 `;
 
 const LineText = styled.Text`

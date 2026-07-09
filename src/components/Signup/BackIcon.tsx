@@ -1,28 +1,16 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
-import React from "react";
 import styled from "styled-components/native";
 
 export default function BackIcon() {
   return (
-    <IconWrapper>
-      <Icon onPress={() => router.back()}>
-        <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-      </Icon>
-    </IconWrapper>
+    <IconButton onPress={() => router.back()}>
+      <MaterialIcons name="arrow-back-ios-new" size={20} color="black" />
+    </IconButton>
   );
 }
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
+const IconButton = styled.Pressable`
+  padding: 12px 20px;
+  align-self: flex-start;
 `;
