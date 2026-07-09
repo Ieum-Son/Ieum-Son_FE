@@ -10,19 +10,19 @@ import styled from "styled-components/native";
 
 export default function ProfileInput() {
   const [isActive, setIsActive] = useState(false);
-  const [id, setId] = useState("");
+  const [name, setName] = useState("");
 
   const InputId = (text: string) => {
     setName(text.replace(/\s/g, ""));
   };
 
   useEffect(() => {
-    if (id.trim()) {
+    if (name) {
       setIsActive(true);
       return;
     }
     setIsActive(false);
-  }, [id]);
+  }, [name]);
 
   return (
     <KeyboardAvoidingView
@@ -48,7 +48,7 @@ export default function ProfileInput() {
                 placeholder="이름을 입력해주세요"
                 type="text"
                 onChangeText={InputId}
-                value={id}
+                value={name}
               />
               <SubText>
                 설정한 이름은 추후에도 자유롭게 변경할 수 있습니다.
@@ -57,7 +57,11 @@ export default function ProfileInput() {
           </Center>
 
           <View>
-            <AuthButton text="다음" isActive={isActive} />
+            <AuthButton
+              text="다음"
+              isActive={isActive}
+              onPress={() => router.push("/Login")}
+            />
             <Question
               question="계정이 있으신가요?"
               button="로그인"
