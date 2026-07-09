@@ -1,28 +1,28 @@
 import AuthButton from "@/components/auth/AuthButton";
 import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
-import Profile from "@/components/Signup/Profile";
+import { BackIcon, Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styled from "styled-components/native";
 
 export default function ProfileInput() {
   const [isActive, setIsActive] = useState(false);
-  const [id, setId] = useState("");
+  const [name, setName] = useState("");
 
   const InputId = (text: string) => {
-    setId(text);
+    setName(text.replace(/\s/g, ""));
   };
 
   useEffect(() => {
-    if (id.trim()) {
+    if (name) {
       setIsActive(true);
       return;
     }
     setIsActive(false);
-  }, [id]);
+  }, [name]);
 
   return (
     <KeyboardAvoidingView
@@ -30,11 +30,7 @@ export default function ProfileInput() {
       style={{ flexGrow: 1 }}
     >
       <Container>
-        <IconWrapper>
-          <Icon>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </Icon>
-        </IconWrapper>
+        <BackIcon />
 
         <TitleWrapper>
           <LineText>
@@ -52,7 +48,7 @@ export default function ProfileInput() {
                 placeholder="이름을 입력해주세요"
                 type="text"
                 onChangeText={InputId}
-                value={id}
+                value={name}
               />
               <SubText>
                 설정한 이름은 추후에도 자유롭게 변경할 수 있습니다.
@@ -61,8 +57,16 @@ export default function ProfileInput() {
           </Center>
 
           <View>
-            <AuthButton text="다음" isActive={isActive} />
-            <Question question="계정이 있으신가요?" button="로그인" />
+            <AuthButton
+              text="다음"
+              isActive={isActive}
+              onPress={() => router.push("/Login")}
+            />
+            <Question
+              question="계정이 있으신가요?"
+              button="로그인"
+              onPress={() => router.push("/Login")}
+            />
           </View>
         </Wrapper>
       </Container>
@@ -97,21 +101,7 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.View``;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
-`;
 
 const TitleWrapper = styled.Text`
   margin: 30px 0px 30px 15px;

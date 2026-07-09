@@ -1,8 +1,9 @@
 import AuthButton from "@/components/auth/AuthButton";
 import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
+import { BackIcon } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styled from "styled-components/native";
@@ -13,14 +14,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const InputId = (text: string) => {
-    setId(text);
+    setId(text.replace(/\s/g, ""));
   };
   const InputPassword = (text: string) => {
-    setPassword(text);
+    setPassword(text.replace(/\s/g, ""));
   };
 
   useEffect(() => {
-    if (id.trim() && password.trim()) {
+    if (id && password) {
       setIsActive(true);
       return;
     }
@@ -33,11 +34,7 @@ export default function Login() {
       style={{ flexGrow: 1 }}
     >
       <Container>
-        <IconWrapper>
-          <Icon>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </Icon>
-        </IconWrapper>
+        <BackIcon />
 
         <TitleWrapper>
           <LineText>
@@ -64,7 +61,11 @@ export default function Login() {
 
           <View>
             <AuthButton text="로그인" isActive={isActive} />
-            <Question question="계정이 없으신가요?" button="회원가입" />
+            <Question
+              question="계정이 없으신가요?"
+              button="회원가입"
+              onPress={() => router.push("/Signup/EmailInput")}
+            />
           </View>
         </Wrapper>
       </Container>
@@ -84,22 +85,8 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.View`
   gap: 16px;
-`;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
 `;
 
 const TitleWrapper = styled.Text`

@@ -1,9 +1,13 @@
 import { colors } from "@/constants/colors";
 import styled from "styled-components/native";
 
-export default function LoginButton() {
+interface LoginButtonProps {
+  onPress: () => void;
+}
+
+export default function LoginButton({ onPress }: LoginButtonProps) {
   return (
-    <Wrapper>
+    <Wrapper onPress={onPress}>
       <ButtonText>로그인</ButtonText>
     </Wrapper>
   );

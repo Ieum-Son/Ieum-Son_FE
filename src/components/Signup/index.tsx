@@ -1,4 +1,6 @@
+import BackIcon from "./BackIcon";
 import CodeInput from "./CodeInput";
 import Input from "./Input";
+import Profile from "./Profile";
 
-export { CodeInput, Input };
+export { BackIcon, CodeInput, Input, Profile };

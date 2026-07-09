@@ -1,7 +1,7 @@
 import { AuthButton, Question } from "@/components/auth/index";
-import { Input } from "@/components/Signup/index";
+import { BackIcon, Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styled from "styled-components/native";
@@ -16,20 +16,25 @@ export default function IdSetting() {
   const [id, setId] = useState("");
 
   const onPress = () => {
-    setIsDuplication(id === "에러아이디");
+    if (id === "에러아이디") {
+      setIsDuplication(true);
+      return;
+    }
+    setIsDuplication(false);
+    router.push("/Signup/PasswordSetting");
+  };
+
+  const InputId = (text: string) => {
+    setId(text.replace(/\s/g, ""));
   };
 
   useEffect(() => {
-    if (id.trim().length > 0) {
+    if (id) {
       setIsActive(true);
-    } else if (id.trim().length == 0) {
+    } else {
       setIsActive(false);
     }
   }, [id]);
-
-  const InputId = (text: string) => {
-    setId(text);
-  };
 
   return (
     <KeyboardAvoidingView
@@ -37,11 +42,7 @@ export default function IdSetting() {
       style={{ flexGrow: 1 }}
     >
       <Container>
-        <IconWrapper>
-          <Icon>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </Icon>
-        </IconWrapper>
+        <BackIcon />
 
         <TitleWrapper>
           <LineText>서비스에서 사용할{"\n"}</LineText>
@@ -63,7 +64,11 @@ export default function IdSetting() {
           </InputWrapperWrapper>
           <View>
             <AuthButton text="다음" isActive={isActive} onPress={onPress} />
-            <Question question="계정이 있으신가요?" button="로그인" />
+            <Question
+              question="계정이 있으신가요?"
+              button="로그인"
+              onPress={() => router.push("/Login")}
+            />
           </View>
         </Wrapper>
       </Container>
@@ -96,14 +101,6 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.View<InputWrapperProps>`
   flex-direction: row;
   align-items: center;
@@ -113,12 +110,6 @@ const InputWrapper = styled.View<InputWrapperProps>`
   border-color: ${({ isDuplication }) =>
     isDuplication ? colors.errorRed : "white"};
   border-radius: 12px;
-`;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
 `;
 
 const TitleWrapper = styled.Text`

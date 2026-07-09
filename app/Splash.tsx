@@ -1,5 +1,6 @@
 import Blue from "@/assets/Logo/Blue.png";
 import { LoginButton, SignupButton } from "@/components/splash/index";
+import { router } from "expo-router";
 import { Image } from "react-native";
 import styled from "styled-components/native";
 
@@ -10,8 +11,8 @@ export default function Splash() {
         <Image source={Blue} resizeMode="contain" />
 
         <ButtonWrapper>
-          <SignupButton />
-          <LoginButton />
+          <SignupButton onPress={() => router.push("/Signup/EmailInput")} />
+          <LoginButton onPress={() => router.push("/Login")} />
         </ButtonWrapper>
       </Container>
     </Wrapper>

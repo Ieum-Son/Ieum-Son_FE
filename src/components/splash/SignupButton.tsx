@@ -1,9 +1,13 @@
 import { colors } from "@/constants/colors";
 import styled from "styled-components/native";
 
-export default function SignupButton() {
+interface SignupButtonProps {
+  onPress: () => void;
+}
+
+export default function SignupButton({ onPress }: SignupButtonProps) {
   return (
-    <Wrapper>
+    <Wrapper onPress={onPress}>
       <ButtonText>회원가입</ButtonText>
     </Wrapper>
   );

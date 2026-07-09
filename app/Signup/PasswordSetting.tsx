@@ -1,7 +1,7 @@
 import { AuthButton, Question } from "@/components/auth/index";
-import { CodeInput } from "@/components/Signup/index";
+import { BackIcon, CodeInput } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styled from "styled-components/native";
@@ -17,23 +17,27 @@ export default function PasswordSetting() {
   const [rePassword, setRePassword] = useState("");
 
   const onPress = () => {
-    setIsDuplication(password !== rePassword);
+    if (password !== rePassword) {
+      setIsDuplication(password !== rePassword);
+      return;
+    }
+    router.push("/Signup/ProfileInput");
   };
 
   useEffect(() => {
-    if (password.length > 0 && rePassword.length > 0) {
+    if (password && rePassword) {
       setIsActive(true);
-    } else if (password.length == 0 || rePassword.length == 0) {
+    } else {
       setIsActive(false);
     }
   }, [password, rePassword]);
 
   const InputPassword = (text: string) => {
-    setPassword(text);
+    setPassword(text.replace(/\s/g, ""));
   };
 
   const InputRePassword = (text: string) => {
-    setRePassword(text);
+    setRePassword(text.replace(/\s/g, ""));
   };
 
   return (
@@ -42,11 +46,7 @@ export default function PasswordSetting() {
       style={{ flexGrow: 1 }}
     >
       <Container>
-        <IconWrapper>
-          <Icon>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </Icon>
-        </IconWrapper>
+        <BackIcon />
 
         <TitleWrapper>
           <LineText>비밀번호를 설정해 주세요</LineText>
@@ -78,7 +78,11 @@ export default function PasswordSetting() {
 
           <View>
             <AuthButton text="다음" isActive={isActive} onPress={onPress} />
-            <Question question="계정이 있으신가요?" button="로그인" />
+            <Question
+              question="계정이 있으신가요?"
+              button="로그인"
+              onPress={() => router.push("/Login")}
+            />
           </View>
         </Wrapper>
       </Container>
@@ -113,14 +117,6 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.View<InputWrapperProps>`
   align-items: flex-start;
   width: 93%;
@@ -130,12 +126,6 @@ const InputWrapper = styled.View<InputWrapperProps>`
   border-color: ${({ isDuplication }) =>
     isDuplication ? colors.errorRed : "white"};
   border-radius: 12px;
-`;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
 `;
 
 const TitleWrapper = styled.Text`

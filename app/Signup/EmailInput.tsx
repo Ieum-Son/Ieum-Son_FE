@@ -1,7 +1,7 @@
 import { AuthButton, ModifyButton, Question } from "@/components/auth/index";
-import { CodeInput, Input } from "@/components/Signup/index";
+import { BackIcon, CodeInput, Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styled from "styled-components/native";
@@ -30,8 +30,12 @@ export default function EmailInput() {
     }
   }, [email]);
 
+  const InputCode = (text: string) => {
+    setCode(text.replace(/\s/g, ""));
+  };
+
   const InputEmail = (text: string) => {
-    setEmail(text);
+    setEmail(text.replace(/\s/g, ""));
   };
 
   return (
@@ -39,13 +43,8 @@ export default function EmailInput() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flexGrow: 1 }}
     >
+      <BackIcon />
       <Container>
-        <IconWrapper>
-          <Icon>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </Icon>
-        </IconWrapper>
-
         <TitleWrapper>
           <LineText>이메일을 입력해주세요</LineText>
         </TitleWrapper>
@@ -70,13 +69,21 @@ export default function EmailInput() {
                 placeholder="인증번호 6자리를 입력해주세요."
                 type="text"
                 value={code}
-                onChangeText={setCode}
+                onChangeText={InputCode}
               />
             )}
           </InputWrapperWrapper>
           <View>
-            <AuthButton text="다음" isActive={isActive} />
-            <Question question="계정이 있으신가요?" button="로그인" />
+            <AuthButton
+              text="다음"
+              isActive={isActive}
+              onPress={() => router.push("/Signup/IdSetting")}
+            />
+            <Question
+              question="계정이 있으신가요?"
+              button="로그인"
+              onPress={() => router.push("/Login")}
+            />
           </View>
         </Wrapper>
       </Container>
@@ -101,24 +108,10 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.View`
   flex-direction: row;
   align-items: center;
   width: 93%;
-`;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
 `;
 
 const TitleWrapper = styled.Text`
