@@ -3,6 +3,7 @@ import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
 import { colors } from "@/constants/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styled from "styled-components/native";
@@ -64,7 +65,11 @@ export default function Login() {
 
           <View>
             <AuthButton text="로그인" isActive={isActive} />
-            <Question question="계정이 없으신가요?" button="회원가입" />
+            <Question
+              question="계정이 없으신가요?"
+              button="회원가입"
+              onPress={() => router.push("/Signup/EmailInput")}
+            />
           </View>
         </Wrapper>
       </Container>

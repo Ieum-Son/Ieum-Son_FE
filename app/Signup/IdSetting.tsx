@@ -2,6 +2,7 @@ import { AuthButton, Question } from "@/components/auth/index";
 import { Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styled from "styled-components/native";
@@ -63,7 +64,11 @@ export default function IdSetting() {
           </InputWrapperWrapper>
           <View>
             <AuthButton text="다음" isActive={isActive} onPress={onPress} />
-            <Question question="계정이 있으신가요?" button="로그인" />
+            <Question
+              question="계정이 있으신가요?"
+              button="로그인"
+              onPress={() => router.push("/Login")}
+            />
           </View>
         </Wrapper>
       </Container>
