@@ -18,7 +18,11 @@ export default function PasswordSetting() {
   const [rePassword, setRePassword] = useState("");
 
   const onPress = () => {
-    setIsDuplication(password !== rePassword);
+    if (password !== rePassword) {
+      setIsDuplication(password !== rePassword);
+      return;
+    }
+    router.push("/Signup/ProfileInput");
   };
 
   useEffect(() => {
@@ -78,11 +82,7 @@ export default function PasswordSetting() {
           </InputWrapperWrapper>
 
           <View>
-            <AuthButton
-              text="다음"
-              isActive={isActive}
-              onPress={() => router.push("/Signup/ProfileInput")}
-            />
+            <AuthButton text="다음" isActive={isActive} onPress={onPress} />
             <Question
               question="계정이 있으신가요?"
               button="로그인"
