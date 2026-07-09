@@ -20,6 +20,7 @@ export default function IdSetting() {
       setIsDuplication(true);
       return;
     }
+    setIsDuplication(false);
     router.push("/Signup/PasswordSetting");
   };
 

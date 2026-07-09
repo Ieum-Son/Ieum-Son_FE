@@ -7,12 +7,7 @@ export default function BackIcon() {
   return (
     <IconWrapper>
       <Icon onPress={() => router.back()}>
-        <MaterialIcons
-          name="arrow-back-ios"
-          size={24}
-          color="black"
-          onPress={() => router.back()}
-        />
+        <MaterialIcons name="arrow-back-ios" size={24} color="black" />
       </Icon>
     </IconWrapper>
   );

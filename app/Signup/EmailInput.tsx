@@ -43,12 +43,11 @@ export default function EmailInput() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flexGrow: 1 }}
     >
+      <BackIcon />
       <Container>
         <TitleWrapper>
           <LineText>이메일을 입력해주세요</LineText>
         </TitleWrapper>
-
-        <BackIcon />
 
         <Wrapper>
           <InputWrapperWrapper>
