@@ -76,7 +76,11 @@ export default function EmailInput() {
             )}
           </InputWrapperWrapper>
           <View>
-            <AuthButton text="다음" isActive={isActive} />
+            <AuthButton
+              text="다음"
+              isActive={isActive}
+              onPress={() => router.push("/Signup/IdSetting")}
+            />
             <Question
               question="계정이 있으신가요?"
               button="로그인"

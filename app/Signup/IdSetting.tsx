@@ -63,7 +63,11 @@ export default function IdSetting() {
             )}
           </InputWrapperWrapper>
           <View>
-            <AuthButton text="다음" isActive={isActive} onPress={onPress} />
+            <AuthButton
+              text="다음"
+              isActive={isActive}
+              onPress={() => router.push("/Signup/PasswordSetting")}
+            />
             <Question
               question="계정이 있으신가요?"
               button="로그인"
