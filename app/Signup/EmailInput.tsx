@@ -1,6 +1,8 @@
 import { AuthButton, ModifyButton, Question } from "@/components/auth/index";
 import { BackIcon, CodeInput, Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
+import { useSignupStore } from "@/stores/signupStore";
+import { isValidEmail } from "@/utils/isValidEmail";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -8,7 +10,8 @@ import styled from "styled-components/native";
 
 export default function EmailInput() {
   const [isActive, setIsActive] = useState(false);
-  const [email, setEmail] = useState("");
+  const { email, setEmail } = useSignupStore();
+  const [isError, setIsError] = useState(false);
   const [isModifyActive, setIsModifyActive] = useState(false);
   const [code, setCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
@@ -23,19 +26,23 @@ export default function EmailInput() {
     setCode("");
     setIsActive(false);
     setIsCodeSent(false);
-    if (email.trim()) {
-      setIsModifyActive(true);
-    } else {
-      setIsModifyActive(false);
-    }
+    setIsModifyActive(!!email);
+    setIsError(false);
   }, [email]);
 
   const InputCode = (text: string) => {
     setCode(text.replace(/\s/g, ""));
   };
 
-  const InputEmail = (text: string) => {
-    setEmail(text.replace(/\s/g, ""));
+  const modify = () => {
+    if (!isValidEmail(email)) {
+      setIsError(true);
+      setIsCodeSent(false);
+      return;
+    }
+
+    setIsError(false);
+    setIsCodeSent(true);
   };
 
   return (
@@ -55,16 +62,19 @@ export default function EmailInput() {
               <Input
                 placeholder="이메일을 입력해주세요."
                 value={email}
-                onChangeText={InputEmail}
+                onChangeText={(text) => {
+                  setEmail(text.replace(/\s/g, ""));
+                }}
               />
               <ModifyButton
                 isActive={isModifyActive}
                 disabled={isCodeSent}
-                onPress={() => setIsCodeSent(true)}
+                onPress={modify}
               />
             </InputWrapper>
+            {isError && <ErrorText>이메일 형식이 올바르지 않습니다.</ErrorText>}
 
-            {isCodeSent && (
+            {isCodeSent && !isError && (
               <CodeInput
                 placeholder="인증번호 6자리를 입력해주세요."
                 type="text"
@@ -90,6 +100,14 @@ export default function EmailInput() {
     </KeyboardAvoidingView>
   );
 }
+
+const ErrorText = styled.Text`
+  color: ${colors.errorRed};
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.2px;
+`;
 
 const InputWrapperWrapper = styled.View`
   display: flex;
