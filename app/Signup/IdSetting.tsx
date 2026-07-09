@@ -81,8 +81,6 @@ const ErrorText = styled.Text`
 
 const InputWrapperWrapper = styled.View`
   display: flex;
-  gap: 16px;
-  display: flex;
   gap: 4px;
 `;
 

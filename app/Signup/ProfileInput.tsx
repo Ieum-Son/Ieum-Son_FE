@@ -11,22 +11,18 @@ import styled from "styled-components/native";
 export default function ProfileInput() {
   const [isActive, setIsActive] = useState(false);
   const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
 
   const InputId = (text: string) => {
     setId(text);
   };
-  const InputPassword = (text: string) => {
-    setPassword(text);
-  };
 
   useEffect(() => {
-    if (id.trim() && password.trim()) {
+    if (id.trim()) {
       setIsActive(true);
       return;
     }
     setIsActive(false);
-  }, [id, password]);
+  }, [id]);
 
   return (
     <KeyboardAvoidingView
