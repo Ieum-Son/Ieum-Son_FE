@@ -1,7 +1,6 @@
 import { AuthButton, Question } from "@/components/auth/index";
-import { CodeInput } from "@/components/Signup/index";
+import { BackIcon, CodeInput } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -47,11 +46,7 @@ export default function PasswordSetting() {
       style={{ flexGrow: 1 }}
     >
       <Container>
-        <IconWrapper>
-          <Icon>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </Icon>
-        </IconWrapper>
+        <BackIcon />
 
         <TitleWrapper>
           <LineText>비밀번호를 설정해 주세요</LineText>
@@ -122,14 +117,6 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.View<InputWrapperProps>`
   align-items: flex-start;
   width: 93%;
@@ -139,12 +126,6 @@ const InputWrapper = styled.View<InputWrapperProps>`
   border-color: ${({ isDuplication }) =>
     isDuplication ? colors.errorRed : "white"};
   border-radius: 12px;
-`;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
 `;
 
 const TitleWrapper = styled.Text`

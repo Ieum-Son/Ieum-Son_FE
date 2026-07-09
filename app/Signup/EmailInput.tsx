@@ -1,7 +1,6 @@
 import { AuthButton, ModifyButton, Question } from "@/components/auth/index";
-import { CodeInput, Input } from "@/components/Signup/index";
+import { BackIcon, CodeInput, Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -41,15 +40,11 @@ export default function EmailInput() {
       style={{ flexGrow: 1 }}
     >
       <Container>
-        <IconWrapper>
-          <Icon>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </Icon>
-        </IconWrapper>
-
         <TitleWrapper>
           <LineText>이메일을 입력해주세요</LineText>
         </TitleWrapper>
+
+        <BackIcon />
 
         <Wrapper>
           <InputWrapperWrapper>
@@ -110,24 +105,10 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const IconWrapper = styled.View`
-  display: flex;
-  width: 100%;
-  padding: 18px 12px;
-  align-items: center;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.View`
   flex-direction: row;
   align-items: center;
   width: 93%;
-`;
-
-const Icon = styled.Text`
-  width: 6px;
-  height: 12px;
-  padding: 18px 12px;
 `;
 
 const TitleWrapper = styled.Text`
