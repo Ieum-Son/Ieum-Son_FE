@@ -30,11 +30,7 @@ export default function IdSetting() {
   };
 
   useEffect(() => {
-    if (id) {
-      setIsActive(true);
-    } else {
-      setIsActive(false);
-    }
+    setIsActive(!!id);
   }, [id]);
 
   return (

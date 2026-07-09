@@ -32,11 +32,7 @@ export default function PasswordSetting() {
   };
 
   useEffect(() => {
-    if (password && rePassword) {
-      setIsActive(true);
-    } else {
-      setIsActive(false);
-    }
+    setIsActive(!!(password && rePassword));
   }, [password, rePassword]);
 
   const InputPassword = (text: string) => {

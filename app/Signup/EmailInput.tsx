@@ -26,11 +26,8 @@ export default function EmailInput() {
     setCode("");
     setIsActive(false);
     setIsCodeSent(false);
-    if (email.trim()) {
-      setIsModifyActive(true);
-    } else {
-      setIsModifyActive(false);
-    }
+    setIsModifyActive(!!email);
+    setIsError(false);
   }, [email]);
 
   const InputCode = (text: string) => {
