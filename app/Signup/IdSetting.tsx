@@ -16,7 +16,13 @@ export default function IdSetting() {
   const [id, setId] = useState("");
 
   const onPress = () => {
-    setIsDuplication(id === "에러아이디");
+    if (id === "에러아이디") {
+      setIsDuplication(true);
+      return;
+    }
+    router.push("/Signup/PasswordSetting");
+  };
+
   const InputId = (text: string) => {
     setId(text.replace(/\s/g, ""));
   };
@@ -28,10 +34,6 @@ export default function IdSetting() {
       setIsActive(false);
     }
   }, [id]);
-
-  const InputId = (text: string) => {
-    setId(text);
-  };
 
   return (
     <KeyboardAvoidingView
@@ -60,11 +62,7 @@ export default function IdSetting() {
             )}
           </InputWrapperWrapper>
           <View>
-            <AuthButton
-              text="다음"
-              isActive={isActive}
-              onPress={() => router.push("/Signup/PasswordSetting")}
-            />
+            <AuthButton text="다음" isActive={isActive} onPress={onPress} />
             <Question
               question="계정이 있으신가요?"
               button="로그인"
