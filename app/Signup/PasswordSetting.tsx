@@ -13,12 +13,18 @@ interface InputWrapperProps {
 export default function PasswordSetting() {
   const [isActive, setIsActive] = useState(false);
   const [isDuplication, setIsDuplication] = useState(false);
+  const [isLengthFull, setIsLengthFull] = useState(true);
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
 
   const onPress = () => {
-    if (password !== rePassword) {
-      setIsDuplication(password !== rePassword);
+    setIsLengthFull(true);
+    setIsDuplication(false);
+    if (password.length < 8) {
+      setIsLengthFull(false);
+      return;
+    } else if (password !== rePassword) {
+      setIsDuplication(true);
       return;
     }
     router.push("/Signup/ProfileInput");
@@ -34,10 +40,14 @@ export default function PasswordSetting() {
 
   const InputPassword = (text: string) => {
     setPassword(text.replace(/\s/g, ""));
+    setIsLengthFull(true);
+    setIsDuplication(false);
   };
 
   const InputRePassword = (text: string) => {
     setRePassword(text.replace(/\s/g, ""));
+    setIsLengthFull(true);
+    setIsDuplication(false);
   };
 
   return (
@@ -71,9 +81,11 @@ export default function PasswordSetting() {
                 value={rePassword}
               />
             </InputWrapper>
-            {isDuplication && (
-              <ErrorText>비밀번호가 일치하지 않습니다</ErrorText>
-            )}
+            {!isLengthFull ? (
+              <ErrorText>8자 이상 입력해주세요.</ErrorText>
+            ) : isDuplication ? (
+              <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
+            ) : null}
           </InputWrapperWrapper>
 
           <View>
