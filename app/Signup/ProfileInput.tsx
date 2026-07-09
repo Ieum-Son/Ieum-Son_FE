@@ -3,6 +3,7 @@ import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
 import { BackIcon, Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
+import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -10,7 +11,12 @@ import styled from "styled-components/native";
 
 export default function ProfileInput() {
   const [isActive, setIsActive] = useState(false);
-  const [name, setName] = useState("");
+  const { name, setName, reset } = useSignupStore();
+
+  const Signup = () => {
+    reset();
+    router.push("/Login");
+  };
 
   const InputId = (text: string) => {
     setName(text.replace(/\s/g, ""));
@@ -57,11 +63,7 @@ export default function ProfileInput() {
           </Center>
 
           <View>
-            <AuthButton
-              text="다음"
-              isActive={isActive}
-              onPress={() => router.push("/Login")}
-            />
+            <AuthButton text="회원가입" isActive={isActive} onPress={Signup} />
             <Question
               question="계정이 있으신가요?"
               button="로그인"

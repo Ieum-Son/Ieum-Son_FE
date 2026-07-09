@@ -1,6 +1,7 @@
 import { AuthButton, Question } from "@/components/auth/index";
 import { BackIcon, Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
+import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -12,8 +13,8 @@ interface InputWrapperProps {
 
 export default function IdSetting() {
   const [isActive, setIsActive] = useState(false);
+  const { id, setId } = useSignupStore();
   const [isDuplication, setIsDuplication] = useState(false);
-  const [id, setId] = useState("");
 
   const onPress = () => {
     if (id === "에러아이디") {

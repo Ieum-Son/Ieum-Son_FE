@@ -1,6 +1,7 @@
 import { AuthButton, Question } from "@/components/auth/index";
 import { BackIcon, CodeInput } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
+import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -14,7 +15,7 @@ export default function PasswordSetting() {
   const [isActive, setIsActive] = useState(false);
   const [isDuplication, setIsDuplication] = useState(false);
   const [isLengthFull, setIsLengthFull] = useState(true);
-  const [password, setPassword] = useState("");
+  const { password, setPassword } = useSignupStore();
   const [rePassword, setRePassword] = useState("");
 
   const onPress = () => {

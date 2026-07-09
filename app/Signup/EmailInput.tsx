@@ -1,6 +1,7 @@
 import { AuthButton, ModifyButton, Question } from "@/components/auth/index";
 import { BackIcon, CodeInput, Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
+import { useSignupStore } from "@/stores/signupStore";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ import styled from "styled-components/native";
 
 export default function EmailInput() {
   const [isActive, setIsActive] = useState(false);
-  const [email, setEmail] = useState("");
+  const { email, setEmail } = useSignupStore();
   const [isError, setIsError] = useState(false);
   const [isModifyActive, setIsModifyActive] = useState(false);
   const [code, setCode] = useState("");
@@ -34,16 +35,6 @@ export default function EmailInput() {
 
   const InputCode = (text: string) => {
     setCode(text.replace(/\s/g, ""));
-  };
-
-  const InputEmail = (text: string) => {
-    const value = text.replace(/\s/g, "");
-
-    setEmail(value);
-
-    if (isError) {
-      setIsError(false);
-    }
   };
 
   const modify = () => {
@@ -74,7 +65,9 @@ export default function EmailInput() {
               <Input
                 placeholder="이메일을 입력해주세요."
                 value={email}
-                onChangeText={InputEmail}
+                onChangeText={(text) => {
+                  setEmail(text.replace(/\s/g, ""));
+                }}
               />
               <ModifyButton
                 isActive={isModifyActive}
