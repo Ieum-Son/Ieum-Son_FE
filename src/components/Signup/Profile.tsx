@@ -4,6 +4,7 @@ import { Pressable } from "react-native";
 import styled from "styled-components/native";
 
 export default function Profile({}) {
+  //이미지 추가 로직 구현
   return (
     <>
       <Wrapper>
