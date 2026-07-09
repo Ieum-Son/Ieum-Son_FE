@@ -17,12 +17,14 @@ export default function IdSetting() {
 
   const onPress = () => {
     setIsDuplication(id === "에러아이디");
+  const InputId = (text: string) => {
+    setId(text.replace(/\s/g, ""));
   };
 
   useEffect(() => {
-    if (id.trim().length > 0) {
+    if (id) {
       setIsActive(true);
-    } else if (id.trim().length == 0) {
+    } else {
       setIsActive(false);
     }
   }, [id]);

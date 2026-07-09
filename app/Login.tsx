@@ -14,14 +14,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const InputId = (text: string) => {
-    setId(text);
+    setId(text.replace(/\s/g, ""));
   };
   const InputPassword = (text: string) => {
-    setPassword(text);
+    setPassword(text.replace(/\s/g, ""));
   };
 
   useEffect(() => {
-    if (id.trim() && password.trim()) {
+    if (id && password) {
       setIsActive(true);
       return;
     }

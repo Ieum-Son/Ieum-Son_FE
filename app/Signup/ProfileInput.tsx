@@ -13,7 +13,7 @@ export default function ProfileInput() {
   const [id, setId] = useState("");
 
   const InputId = (text: string) => {
-    setId(text);
+    setName(text.replace(/\s/g, ""));
   };
 
   useEffect(() => {

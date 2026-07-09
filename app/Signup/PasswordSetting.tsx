@@ -25,19 +25,19 @@ export default function PasswordSetting() {
   };
 
   useEffect(() => {
-    if (password.length > 0 && rePassword.length > 0) {
+    if (password && rePassword) {
       setIsActive(true);
-    } else if (password.length == 0 || rePassword.length == 0) {
+    } else {
       setIsActive(false);
     }
   }, [password, rePassword]);
 
   const InputPassword = (text: string) => {
-    setPassword(text);
+    setPassword(text.replace(/\s/g, ""));
   };
 
   const InputRePassword = (text: string) => {
-    setRePassword(text);
+    setRePassword(text.replace(/\s/g, ""));
   };
 
   return (

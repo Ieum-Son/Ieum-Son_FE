@@ -30,8 +30,12 @@ export default function EmailInput() {
     }
   }, [email]);
 
+  const InputCode = (text: string) => {
+    setCode(text.replace(/\s/g, ""));
+  };
+
   const InputEmail = (text: string) => {
-    setEmail(text);
+    setEmail(text.replace(/\s/g, ""));
   };
 
   return (
@@ -66,7 +70,7 @@ export default function EmailInput() {
                 placeholder="인증번호 6자리를 입력해주세요."
                 type="text"
                 value={code}
-                onChangeText={setCode}
+                onChangeText={InputCode}
               />
             )}
           </InputWrapperWrapper>
