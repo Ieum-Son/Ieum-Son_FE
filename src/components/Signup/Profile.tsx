@@ -12,7 +12,7 @@ export default function Profile({}) {
           source={require("@/assets/user/defaultProfile.png")}
         ></UserProfile>
         <Overlay />
-        <Camera source={require("@/assets/user/camera.svg")}></Camera>
+        <Camera source={require("@/assets/user/camera.png")}></Camera>
       </Wrapper>
     </>
   );
