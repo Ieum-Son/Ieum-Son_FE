@@ -1,14 +1,25 @@
-import Blue from "@/assets/Logo/Blue.png";
-import { LoginButton, SignupButton } from "@/components/splash/index";
+import BgImage from "@/assets/background/bg.png";
+import Bluee from "@/assets/Logo/Blue";
+import { LoginButton, SignupButton } from "@/components/splash";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { Image } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import styled from "styled-components/native";
 
 export default function Splash() {
   return (
-    <Wrapper>
+    <Wrapper style={StyleSheet.absoluteFillObject}>
+      <Image
+        source={BgImage}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode="cover"
+      />
+
       <Container>
-        <Image source={Blue} resizeMode="contain" />
+        <Top>
+          <Bluee />
+          <SubText>매일 조금씩, 수화와 가까워지세요</SubText>
+        </Top>
 
         <ButtonWrapper>
           <SignupButton onPress={() => router.push("/Signup/EmailInput")} />
@@ -19,21 +30,35 @@ export default function Splash() {
   );
 }
 
-const Wrapper = styled.View`
-  height: 100%;
-  justify-content: center;
+const Top = styled.View`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 40px;
 `;
 
+const SubText = styled.Text`
+  color: white;
+  font-size: 15px;
+`;
+
+const Wrapper = styled(LinearGradient).attrs({
+  colors: ["rgba(108,169,216)", "rgba(141,189,227)", "rgba(208,231,249)"],
+  start: { x: 0.5, y: 0 },
+  end: { x: 0.5, y: 1 },
+})`
+  flex: 1;
+`;
 const Container = styled.View`
-  width: 100%;
-  height: 80%;
-  display: flex;
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  bottom: 50px;
+
   align-items: center;
   justify-content: space-between;
 `;
-
 const ButtonWrapper = styled.View`
-  display: flex;
   gap: 15px;
-  margin-bottom: -20px;
 `;
