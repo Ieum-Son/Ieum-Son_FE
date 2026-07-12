@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useTimer = (initialTime = 10) => {
+export const useTimer = (initialTime = 180) => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isExpired, setIsExpired] = useState(false);
 
