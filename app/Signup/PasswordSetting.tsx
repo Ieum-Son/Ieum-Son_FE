@@ -3,7 +3,7 @@ import { BackIcon, CodeInput } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
 import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -13,11 +13,11 @@ interface InputWrapperProps {
 }
 
 export default function PasswordSetting() {
-  const [isActive, setIsActive] = useState(false);
   const [isDuplication, setIsDuplication] = useState(false);
   const [isLengthFull, setIsLengthFull] = useState(true);
   const { password, setPassword } = useSignupStore();
   const [rePassword, setRePassword] = useState("");
+  const isActive = password.length > 0 && rePassword.length > 0;
 
   const onPress = () => {
     setIsLengthFull(true);
@@ -31,10 +31,6 @@ export default function PasswordSetting() {
     }
     router.push("/Signup/ProfileInput");
   };
-
-  useEffect(() => {
-    setIsActive(!!(password && rePassword));
-  }, [password, rePassword]);
 
   const InputPassword = (text: string) => {
     setPassword(text.replace(/\s/g, ""));
