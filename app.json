@@ -25,7 +25,8 @@
           "cameraPermissionText": "카메라 권한이 필요합니다.",
           "enableMicrophonePermission": false
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
