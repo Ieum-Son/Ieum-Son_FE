@@ -1,4 +1,5 @@
 import { signup, verifyCode, verifyEmail } from "@/apis/auth/signup";
+import { useSignupStore } from "@/stores/signupStore";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
@@ -73,6 +74,7 @@ export const useSignup = () => {
     mutationFn: signup,
 
     onSuccess: () => {
+      useSignupStore.getState().setLoginIdError(null);
       console.log("회원가입 성공!");
       router.push("/Login");
     },
@@ -89,6 +91,12 @@ export const useSignup = () => {
       if (status === 403) {
         console.error(message ?? "이메일 코드 인증이 필요합니다.");
       } else if (status === 409) {
+        if (message?.includes("로그인 ID")) {
+          useSignupStore
+            .getState()
+            .setLoginIdError(message ?? "이미 사용 중인 로그인 ID입니다.");
+          router.push("/Signup/IdSetting");
+        }
         console.error(message ?? "이미 사용 중인 이메일 또는 로그인 ID입니다.");
       } else if (status === 429) {
         console.error(

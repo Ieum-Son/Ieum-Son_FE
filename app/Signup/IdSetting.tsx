@@ -7,9 +7,14 @@ import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
+interface InputWrapperProps {
+  isDuplication: boolean;
+}
+
 export default function IdSetting() {
-  const { loginId, setLoginId } = useSignupStore();
-  const isActive = loginId.length > 0;
+  const { loginId, loginIdError, setLoginId } = useSignupStore();
+  const isDuplication = Boolean(loginIdError);
+  const isActive = loginId.length > 0 && !isDuplication;
 
   const onPress = () => {
     router.push("/Signup/PasswordSetting");
@@ -35,13 +40,14 @@ export default function IdSetting() {
 
           <Wrapper>
             <InputWrapperWrapper>
-              <InputWrapper>
+              <InputWrapper isDuplication={isDuplication}>
                 <Input
                   placeholder="아이디를 입력해주세요."
                   value={loginId}
                   onChangeText={InputId}
                 />
               </InputWrapper>
+              {loginIdError && <ErrorText>{loginIdError}</ErrorText>}
             </InputWrapperWrapper>
             <View>
               <AuthButton text="다음" isActive={isActive} onPress={onPress} />
@@ -63,6 +69,14 @@ const InputWrapperWrapper = styled.View`
   gap: 4px;
 `;
 
+const ErrorText = styled.Text`
+  color: ${colors.errorRed};
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.2px;
+`;
+
 const Container = styled.View`
   flex: 1;
   padding: 10px;
@@ -75,13 +89,14 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const InputWrapper = styled.View`
+const InputWrapper = styled.View<InputWrapperProps>`
   flex-direction: row;
   align-items: center;
   width: 93%;
 
   border-width: 1px;
-  border-color: white;
+  border-color: ${({ isDuplication }) =>
+    isDuplication ? colors.errorRed : "white"};
   border-radius: 12px;
 `;
 

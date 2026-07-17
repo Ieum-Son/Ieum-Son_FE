@@ -32,6 +32,7 @@ export default function EmailInput() {
 
   const [code, setCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
 
   const { formattedTime, isExpired, startTimer } = useTimer();
   const isModifyActive =
@@ -45,6 +46,7 @@ export default function EmailInput() {
   useEffect(() => {
     setCode("");
     setIsCodeSent(false);
+    setVerifiedEmail(null);
     setIsError(false);
     setErrorMessage("");
   }, [email]);
@@ -62,12 +64,20 @@ export default function EmailInput() {
       return;
     }
 
+    const requestedEmail = email;
+
     try {
-      await verifyEmailMutation.mutateAsync({ email });
+      await verifyEmailMutation.mutateAsync({ email: requestedEmail });
+
+      if (useSignupStore.getState().email !== requestedEmail) {
+        return;
+      }
+
       setIsError(false);
       setErrorMessage("");
       setCode("");
       setIsCodeSent(true);
+      setVerifiedEmail(requestedEmail);
       startTimer();
     } catch (error) {
       setIsError(true);
@@ -78,13 +88,18 @@ export default function EmailInput() {
   };
 
   const handleNext = async () => {
+    if (!verifiedEmail || verifiedEmail !== email) {
+      setErrorMessage("현재 이메일로 다시 인증해주세요.");
+      return;
+    }
+
     if (isExpired) {
       setErrorMessage("인증 시간이 만료되었습니다. 다시 인증해주세요.");
       return;
     }
 
     try {
-      await verifyCodeMutation.mutateAsync({ email, code });
+      await verifyCodeMutation.mutateAsync({ email: verifiedEmail, code });
       setErrorMessage("");
       router.push("/Signup/IdSetting");
     } catch (error) {

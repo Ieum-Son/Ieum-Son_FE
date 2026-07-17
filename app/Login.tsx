@@ -5,6 +5,7 @@ import { BackIcon } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
 import type { ErrorResponse } from "@/hooks/auth/errorResponse";
 import { useLogin } from "@/hooks/auth/useLogin";
+import { useSignupStore } from "@/stores/signupStore";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -14,6 +15,7 @@ import styled from "styled-components/native";
 
 export default function Login() {
   const loginMutation = useLogin();
+  const resetSignup = useSignupStore((state) => state.reset);
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -44,6 +46,11 @@ export default function Login() {
         error.response?.data?.message ?? "로그인 중 오류가 발생했습니다.",
       );
     }
+  };
+
+  const handleSignup = () => {
+    resetSignup();
+    router.push("/Signup/EmailInput");
   };
 
   return (
@@ -88,7 +95,7 @@ export default function Login() {
               <Question
                 question="계정이 없으신가요?"
                 button="회원가입"
-                onPress={() => router.push("/Signup/EmailInput")}
+                onPress={handleSignup}
               />
             </View>
           </Wrapper>

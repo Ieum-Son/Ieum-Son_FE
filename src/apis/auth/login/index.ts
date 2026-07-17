@@ -1,5 +1,5 @@
 import { api } from "@/apis";
-import { LoginRequestProps, LoginResponseProps } from "./type";
+import type { LoginRequestProps, LoginResponseProps } from "./type";
 
 export const login = async ({ loginId, password }: LoginRequestProps) => {
   const response = await api.post<LoginResponseProps>(`/api/auth/login`, {

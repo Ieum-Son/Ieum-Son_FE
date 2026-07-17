@@ -1,4 +1,4 @@
-import { LoginResponseProps } from "@/apis/auth/login/type";
+import type { LoginResponseProps } from "@/apis/auth/login/type";
 import * as SecureStore from "expo-secure-store";
 
 const ACCESS_TOKEN_KEY = "accessToken";
@@ -8,10 +8,16 @@ export const saveTokens = async ({
   accessToken,
   refreshToken,
 }: LoginResponseProps) => {
-  await Promise.all([
-    SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken),
-    SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken),
-  ]);
+  try {
+    await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken);
+    await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+  } catch (error) {
+    await Promise.allSettled([
+      SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY),
+      SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
+    ]);
+    throw error;
+  }
 };
 
 export const getAccessTokens = () => {
