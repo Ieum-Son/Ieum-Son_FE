@@ -2,67 +2,96 @@ import { AuthButton, ModifyButton, Question } from "@/components/auth/index";
 import { BackIcon, CodeInput, Input } from "@/components/Signup/index";
 import VerifyTimer from "@/components/Signup/VerifyTimer";
 import { colors } from "@/constants/colors";
+import type { ErrorResponse } from "@/hooks/auth/errorResponse";
+import { useVerifyCode, useVerifyEmail } from "@/hooks/auth/useSignup";
 import { useTimer } from "@/hooks/useTimer";
 import { useSignupStore } from "@/stores/signupStore";
 import { isValidEmail } from "@/utils/isValidEmail";
+import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (!isAxiosError<ErrorResponse>(error)) {
+    return fallback;
+  }
+
+  return error.response?.data?.message ?? fallback;
+};
+
 export default function EmailInput() {
-  const [isActive, setIsActive] = useState(false);
+  const verifyEmailMutation = useVerifyEmail();
+  const verifyCodeMutation = useVerifyCode();
   const { email, setEmail } = useSignupStore();
 
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [isModifyActive, setIsModifyActive] = useState(false);
   const [code, setCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
 
   const { formattedTime, isExpired, startTimer } = useTimer();
-
-  useEffect(() => {
-    setIsActive(code.trim().length === 6);
-  }, [code]);
+  const isModifyActive =
+    isValidEmail(email) && !verifyEmailMutation.isPending;
+  const isNextActive =
+    isCodeSent &&
+    /^\d{6}$/.test(code) &&
+    !isExpired &&
+    !verifyCodeMutation.isPending;
 
   useEffect(() => {
     setCode("");
-    setIsActive(false);
     setIsCodeSent(false);
-    setIsModifyActive(!!email);
     setIsError(false);
     setErrorMessage("");
   }, [email]);
 
   const InputCode = (text: string) => {
-    setCode(text.replace(/\s/g, ""));
+    setCode(text.replace(/\D/g, "").slice(0, 6));
     setErrorMessage("");
     setIsError(false);
   };
 
-  const modify = () => {
+  const modify = async () => {
     if (!isValidEmail(email)) {
       setIsError(true);
       setErrorMessage("이메일 형식이 올바르지 않습니다.");
       return;
     }
 
-    setIsError(false);
-    setErrorMessage("");
-    setIsCodeSent(true);
-    startTimer();
+    try {
+      await verifyEmailMutation.mutateAsync({ email });
+      setIsError(false);
+      setErrorMessage("");
+      setCode("");
+      setIsCodeSent(true);
+      startTimer();
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage(
+        getErrorMessage(error, "인증 메일 전송에 실패했습니다."),
+      );
+    }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (isExpired) {
-      setErrorMessage("시간 초과되었습니다. 다시 시도하세요");
+      setErrorMessage("인증 시간이 만료되었습니다. 다시 인증해주세요.");
       return;
     }
 
-    router.push("/Signup/IdSetting");
+    try {
+      await verifyCodeMutation.mutateAsync({ email, code });
+      setErrorMessage("");
+      router.push("/Signup/IdSetting");
+    } catch (error) {
+      setErrorMessage(
+        getErrorMessage(error, "인증 코드가 올바르지 않거나 만료되었습니다."),
+      );
+    }
   };
 
   return (
@@ -92,13 +121,13 @@ export default function EmailInput() {
 
                   <ModifyButton
                     isActive={isModifyActive}
-                    disabled={isCodeSent}
+                    disabled={isCodeSent && !isExpired}
                     onPress={modify}
                   />
                 </InputWrapper>
 
                 {isError && !isCodeSent && (
-                  <ErrorText>이메일 형식이 올바르지 않습니다.</ErrorText>
+                  <ErrorText>{errorMessage}</ErrorText>
                 )}
               </EmailArea>
 
@@ -125,7 +154,7 @@ export default function EmailInput() {
             <View>
               <AuthButton
                 text="다음"
-                isActive={isActive}
+                isActive={isNextActive}
                 onPress={handleNext}
               />
 
