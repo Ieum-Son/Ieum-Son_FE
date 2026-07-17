@@ -35,8 +35,7 @@ export default function EmailInput() {
   const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
 
   const { formattedTime, isExpired, startTimer } = useTimer();
-  const isModifyActive =
-    isValidEmail(email) && !verifyEmailMutation.isPending;
+  const isModifyActive = isValidEmail(email) && !verifyEmailMutation.isPending;
   const isNextActive =
     isCodeSent &&
     /^\d{6}$/.test(code) &&
@@ -80,10 +79,11 @@ export default function EmailInput() {
       setVerifiedEmail(requestedEmail);
       startTimer();
     } catch (error) {
+      if (useSignupStore.getState().email !== requestedEmail) {
+        return;
+      }
       setIsError(true);
-      setErrorMessage(
-        getErrorMessage(error, "인증 메일 전송에 실패했습니다."),
-      );
+      setErrorMessage(getErrorMessage(error, "인증 메일 전송에 실패했습니다."));
     }
   };
 
@@ -99,7 +99,12 @@ export default function EmailInput() {
     }
 
     try {
-      await verifyCodeMutation.mutateAsync({ email: verifiedEmail, code });
+      const requestedEmail = verifiedEmail;
+      await verifyCodeMutation.mutateAsync({ email: requestedEmail, code });
+
+      if (useSignupStore.getState().email !== requestedEmail) {
+        return;
+      }
       setErrorMessage("");
       router.push("/Signup/IdSetting");
     } catch (error) {

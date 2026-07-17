@@ -36,6 +36,7 @@ export default function Login() {
     try {
       await loginMutation.mutateAsync({ loginId, password });
       setErrorMessage("");
+      // main으로 이동 router
     } catch (error) {
       if (!isAxiosError<ErrorResponse>(error)) {
         setErrorMessage("로그인 정보를 저장하는 중 오류가 발생했습니다.");

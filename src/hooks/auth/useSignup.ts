@@ -74,7 +74,7 @@ export const useSignup = () => {
     mutationFn: signup,
 
     onSuccess: () => {
-      useSignupStore.getState().setLoginIdError(null);
+      useSignupStore.getState().reset();
       console.log("회원가입 성공!");
       router.push("/Login");
     },
@@ -95,7 +95,7 @@ export const useSignup = () => {
           useSignupStore
             .getState()
             .setLoginIdError(message ?? "이미 사용 중인 로그인 ID입니다.");
-          router.push("/Signup/IdSetting");
+          router.dismissTo("/Signup/IdSetting");
         }
         console.error(message ?? "이미 사용 중인 이메일 또는 로그인 ID입니다.");
       } else if (status === 429) {
