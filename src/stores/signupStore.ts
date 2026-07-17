@@ -1,34 +1,36 @@
+import type { SignupProps } from "@/apis/auth/signup/type";
 import { create } from "zustand";
 
-interface SignupState {
-  email: string;
-  id: string;
-  password: string;
-  name: string;
-
+interface SignupState extends SignupProps {
   setEmail: (email: string) => void;
-  setId: (id: string) => void;
+  setLoginId: (loginId: string) => void;
   setPassword: (password: string) => void;
-  setName: (nickname: string) => void;
+  setName: (name: string) => void;
 
+  getSignupPayload: () => SignupProps;
   reset: () => void;
 }
 
-export const useSignupStore = create<SignupState>((set) => ({
+export const useSignupStore = create<SignupState>((set, get) => ({
   email: "",
-  id: "",
+  loginId: "",
   password: "",
   name: "",
 
   setEmail: (email) => set({ email }),
-  setId: (id) => set({ id }),
+  setLoginId: (loginId) => set({ loginId }),
   setPassword: (password) => set({ password }),
   setName: (name) => set({ name }),
+
+  getSignupPayload: () => {
+    const { email, loginId, password, name } = get();
+    return { email, loginId, password, name };
+  },
 
   reset: () =>
     set({
       email: "",
-      id: "",
+      loginId: "",
       password: "",
       name: "",
     }),
