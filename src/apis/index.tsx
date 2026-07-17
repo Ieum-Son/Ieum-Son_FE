@@ -1,9 +1,13 @@
-import axios from "axios";
+import { create } from "axios";
 
-const BaseURL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
-export const api = axios.create({
-  baseURL: BaseURL,
+if (!BASE_URL) {
+  throw new Error("EXPO_PUBLIC_API_BASE_URL 환경변수가 설정되지 않았습니다.");
+}
+
+export const api = create({
+  baseURL: BASE_URL,
   timeout: 15000,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
