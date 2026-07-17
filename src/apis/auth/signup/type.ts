@@ -1,13 +1,13 @@
-export interface verifyEmailProps {
+export interface VerifyEmailProps {
   email: string;
 }
 
-export interface verifyCodeProps {
+export interface VerifyCodeProps {
   email: string;
-  code: number;
+  code: string;
 }
 
-export interface signupProps {
+export interface SignupProps {
   email: string;
   name: string;
   loginId: string;

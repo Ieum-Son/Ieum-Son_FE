@@ -1,14 +1,15 @@
-import { api } from "../..";
-import type { signupProps, verifyCodeProps, verifyEmailProps } from "./type";
+import { api } from "@/apis";
+import type { SignupProps, VerifyCodeProps, VerifyEmailProps } from "./type";
 
-export const verifyEmail = async ({ email }: verifyEmailProps) => {
-  const response = await api.post(`/api/auth/verify`, { email });
-  return response;
+export const verifyEmail = async ({ email }: VerifyEmailProps): Promise<void> => {
+  await api.post(`/api/auth/verify`, { email });
 };
 
-export const verifyCode = async ({ email, code }: verifyCodeProps) => {
-  const response = await api.post(`/api/auth/code`, { email, code });
-  return response;
+export const verifyCode = async ({
+  email,
+  code,
+}: VerifyCodeProps): Promise<void> => {
+  await api.post(`/api/auth/code`, { email, code });
 };
 
 export const signup = async ({
@@ -16,12 +17,11 @@ export const signup = async ({
   name,
   loginId,
   password,
-}: signupProps) => {
-  const response = await api.post(`/api/auth/signup`, {
+}: SignupProps): Promise<void> => {
+  await api.post(`/api/auth/signup`, {
     email,
     name,
     loginId,
     password,
   });
-  return response;
 };
