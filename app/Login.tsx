@@ -3,31 +3,48 @@ import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
 import { BackIcon } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
+import type { ErrorResponse } from "@/hooks/auth/errorResponse";
+import { useLogin } from "@/hooks/auth/useLogin";
+import { isAxiosError } from "axios";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function Login() {
-  const [isActive, setIsActive] = useState(false);
-  const [id, setId] = useState("");
+  const loginMutation = useLogin();
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const isActive =
+    loginId.length > 0 && password.length > 0 && !loginMutation.isPending;
 
   const InputId = (text: string) => {
-    setId(text.replace(/\s/g, ""));
-  };
-  const InputPassword = (text: string) => {
-    setPassword(text.replace(/\s/g, ""));
+    setLoginId(text.replace(/\s/g, ""));
+    setErrorMessage("");
   };
 
-  useEffect(() => {
-    if (id && password) {
-      setIsActive(true);
-      return;
+  const InputPassword = (text: string) => {
+    setPassword(text.replace(/\s/g, ""));
+    setErrorMessage("");
+  };
+
+  const handleLogin = async () => {
+    try {
+      await loginMutation.mutateAsync({ loginId, password });
+      setErrorMessage("");
+    } catch (error) {
+      if (!isAxiosError<ErrorResponse>(error)) {
+        setErrorMessage("로그인 정보를 저장하는 중 오류가 발생했습니다.");
+        return;
+      }
+
+      setErrorMessage(
+        error.response?.data?.message ?? "로그인 중 오류가 발생했습니다.",
+      );
     }
-    setIsActive(false);
-  }, [id, password]);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
@@ -51,7 +68,7 @@ export default function Login() {
                 placeholder="아이디를 입력해주세요."
                 type="text"
                 onChangeText={InputId}
-                value={id}
+                value={loginId}
               />
               <Input
                 placeholder="비밀번호를 입력해주세요."
@@ -59,10 +76,15 @@ export default function Login() {
                 onChangeText={InputPassword}
                 value={password}
               />
+              {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
             </InputWrapper>
 
             <View>
-              <AuthButton text="로그인" isActive={isActive} />
+              <AuthButton
+                text="로그인"
+                isActive={isActive}
+                onPress={handleLogin}
+              />
               <Question
                 question="계정이 없으신가요?"
                 button="회원가입"
@@ -90,6 +112,13 @@ const Wrapper = styled.View`
 
 const InputWrapper = styled.View`
   gap: 16px;
+`;
+
+const ErrorText = styled.Text`
+  color: ${colors.errorRed};
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
 `;
 
 const TitleWrapper = styled.Text`
