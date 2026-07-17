@@ -2,136 +2,192 @@ import { AuthButton, ModifyButton, Question } from "@/components/auth/index";
 import { BackIcon, CodeInput, Input } from "@/components/Signup/index";
 import VerifyTimer from "@/components/Signup/VerifyTimer";
 import { colors } from "@/constants/colors";
+import type { ErrorResponse } from "@/hooks/auth/errorResponse";
+import { useVerifyCode, useVerifyEmail } from "@/hooks/auth/useSignup";
 import { useTimer } from "@/hooks/useTimer";
 import { useSignupStore } from "@/stores/signupStore";
 import { isValidEmail } from "@/utils/isValidEmail";
+import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (!isAxiosError<ErrorResponse>(error)) {
+    return fallback;
+  }
+
+  return error.response?.data?.message ?? fallback;
+};
+
 export default function EmailInput() {
-  const [isActive, setIsActive] = useState(false);
+  const verifyEmailMutation = useVerifyEmail();
+  const verifyCodeMutation = useVerifyCode();
   const { email, setEmail } = useSignupStore();
 
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [isModifyActive, setIsModifyActive] = useState(false);
   const [code, setCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
 
   const { formattedTime, isExpired, startTimer } = useTimer();
-
-  useEffect(() => {
-    setIsActive(code.trim().length === 6);
-  }, [code]);
+  const isModifyActive = isValidEmail(email) && !verifyEmailMutation.isPending;
+  const isNextActive =
+    isCodeSent &&
+    /^\d{6}$/.test(code) &&
+    !isExpired &&
+    !verifyCodeMutation.isPending;
 
   useEffect(() => {
     setCode("");
-    setIsActive(false);
     setIsCodeSent(false);
-    setIsModifyActive(!!email);
+    setVerifiedEmail(null);
     setIsError(false);
     setErrorMessage("");
   }, [email]);
 
   const InputCode = (text: string) => {
-    setCode(text.replace(/\s/g, ""));
+    setCode(text.replace(/\D/g, "").slice(0, 6));
     setErrorMessage("");
     setIsError(false);
   };
 
-  const modify = () => {
+  const modify = async () => {
     if (!isValidEmail(email)) {
       setIsError(true);
       setErrorMessage("이메일 형식이 올바르지 않습니다.");
       return;
     }
 
-    setIsError(false);
-    setErrorMessage("");
-    setIsCodeSent(true);
-    startTimer();
+    const requestedEmail = email;
+
+    try {
+      await verifyEmailMutation.mutateAsync({ email: requestedEmail });
+
+      if (useSignupStore.getState().email !== requestedEmail) {
+        return;
+      }
+
+      setIsError(false);
+      setErrorMessage("");
+      setCode("");
+      setIsCodeSent(true);
+      setVerifiedEmail(requestedEmail);
+      startTimer();
+    } catch (error) {
+      if (useSignupStore.getState().email !== requestedEmail) {
+        return;
+      }
+      setIsError(true);
+      setErrorMessage(getErrorMessage(error, "인증 메일 전송에 실패했습니다."));
+    }
   };
 
-  const handleNext = () => {
-    if (isExpired) {
-      setErrorMessage("시간 초과되었습니다. 다시 시도하세요");
+  const handleNext = async () => {
+    if (!verifiedEmail || verifiedEmail !== email) {
+      setErrorMessage("현재 이메일로 다시 인증해주세요.");
       return;
     }
 
-    router.push("/Signup/IdSetting");
+    if (isExpired) {
+      setErrorMessage("인증 시간이 만료되었습니다. 다시 인증해주세요.");
+      return;
+    }
+
+    try {
+      const requestedEmail = verifiedEmail;
+      await verifyCodeMutation.mutateAsync({ email: requestedEmail, code });
+
+      if (useSignupStore.getState().email !== requestedEmail) {
+        return;
+      }
+      setErrorMessage("");
+      router.push("/Signup/IdSetting");
+    } catch (error) {
+      setErrorMessage(
+        getErrorMessage(error, "인증 코드가 올바르지 않거나 만료되었습니다."),
+      );
+    }
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <Container>
-        <BackIcon />
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <Container>
+          <BackIcon />
 
-        <TitleWrapper>
-          <LineText>이메일을 입력해주세요</LineText>
-        </TitleWrapper>
+          <TitleWrapper>
+            <LineText>이메일을 입력해주세요</LineText>
+          </TitleWrapper>
 
-        <Wrapper>
-          <InputWrapperWrapper>
-            <EmailArea>
-              <InputWrapper>
-                <Input
-                  placeholder="이메일을 입력해주세요."
-                  value={email}
-                  onChangeText={(text) => {
-                    setEmail(text.replace(/\s/g, ""));
-                  }}
-                />
+          <Wrapper>
+            <InputWrapperWrapper>
+              <EmailArea>
+                <InputWrapper>
+                  <Input
+                    placeholder="이메일을 입력해주세요."
+                    value={email}
+                    onChangeText={(text) => {
+                      setEmail(text.replace(/\s/g, ""));
+                    }}
+                  />
 
-                <ModifyButton
-                  isActive={isModifyActive}
-                  disabled={isCodeSent}
-                  onPress={modify}
-                />
-              </InputWrapper>
+                  <ModifyButton
+                    isActive={isModifyActive}
+                    disabled={isCodeSent && !isExpired}
+                    onPress={modify}
+                  />
+                </InputWrapper>
 
-              {isError && !isCodeSent && (
-                <ErrorText>이메일 형식이 올바르지 않습니다.</ErrorText>
+                {isError && !isCodeSent && (
+                  <ErrorText>{errorMessage}</ErrorText>
+                )}
+              </EmailArea>
+
+              {isCodeSent && (
+                <CodeArea>
+                  <CodeRow>
+                    <CodeInputWrapper>
+                      <CodeInput
+                        placeholder="인증번호 6자리를 입력해주세요."
+                        type="text"
+                        value={code}
+                        onChangeText={InputCode}
+                      />
+                    </CodeInputWrapper>
+
+                    <VerifyTimer time={formattedTime} />
+                  </CodeRow>
+
+                  {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+                </CodeArea>
               )}
-            </EmailArea>
+            </InputWrapperWrapper>
 
-            {isCodeSent && (
-              <CodeArea>
-                <CodeRow>
-                  <CodeInputWrapper>
-                    <CodeInput
-                      placeholder="인증번호 6자리를 입력해주세요."
-                      type="text"
-                      value={code}
-                      onChangeText={InputCode}
-                    />
-                  </CodeInputWrapper>
+            <View>
+              <AuthButton
+                text="다음"
+                isActive={isNextActive}
+                onPress={handleNext}
+              />
 
-                  <VerifyTimer time={formattedTime} />
-                </CodeRow>
-
-                {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
-              </CodeArea>
-            )}
-          </InputWrapperWrapper>
-
-          <View>
-            <AuthButton text="다음" isActive={isActive} onPress={handleNext} />
-
-            <Question
-              question="계정이 있으신가요?"
-              button="로그인"
-              onPress={() => router.push("/Login")}
-            />
-          </View>
-        </Wrapper>
-      </Container>
-    </KeyboardAvoidingView>
+              <Question
+                question="계정이 있으신가요?"
+                button="로그인"
+                onPress={() => router.push("/Login")}
+              />
+            </View>
+          </Wrapper>
+        </Container>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
