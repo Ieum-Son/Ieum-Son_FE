@@ -5,6 +5,7 @@ import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 interface InputWrapperProps {
@@ -48,54 +49,56 @@ export default function PasswordSetting() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flexGrow: 1 }}
-    >
-      <Container>
-        <BackIcon />
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flexGrow: 1 }}
+      >
+        <Container>
+          <BackIcon />
 
-        <TitleWrapper>
-          <LineText>비밀번호를 설정해 주세요</LineText>
-        </TitleWrapper>
+          <TitleWrapper>
+            <LineText>비밀번호를 설정해 주세요</LineText>
+          </TitleWrapper>
 
-        <Wrapper>
-          <InputWrapperWrapper>
-            <InputWrapper>
-              <CodeInput
-                placeholder="비밀번호를 입력해주세요."
-                type="password"
-                onChangeText={InputPassword}
-                value={password}
+          <Wrapper>
+            <InputWrapperWrapper>
+              <InputWrapper>
+                <CodeInput
+                  placeholder="비밀번호를 입력해주세요."
+                  type="password"
+                  onChangeText={InputPassword}
+                  value={password}
+                />
+              </InputWrapper>
+
+              <InputWrapper isDuplication={isDuplication}>
+                <CodeInput
+                  placeholder="비밀번호를 다시 입력해주세요."
+                  type="password"
+                  onChangeText={InputRePassword}
+                  value={rePassword}
+                />
+              </InputWrapper>
+              {!isLengthFull ? (
+                <ErrorText>8자 이상 입력해주세요.</ErrorText>
+              ) : isDuplication ? (
+                <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
+              ) : null}
+            </InputWrapperWrapper>
+
+            <View>
+              <AuthButton text="다음" isActive={isActive} onPress={onPress} />
+              <Question
+                question="계정이 있으신가요?"
+                button="로그인"
+                onPress={() => router.push("/Login")}
               />
-            </InputWrapper>
-
-            <InputWrapper isDuplication={isDuplication}>
-              <CodeInput
-                placeholder="비밀번호를 다시 입력해주세요."
-                type="password"
-                onChangeText={InputRePassword}
-                value={rePassword}
-              />
-            </InputWrapper>
-            {!isLengthFull ? (
-              <ErrorText>8자 이상 입력해주세요.</ErrorText>
-            ) : isDuplication ? (
-              <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
-            ) : null}
-          </InputWrapperWrapper>
-
-          <View>
-            <AuthButton text="다음" isActive={isActive} onPress={onPress} />
-            <Question
-              question="계정이 있으신가요?"
-              button="로그인"
-              onPress={() => router.push("/Login")}
-            />
-          </View>
-        </Wrapper>
-      </Container>
-    </KeyboardAvoidingView>
+            </View>
+          </Wrapper>
+        </Container>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

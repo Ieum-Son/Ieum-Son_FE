@@ -7,6 +7,7 @@ import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function ProfileInput() {
@@ -31,48 +32,54 @@ export default function ProfileInput() {
   }, [name]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flexGrow: 1 }}
-    >
-      <Container>
-        <BackIcon />
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flexGrow: 1 }}
+      >
+        <Container>
+          <BackIcon />
 
-        <TitleWrapper>
-          <LineText>
-            이제 마지막 단계에요 {"\n"}
-            나만의 <Name>프로필</Name>을 만들어보세요
-          </LineText>
-        </TitleWrapper>
+          <TitleWrapper>
+            <LineText>
+              이제 마지막 단계에요 {"\n"}
+              나만의 <Name>프로필</Name>을 만들어보세요
+            </LineText>
+          </TitleWrapper>
 
-        <Wrapper>
-          <Center>
-            <Profile />
+          <Wrapper>
+            <Center>
+              <Profile />
 
-            <InputWrapper>
-              <Input
-                placeholder="이름을 입력해주세요"
-                type="text"
-                onChangeText={InputId}
-                value={name}
+              <InputWrapper>
+                <Input
+                  placeholder="이름을 입력해주세요"
+                  type="text"
+                  onChangeText={InputId}
+                  value={name}
+                />
+                <SubText>
+                  설정한 이름은 추후에도 자유롭게 변경할 수 있습니다.
+                </SubText>
+              </InputWrapper>
+            </Center>
+
+            <View>
+              <AuthButton
+                text="회원가입"
+                isActive={isActive}
+                onPress={Signup}
               />
-              <SubText>
-                설정한 이름은 추후에도 자유롭게 변경할 수 있습니다.
-              </SubText>
-            </InputWrapper>
-          </Center>
-
-          <View>
-            <AuthButton text="회원가입" isActive={isActive} onPress={Signup} />
-            <Question
-              question="계정이 있으신가요?"
-              button="로그인"
-              onPress={() => router.push("/Login")}
-            />
-          </View>
-        </Wrapper>
-      </Container>
-    </KeyboardAvoidingView>
+              <Question
+                question="계정이 있으신가요?"
+                button="로그인"
+                onPress={() => router.push("/Login")}
+              />
+            </View>
+          </Wrapper>
+        </Container>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

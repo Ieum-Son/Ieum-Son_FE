@@ -6,6 +6,7 @@ import { colors } from "@/constants/colors";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function Login() {
@@ -29,47 +30,49 @@ export default function Login() {
   }, [id, password]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flexGrow: 1 }}
-    >
-      <Container>
-        <BackIcon />
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flexGrow: 1 }}
+      >
+        <Container>
+          <BackIcon />
 
-        <TitleWrapper>
-          <LineText>
-            <Name>이음손</Name>에 다시 {"\n"}
-          </LineText>
-          <LineText>오신 것을 환영해요!</LineText>
-        </TitleWrapper>
+          <TitleWrapper>
+            <LineText>
+              <Name>이음손</Name>에 다시 {"\n"}
+            </LineText>
+            <LineText>오신 것을 환영해요!</LineText>
+          </TitleWrapper>
 
-        <Wrapper>
-          <InputWrapper>
-            <Input
-              placeholder="아이디를 입력해주세요."
-              type="text"
-              onChangeText={InputId}
-              value={id}
-            />
-            <Input
-              placeholder="비밀번호를 입력해주세요."
-              type="password"
-              onChangeText={InputPassword}
-              value={password}
-            />
-          </InputWrapper>
+          <Wrapper>
+            <InputWrapper>
+              <Input
+                placeholder="아이디를 입력해주세요."
+                type="text"
+                onChangeText={InputId}
+                value={id}
+              />
+              <Input
+                placeholder="비밀번호를 입력해주세요."
+                type="password"
+                onChangeText={InputPassword}
+                value={password}
+              />
+            </InputWrapper>
 
-          <View>
-            <AuthButton text="로그인" isActive={isActive} />
-            <Question
-              question="계정이 없으신가요?"
-              button="회원가입"
-              onPress={() => router.push("/Signup/EmailInput")}
-            />
-          </View>
-        </Wrapper>
-      </Container>
-    </KeyboardAvoidingView>
+            <View>
+              <AuthButton text="로그인" isActive={isActive} />
+              <Question
+                question="계정이 없으신가요?"
+                button="회원가입"
+                onPress={() => router.push("/Signup/EmailInput")}
+              />
+            </View>
+          </Wrapper>
+        </Container>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

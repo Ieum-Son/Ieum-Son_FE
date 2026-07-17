@@ -8,6 +8,7 @@ import { isValidEmail } from "@/utils/isValidEmail";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function EmailInput() {
@@ -65,73 +66,79 @@ export default function EmailInput() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <Container>
-        <BackIcon />
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <Container>
+          <BackIcon />
 
-        <TitleWrapper>
-          <LineText>이메일을 입력해주세요</LineText>
-        </TitleWrapper>
+          <TitleWrapper>
+            <LineText>이메일을 입력해주세요</LineText>
+          </TitleWrapper>
 
-        <Wrapper>
-          <InputWrapperWrapper>
-            <EmailArea>
-              <InputWrapper>
-                <Input
-                  placeholder="이메일을 입력해주세요."
-                  value={email}
-                  onChangeText={(text) => {
-                    setEmail(text.replace(/\s/g, ""));
-                  }}
-                />
+          <Wrapper>
+            <InputWrapperWrapper>
+              <EmailArea>
+                <InputWrapper>
+                  <Input
+                    placeholder="이메일을 입력해주세요."
+                    value={email}
+                    onChangeText={(text) => {
+                      setEmail(text.replace(/\s/g, ""));
+                    }}
+                  />
 
-                <ModifyButton
-                  isActive={isModifyActive}
-                  disabled={isCodeSent}
-                  onPress={modify}
-                />
-              </InputWrapper>
+                  <ModifyButton
+                    isActive={isModifyActive}
+                    disabled={isCodeSent}
+                    onPress={modify}
+                  />
+                </InputWrapper>
 
-              {isError && !isCodeSent && (
-                <ErrorText>이메일 형식이 올바르지 않습니다.</ErrorText>
+                {isError && !isCodeSent && (
+                  <ErrorText>이메일 형식이 올바르지 않습니다.</ErrorText>
+                )}
+              </EmailArea>
+
+              {isCodeSent && (
+                <CodeArea>
+                  <CodeRow>
+                    <CodeInputWrapper>
+                      <CodeInput
+                        placeholder="인증번호 6자리를 입력해주세요."
+                        type="text"
+                        value={code}
+                        onChangeText={InputCode}
+                      />
+                    </CodeInputWrapper>
+
+                    <VerifyTimer time={formattedTime} />
+                  </CodeRow>
+
+                  {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+                </CodeArea>
               )}
-            </EmailArea>
+            </InputWrapperWrapper>
 
-            {isCodeSent && (
-              <CodeArea>
-                <CodeRow>
-                  <CodeInputWrapper>
-                    <CodeInput
-                      placeholder="인증번호 6자리를 입력해주세요."
-                      type="text"
-                      value={code}
-                      onChangeText={InputCode}
-                    />
-                  </CodeInputWrapper>
+            <View>
+              <AuthButton
+                text="다음"
+                isActive={isActive}
+                onPress={handleNext}
+              />
 
-                  <VerifyTimer time={formattedTime} />
-                </CodeRow>
-
-                {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
-              </CodeArea>
-            )}
-          </InputWrapperWrapper>
-
-          <View>
-            <AuthButton text="다음" isActive={isActive} onPress={handleNext} />
-
-            <Question
-              question="계정이 있으신가요?"
-              button="로그인"
-              onPress={() => router.push("/Login")}
-            />
-          </View>
-        </Wrapper>
-      </Container>
-    </KeyboardAvoidingView>
+              <Question
+                question="계정이 있으신가요?"
+                button="로그인"
+                onPress={() => router.push("/Login")}
+              />
+            </View>
+          </Wrapper>
+        </Container>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

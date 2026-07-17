@@ -1,7 +1,7 @@
 import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 interface LoginInputProps {
