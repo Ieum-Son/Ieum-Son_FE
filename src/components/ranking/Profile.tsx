@@ -4,13 +4,25 @@ import styled from "styled-components/native";
 
 interface ProfileProps {
   profile: ImageSourcePropType;
-}
-export default function Profile({ profile }: ProfileProps) {
-  return <Wrapper source={profile}></Wrapper>;
+  width?: number;
+  height?: number;
 }
 
-const Wrapper = styled.Image`
-  width: 42px;
-  height: 42px;
+interface WrapperProps {
+  $width: number;
+  $height: number;
+}
+
+export default function Profile({
+  profile,
+  width = 42,
+  height = 42,
+}: ProfileProps) {
+  return <Wrapper source={profile} $width={width} $height={height}></Wrapper>;
+}
+
+const Wrapper = styled.Image<WrapperProps>`
+  width: ${({ $width }) => $width}px;
+  height: ${({ $height }) => $height}px;
   border-radius: 100%;
 `;
