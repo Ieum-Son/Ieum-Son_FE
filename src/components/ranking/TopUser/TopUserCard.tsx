@@ -29,12 +29,7 @@ const rankStyles = {
   },
 };
 
-export default function TopUserCard({
-  profile,
-  ranking,
-  name,
-  coin,
-}: TopUser) {
+export default function TopUserCard({ profile, ranking, name, coin }: TopUser) {
   const style = rankStyles[ranking];
 
   return (

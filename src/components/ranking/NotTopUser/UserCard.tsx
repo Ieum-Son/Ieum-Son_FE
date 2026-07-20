@@ -2,9 +2,9 @@ import { colors } from "@/constants/colors";
 import React from "react";
 import type { ImageSourcePropType } from "react-native";
 import styled from "styled-components/native";
-import Profile from "./Profile";
+import Profile from "../Profile";
 
-interface UserCardProps {
+export interface UserCardProps {
   ranking: number;
   profile: ImageSourcePropType;
   name: string;
@@ -79,6 +79,7 @@ const Name = styled.Text`
 const Coin = styled.Text`
   font-size: 14px;
   color: ${colors.neutral600};
+  font-weight: 600;
 `;
 
 const CoinImg = styled.Image``;

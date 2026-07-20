@@ -25,9 +25,7 @@ const topUsers: TopUser[] = [
 ];
 
 export default function TopUserList() {
-  const usersByRanking = new Map(
-    topUsers.map((user) => [user.ranking, user]),
-  );
+  const usersByRanking = new Map(topUsers.map((user) => [user.ranking, user]));
 
   return (
     <Wrapper>
@@ -46,4 +44,5 @@ const Wrapper = styled.View`
   align-items: flex-end;
   justify-content: center;
   gap: 16px;
+  margin-bottom: 20px;
 `;
