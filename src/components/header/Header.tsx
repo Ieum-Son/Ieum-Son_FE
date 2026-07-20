@@ -52,4 +52,5 @@ const SettingImg = styled.Image`
 const Coin = styled.Text`
   font-size: 18px;
   color: ${colors.neutral600};
+  font-weight: 600;
 `;
