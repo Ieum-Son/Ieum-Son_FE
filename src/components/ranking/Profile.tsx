@@ -24,5 +24,5 @@ export default function Profile({
 const Wrapper = styled.Image<WrapperProps>`
   width: ${({ $width }) => $width}px;
   height: ${({ $height }) => $height}px;
-  border-radius: 100%;
+  border-radius: 50px;
 `;
