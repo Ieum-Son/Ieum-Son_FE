@@ -1,11 +1,11 @@
+import { useSignupStore } from "@/stores/signupStore";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
 import styled from "styled-components/native";
 
 export default function Profile() {
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const [imageUrl, setImageUrl] = useState("");
+  const { profile, setProfile } = useSignupStore();
 
   const uploadImage = async () => {
     //권한 확인
@@ -29,19 +29,25 @@ export default function Profile() {
     }
 
     //이미지 업로드 한 거 표시
-    setImageUrl(result.assets[0].uri);
+    const image = result.assets[0];
+    setProfile({
+      uri: image.uri,
+      name: image.fileName ?? `profile-${Date.now()}.jpg`,
+      type: image.mimeType ?? "image/jpeg",
+      size: image.fileSize,
+    });
   };
 
   return (
     <Wrapper onPress={uploadImage}>
       <UserProfile
         source={
-          imageUrl
-            ? { uri: imageUrl }
+          profile
+            ? { uri: profile.uri }
             : require("@/assets/user/defaultProfile.png")
         }
       />
-      {!imageUrl && (
+      {!profile && (
         <Overlay pointerEvents="none">
           <Camera source={require("@/assets/user/camera.png")} />
         </Overlay>

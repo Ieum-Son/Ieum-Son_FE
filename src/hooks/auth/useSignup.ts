@@ -88,7 +88,9 @@ export const useSignup = () => {
       const status = error.response?.status;
       const message = error.response?.data?.message;
 
-      if (status === 403) {
+      if (status === 400) {
+        console.error(message ?? "프로필 이미지를 확인해주세요.");
+      } else if (status === 403) {
         console.error(message ?? "이메일 코드 인증이 필요합니다.");
       } else if (status === 409) {
         if (message?.includes("로그인 ID")) {
@@ -102,6 +104,8 @@ export const useSignup = () => {
         console.error(
           message ?? "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
         );
+      } else if (status === 502) {
+        console.error(message ?? "프로필 이미지 업로드에 실패했습니다.");
       } else {
         console.error(message ?? "회원가입 중 오류가 발생했습니다.");
       }
