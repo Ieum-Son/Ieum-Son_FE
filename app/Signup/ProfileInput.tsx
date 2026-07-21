@@ -13,26 +13,58 @@ import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
+const ALLOWED_PROFILE_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
+const MAX_PROFILE_IMAGE_SIZE = 50 * 1024 * 1024;
+
 export default function ProfileInput() {
   const { mutate: submitSignup, isPending } = useSignup();
-  const { name, setName, getSignupPayload } = useSignupStore();
+  const { name, profile, setName, getSignupPayload } = useSignupStore();
   const [errorMessage, setErrorMessage] = useState("");
-  const isActive = name.length > 0 && !isPending;
+  const isActive = name.length > 0 && profile !== null && !isPending;
 
   const handleSignup = () => {
     setErrorMessage("");
-    submitSignup(getSignupPayload(), {
-      onError: (error) => {
-        if (!isAxiosError<ErrorResponse>(error)) {
-          setErrorMessage("회원가입 중 오류가 발생했습니다.");
-          return;
-        }
+    const signupPayload = getSignupPayload();
 
-        setErrorMessage(
-          error.response?.data?.message ?? "회원가입 중 오류가 발생했습니다.",
-        );
+    if (!signupPayload) {
+      setErrorMessage("프로필 이미지를 업로드해주세요.");
+      return;
+    }
+
+    if (!ALLOWED_PROFILE_IMAGE_TYPES.includes(signupPayload.image.type)) {
+      setErrorMessage("지원하지 않는 이미지 형식입니다.");
+      return;
+    }
+
+    if (
+      signupPayload.image.size !== undefined &&
+      signupPayload.image.size > MAX_PROFILE_IMAGE_SIZE
+    ) {
+      setErrorMessage("파일 크기는 50MB 이하이어야 합니다.");
+      return;
+    }
+
+    submitSignup(
+      signupPayload,
+      {
+        onError: (error) => {
+          if (!isAxiosError<ErrorResponse>(error)) {
+            setErrorMessage("회원가입 중 오류가 발생했습니다.");
+            return;
+          }
+
+          setErrorMessage(
+            error.response?.data?.message ??
+              "회원가입 중 오류가 발생했습니다.",
+          );
+        },
       },
-    });
+    );
   };
 
   const InputId = (text: string) => {
