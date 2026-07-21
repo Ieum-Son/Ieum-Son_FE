@@ -38,13 +38,7 @@ export const signup = async ({
     type: image.type,
   } as unknown as Blob);
 
-  const response = await api.post<SignupResponse>(
-    `/api/auth/signup`,
-    formData,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
-  );
+  const response = await api.post<SignupResponse>(`/api/auth/signup`, formData);
 
   return response.data;
 };
