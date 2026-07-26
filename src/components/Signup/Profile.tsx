@@ -34,7 +34,7 @@ export default function Profile() {
     setProfile({
       uri: image.uri,
       name: image.fileName ?? `profile-${Date.now()}.jpg`,
-      type: image.mimeType ?? "image/jpeg",
+      type: image.mimeType ?? "",
       size: image.fileSize,
     });
   };
