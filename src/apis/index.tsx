@@ -21,7 +21,6 @@ if (!BASE_URL) {
 export const api = create({
   baseURL: BASE_URL,
   timeout: 15000,
-  headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
@@ -72,20 +71,23 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 401 && !config._retry) {
-      const refreshToken = await getRefreshTokens();
-      if (!refreshToken) {
-        return Promise.reject(error);
-      }
-
       config._retry = true;
 
       try {
+        const refreshToken = await getRefreshTokens();
+        if (!refreshToken) {
+          throw new Error("저장된 Refresh Token이 없습니다.");
+        }
+
         if (!currentRefreshPromise) {
           currentRefreshPromise = axios
             .post<RefreshResponse>(
               `${BASE_URL}/api/auth/refresh`,
               { refreshToken },
-              { headers: { "Content-Type": "application/json" } },
+              {
+                headers: { "Content-Type": "application/json" },
+                timeout: 15000,
+              },
             )
             .then(async ({ data }) => {
               await saveTokens(data);
