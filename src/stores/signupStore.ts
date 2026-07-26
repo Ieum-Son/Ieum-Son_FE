@@ -38,7 +38,7 @@ export const useSignupStore = create<SignupState>((set, get) => ({
   getSignupPayload: () => {
     const { email, loginId, password, name, profile } = get();
 
-    if (!profile) {
+    if (!email || !loginId || !password || !name || !profile) {
       return null;
     }
 
