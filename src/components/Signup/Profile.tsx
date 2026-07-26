@@ -1,7 +1,46 @@
 import { useSignupStore } from "@/stores/signupStore";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
+import { Alert } from "react-native";
 import styled from "styled-components/native";
+
+const MIME_TYPE_BY_EXTENSION: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+};
+const SUPPORTED_IMAGE_MIME_TYPES = new Set(
+  Object.values(MIME_TYPE_BY_EXTENSION),
+);
+
+const getImageMimeType = (
+  mimeType: string | null | undefined,
+  fileName: string | null | undefined,
+  uri: string,
+) => {
+  const normalizedMimeType = mimeType?.toLowerCase();
+  if (
+    normalizedMimeType &&
+    SUPPORTED_IMAGE_MIME_TYPES.has(normalizedMimeType)
+  ) {
+    return normalizedMimeType;
+  }
+
+  for (const source of [fileName, uri]) {
+    const extension = source
+      ?.split(/[?#]/)[0]
+      .match(/\.([^.\/]+)$/)?.[1]
+      ?.toLowerCase();
+
+    if (extension && MIME_TYPE_BY_EXTENSION[extension]) {
+      return MIME_TYPE_BY_EXTENSION[extension];
+    }
+  }
+
+  return undefined;
+};
 
 export default function Profile() {
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -13,7 +52,7 @@ export default function Profile() {
       const permission = await requestPermission();
 
       if (!permission.granted) {
-        console.log("권한 필요", "사진 접근 권한을 허용해주세요.");
+        Alert.alert("권한 필요", "사진 접근 권한을 허용해주세요.");
         return;
       }
     }
@@ -31,10 +70,26 @@ export default function Profile() {
 
     //이미지 업로드 한 거 표시
     const image = result.assets[0];
+    const mimeType = getImageMimeType(
+      image.mimeType,
+      image.fileName,
+      image.uri,
+    );
+
+    if (!mimeType) {
+      Alert.alert(
+        "지원하지 않는 이미지",
+        "JPEG, PNG, WEBP, GIF 이미지만 선택할 수 있습니다.",
+      );
+      return;
+    }
+
+    const extension = mimeType === "image/jpeg" ? "jpg" : mimeType.split("/")[1];
+
     setProfile({
       uri: image.uri,
-      name: image.fileName ?? `profile-${Date.now()}.jpg`,
-      type: image.mimeType ?? "image/jpeg",
+      name: image.fileName ?? `profile-${Date.now()}.${extension}`,
+      type: mimeType,
       size: image.fileSize,
     });
   };
