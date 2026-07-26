@@ -32,7 +32,11 @@ export default function ProfileInput() {
     const signupPayload = getSignupPayload();
 
     if (!signupPayload) {
-      setErrorMessage("프로필 이미지를 업로드해주세요.");
+      setErrorMessage(
+        profile
+          ? "회원가입 정보를 다시 확인해주세요."
+          : "프로필 이미지를 업로드해주세요.",
+      );
       return;
     }
 
