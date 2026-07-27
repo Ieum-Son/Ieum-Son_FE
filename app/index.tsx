@@ -7,8 +7,8 @@ import styled from "styled-components/native";
 export default function Splash() {
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.replace("/Splash");
-    }, 2000);
+      router.replace("/Profile/ChangeProfile");
+    }, 0);
 
     return () => clearTimeout(timer);
   }, []);
