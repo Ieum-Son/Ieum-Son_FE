@@ -9,7 +9,7 @@ export default function FavoritesWords() {
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flexGrow: 1 }}
+        style={{ flex: 1 }}
       >
         <Container>
           <ProfileHeader title="즐겨찾기한 단어" />

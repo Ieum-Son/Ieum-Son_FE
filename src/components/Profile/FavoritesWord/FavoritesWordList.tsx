@@ -4,7 +4,15 @@ import FavoritesWord from "./FavoritesWord";
 
 export default function FavoritesWordList() {
   return (
-    <Wrapper>
+    <Wrapper
+      contentContainerStyle={{
+        gap: 12,
+      }}
+      showsVerticalScrollIndicator={false}
+    >
+      <FavoritesWord day="1" text="학습하다" studyDate="2026.07.25" />
+      <FavoritesWord day="1" text="학습하다" studyDate="2026.07.25" />
+      <FavoritesWord day="1" text="학습하다" studyDate="2026.07.25" />
       <FavoritesWord day="1" text="학습하다" studyDate="2026.07.25" />
       <FavoritesWord day="1" text="학습하다" studyDate="2026.07.25" />
       <FavoritesWord day="1" text="학습하다" studyDate="2026.07.25" />
@@ -12,8 +20,7 @@ export default function FavoritesWordList() {
   );
 }
 
-const Wrapper = styled.View`
-  padding: 0px 20px;
-  gap: 12px;
+const Wrapper = styled.ScrollView`
   margin-top: 6px;
+  padding: 0px 20px;
 `;
