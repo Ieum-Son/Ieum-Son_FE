@@ -3,16 +3,22 @@ import Input from "@/components/auth/LoginInput";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
+import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function ChangeProfile() {
   const [errorMessage, setErrorMessage] = useState("");
   const [name, setName] = useState("");
-  const isActive = name.length > 0;
+  const profile = useSignupStore((state) => state.profile);
+  const setProfile = useSignupStore((state) => state.setProfile);
+  const [initialProfile] = useState(() => profile);
+  const profileChanged = profile?.uri !== initialProfile?.uri;
+  const hasChanges = name.length > 0 || profileChanged;
+  const isActive = hasChanges;
 
   const handleChangeProfile = () => {
     setErrorMessage("");
@@ -24,6 +30,32 @@ export default function ChangeProfile() {
     setErrorMessage("");
   };
 
+  const handleBackPress = () => {
+    if (!hasChanges) {
+      router.back();
+      return;
+    }
+
+    Alert.alert(
+      "변경사항이 저장되지 않았습니다",
+      "저장하지 않고 이전 화면으로 이동하시겠습니까?",
+      [
+        {
+          text: "취소",
+          style: "cancel",
+        },
+        {
+          text: "나가기",
+          style: "destructive",
+          onPress: () => {
+            setProfile(initialProfile);
+            router.back();
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
       <KeyboardAvoidingView
@@ -31,7 +63,10 @@ export default function ChangeProfile() {
         style={{ flexGrow: 1 }}
       >
         <Container>
-          <ProfileHeader title="프로필 변경" />
+          <ProfileHeader
+            title="프로필 변경"
+            onBackPress={handleBackPress}
+          />
 
           <TitleWrapper>
             <LineText>
