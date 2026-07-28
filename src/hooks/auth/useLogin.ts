@@ -1,5 +1,6 @@
 import { login } from "@/apis/auth/login/index";
 import type { LoginRequestProps } from "@/apis/auth/login/type";
+import { useUserStore } from "@/stores/userStore";
 import { saveTokens } from "@/utils/tokenStorage";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -13,7 +14,18 @@ export const useLogin = () => {
       return tokens;
     },
 
-    onSuccess: () => {
+    onSuccess: (_tokens, credentials) => {
+      const currentUser = useUserStore.getState().user;
+
+      if (currentUser?.loginId !== credentials.loginId) {
+        useUserStore.getState().setUser({
+          email: "",
+          name: credentials.loginId,
+          loginId: credentials.loginId,
+          profileImageUrl: null,
+        });
+      }
+
       console.log("로그인 성공!");
       //메인 페이지로 이동 router.push
     },
