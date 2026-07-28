@@ -40,12 +40,13 @@ const Wrapper = styled.View`
   padding: 12px 24px;
   border-radius: 8px;
   background-color: ${colors.primary50};
-  border: 1px solid ${colors.primary300};
+  border: 1px solid ${colors.primary200};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-left: 20px;
   margin-right: 20px;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
 `;
 
 const Left = styled.View`

@@ -3,6 +3,7 @@ import Input from "@/components/auth/LoginInput";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
+import { router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +16,7 @@ export default function ChangeProfile() {
 
   const handleChangeProfile = () => {
     setErrorMessage("");
+    router.replace("/Profile/Profile");
   };
 
   const onChangeName = (text: string) => {

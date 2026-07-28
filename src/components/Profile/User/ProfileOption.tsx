@@ -6,14 +6,16 @@ import styled from "styled-components/native";
 interface ProfileOptionProps {
   content: string;
   destructive?: boolean;
+  onPress?: () => void;
 }
 
 export default function ProfileOption({
   content,
   destructive = false,
+  onPress,
 }: ProfileOptionProps) {
   return (
-    <Wrapper>
+    <Wrapper onPress={onPress} disabled={!onPress}>
       <Content $destructive={destructive}>{content}</Content>
 
       {!destructive && (
@@ -27,7 +29,7 @@ export default function ProfileOption({
   );
 }
 
-const Wrapper = styled.View`
+const Wrapper = styled.Pressable`
   padding: 12px;
   flex-direction: row;
   justify-content: space-between;
