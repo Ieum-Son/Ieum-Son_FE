@@ -2,7 +2,10 @@ import { colors } from "@/constants/colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
 import React, { useEffect, useState } from "react";
-import type { GestureResponderEvent } from "react-native";
+import type {
+  AccessibilityActionEvent,
+  GestureResponderEvent,
+} from "react-native";
 import styled from "styled-components/native";
 
 const previewSound = require("../../../assets/audio/volume-preview.wav");
@@ -53,6 +56,19 @@ export default function VolumeControl({
     void playVolumePreview(nextVolume);
   };
 
+  const handleAccessibilityAction = (event: AccessibilityActionEvent) => {
+    if (disabled) return;
+
+    const direction = event.nativeEvent.actionName === "increment" ? 1 : -1;
+    const nextVolume = Math.min(
+      1,
+      Math.max(0, Math.round((value + direction * 0.1) * 10) / 10),
+    );
+
+    onValueChange(nextVolume);
+    void playVolumePreview(nextVolume);
+  };
+
   return (
     <Wrapper>
       <MaterialCommunityIcons
@@ -63,12 +79,18 @@ export default function VolumeControl({
       <TrackTouchArea
         $disabled={disabled}
         accessibilityRole="adjustable"
+        accessibilityLabel="볼륨"
         accessibilityState={{ disabled }}
         accessibilityValue={{
           min: 0,
           max: 100,
           now: Math.round(value * 100),
         }}
+        accessibilityActions={[
+          { name: "increment", label: "볼륨 높이기" },
+          { name: "decrement", label: "볼륨 낮추기" },
+        ]}
+        onAccessibilityAction={handleAccessibilityAction}
         onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
         onStartShouldSetResponder={() => !disabled}
         onMoveShouldSetResponder={() => !disabled}

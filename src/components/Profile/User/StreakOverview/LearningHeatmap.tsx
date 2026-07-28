@@ -23,20 +23,24 @@ export default function LearningHeatmap({
 }: LearningHeatmapProps) {
   return (
     <Wrapper>
-      {DAYS.map((day, rowIndex) => (
-        <Row key={day}>
-          <Day>{day}</Day>
-          <Cells>
-            {activity[rowIndex].map((isActive, columnIndex) => (
-              <Cell
-                key={`${day}-${columnIndex}`}
-                $active={isActive}
-                $outlined={rowIndex === 0 && columnIndex === 6}
-              />
-            ))}
-          </Cells>
-        </Row>
-      ))}
+      {DAYS.map((day, rowIndex) => {
+        const rowActivity = activity[rowIndex] ?? [];
+
+        return (
+          <Row key={day}>
+            <Day>{day}</Day>
+            <Cells>
+              {Array.from({ length: 7 }, (_, columnIndex) => (
+                <Cell
+                  key={`${day}-${columnIndex}`}
+                  $active={rowActivity[columnIndex] ?? false}
+                  $outlined={rowIndex === 0 && columnIndex === 6}
+                />
+              ))}
+            </Cells>
+          </Row>
+        );
+      })}
     </Wrapper>
   );
 }

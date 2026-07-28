@@ -30,7 +30,7 @@ const Wrapper = styled.View`
 
 const Info = styled.View`
   flex-direction: column;
-  gap: -2px;
+  gap: 0px;
 `;
 
 const Profile = styled.Image`
