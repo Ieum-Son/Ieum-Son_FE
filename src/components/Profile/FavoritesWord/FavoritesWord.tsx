@@ -1,28 +1,31 @@
 import { colors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react";
 import styled from "styled-components/native";
 
 interface FavoritesWordProps {
   day: string;
   text: string;
   studyDate: string;
+  onRemove: () => void;
 }
 
 export default function FavoritesWord({
   day,
   text,
   studyDate,
+  onRemove,
 }: FavoritesWordProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
-
   return (
     <Wrapper>
       <Top>
         <Day>Day {day}</Day>
-        <Star onPress={() => setIsFavorite((previous) => !previous)}>
+        <Star
+          onPress={onRemove}
+          accessibilityRole="button"
+          accessibilityLabel={`${text} 즐겨찾기 취소`}
+        >
           <MaterialIcons
-            name={isFavorite ? "star" : "star-border"}
+            name="star"
             size={24}
             color={colors.primary300}
           />
