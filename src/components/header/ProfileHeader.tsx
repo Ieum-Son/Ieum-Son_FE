@@ -4,12 +4,16 @@ import styled from "styled-components/native";
 
 interface ProfileHeaderProps {
   title: string;
+  onBackPress?: () => void;
 }
 
-export default function ProfileHeader({ title }: ProfileHeaderProps) {
+export default function ProfileHeader({
+  title,
+  onBackPress,
+}: ProfileHeaderProps) {
   return (
     <Top>
-      <BackIcon />
+      <BackIcon onPress={onBackPress} />
       <Title pointerEvents="none">{title}</Title>
     </Top>
   );

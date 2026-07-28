@@ -2,9 +2,17 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import styled from "styled-components/native";
 
-export default function BackIcon() {
+interface BackIconProps {
+  onPress?: () => void;
+}
+
+export default function BackIcon({ onPress }: BackIconProps) {
   return (
-    <IconButton onPress={() => router.back()}>
+    <IconButton
+      onPress={onPress ?? (() => router.back())}
+      accessibilityRole="button"
+      accessibilityLabel="이전 화면으로 이동"
+    >
       <MaterialIcons name="arrow-back-ios-new" size={20} color="black" />
     </IconButton>
   );
