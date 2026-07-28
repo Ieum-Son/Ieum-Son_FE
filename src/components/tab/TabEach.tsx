@@ -18,22 +18,24 @@ export default function TabEach({
   onPress,
 }: TabEachProps) {
   return (
-    <Wrapper $isActive={isActive} onPress={onPress}>
+    <Wrapper
+      onPress={onPress}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: isActive }}
+    >
       <Icon source={img} contentFit="contain" />
       <Title $isActive={isActive}>{text}</Title>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.Pressable<{ $isActive: boolean }>`
+const Wrapper = styled.Pressable`
   height: 60px;
   flex: 1;
   padding: 6px 0px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: ${({ $isActive }) =>
-    $isActive ? colors.primary50 : "transparent"};
   border-radius: 50px;
 `;
 
