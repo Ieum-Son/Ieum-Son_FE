@@ -1,4 +1,5 @@
 import { colors } from "@/constants/colors";
+import { router } from "expo-router";
 import React from "react";
 import styled from "styled-components/native";
 
@@ -12,7 +13,11 @@ export default function Header() {
           ></CoinImg>
           <Coin>168</Coin>
         </Left>
-        <Right>
+        <Right
+          onPress={() => router.push("/Profile/Setting")}
+          accessibilityRole="button"
+          accessibilityLabel="설정으로 이동"
+        >
           <SettingImg
             source={require("@/assets/header/setting.png")}
           ></SettingImg>
@@ -34,7 +39,7 @@ const Left = styled.View`
   align-items: center;
 `;
 
-const Right = styled.View`
+const Right = styled.Pressable`
   flex-direction: row;
   align-items: center;
 `;

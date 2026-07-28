@@ -8,28 +8,34 @@ interface TabEachProps {
   img: ImageSourcePropType;
   text: string;
   isActive: boolean;
+  onPress?: () => void;
 }
 
-export default function TabEach({ img, text, isActive }: TabEachProps) {
+export default function TabEach({
+  img,
+  text,
+  isActive,
+  onPress,
+}: TabEachProps) {
   return (
-    <>
-      <Wrapper $isActive={isActive}>
-        <Icon source={img} contentFit="contain" />
-        <Title $isActive={isActive}>{text}</Title>
-      </Wrapper>
-    </>
+    <Wrapper
+      onPress={onPress}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: isActive }}
+    >
+      <Icon source={img} contentFit="contain" />
+      <Title $isActive={isActive}>{text}</Title>
+    </Wrapper>
   );
 }
 
-const Wrapper = styled.View<{ $isActive: boolean }>`
+const Wrapper = styled.Pressable`
   height: 60px;
   flex: 1;
   padding: 6px 0px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: ${({ $isActive }) =>
-    $isActive ? colors.primary50 : "transparent"};
   border-radius: 50px;
 `;
 

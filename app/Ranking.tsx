@@ -4,21 +4,34 @@ import MyRanking from "@/components/ranking/Me/MyRanking";
 import UserCardList from "@/components/ranking/NotTopUser/UserCardList";
 import TopUserList from "@/components/ranking/TopUser/TopUserList";
 import Tab from "@/components/tab/Tab";
-import { ScrollView } from "react-native";
+import { useUserStore } from "@/stores/userStore";
+import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Ranking() {
+  const user = useUserStore((state) => state.user);
+  const profileSource = user?.profileImageUrl
+    ? { uri: user.profileImageUrl }
+    : Profile;
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
-        <Header />
+        <View style={{ paddingTop: 10, paddingHorizontal: 10 }}>
+          <Header />
+        </View>
         <TopUserList />
         <UserCardList />
       </ScrollView>
-      <MyRanking ranking={'-'} profile={Profile} name="이태연" coin={988} />
+      <MyRanking
+        ranking="-"
+        profile={profileSource}
+        name={user?.name || user?.loginId || "사용자명"}
+        coin={988}
+      />
       <Tab activeTab="ranking" />
     </SafeAreaView>
   );
