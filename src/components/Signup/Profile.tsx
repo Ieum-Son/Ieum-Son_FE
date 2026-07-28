@@ -1,4 +1,5 @@
 import { useSignupStore } from "@/stores/signupStore";
+import type { ProfileImage } from "@/apis/auth/signup/type";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
@@ -42,9 +43,16 @@ const getImageMimeType = (
   return undefined;
 };
 
-export default function Profile() {
+interface ProfileProps {
+  value?: ProfileImage | null;
+  onChange?: (profile: ProfileImage) => void;
+}
+
+export default function Profile({ value, onChange }: ProfileProps) {
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const { profile, setProfile } = useSignupStore();
+  const signupProfile = useSignupStore((state) => state.profile);
+  const setSignupProfile = useSignupStore((state) => state.setProfile);
+  const profile = value === undefined ? signupProfile : value;
 
   const uploadImage = async () => {
     //권한 확인
@@ -86,12 +94,19 @@ export default function Profile() {
 
     const extension = mimeType === "image/jpeg" ? "jpg" : mimeType.split("/")[1];
 
-    setProfile({
+    const nextProfile = {
       uri: image.uri,
       name: image.fileName ?? `profile-${Date.now()}.${extension}`,
       type: mimeType,
       size: image.fileSize,
-    });
+    };
+
+    if (onChange) {
+      onChange(nextProfile);
+      return;
+    }
+
+    setSignupProfile(nextProfile);
   };
 
   return (

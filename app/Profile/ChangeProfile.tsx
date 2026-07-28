@@ -1,9 +1,10 @@
 import AuthButton from "@/components/auth/AuthButton";
+import type { ProfileImage } from "@/apis/auth/signup/type";
 import Input from "@/components/auth/LoginInput";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
-import { useSignupStore } from "@/stores/signupStore";
+import { useUserStore } from "@/stores/userStore";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform } from "react-native";
@@ -12,16 +13,35 @@ import styled from "styled-components/native";
 
 export default function ChangeProfile() {
   const [errorMessage, setErrorMessage] = useState("");
-  const [name, setName] = useState("");
-  const profile = useSignupStore((state) => state.profile);
-  const setProfile = useSignupStore((state) => state.setProfile);
-  const [initialProfile] = useState(() => profile);
-  const profileChanged = profile?.uri !== initialProfile?.uri;
-  const hasChanges = name.length > 0 || profileChanged;
+  const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
+  const [initialName] = useState(() => user?.name ?? "");
+  const [initialProfileImageUrl] = useState(
+    () => user?.profileImageUrl ?? null,
+  );
+  const [name, setName] = useState(initialName);
+  const [profile, setProfile] = useState<ProfileImage | null>(() =>
+    initialProfileImageUrl
+      ? {
+          uri: initialProfileImageUrl,
+          name: "current-profile",
+          type: "image/jpeg",
+        }
+      : null,
+  );
+  const profileChanged = profile?.uri !== initialProfileImageUrl;
+  const nameChanged = name !== initialName;
+  const hasChanges = nameChanged || profileChanged;
   const isActive = hasChanges;
 
   const handleChangeProfile = () => {
     setErrorMessage("");
+    setUser({
+      email: user?.email ?? "",
+      loginId: user?.loginId ?? "",
+      name: name || user?.name || "사용자명",
+      profileImageUrl: profile?.uri ?? user?.profileImageUrl ?? null,
+    });
     router.replace("/Profile/Profile");
   };
 
@@ -47,10 +67,7 @@ export default function ChangeProfile() {
         {
           text: "나가기",
           style: "destructive",
-          onPress: () => {
-            setProfile(initialProfile);
-            router.back();
-          },
+          onPress: () => router.back(),
         },
       ],
     );
@@ -77,7 +94,7 @@ export default function ChangeProfile() {
 
           <Wrapper>
             <Center>
-              <Profile />
+              <Profile value={profile} onChange={setProfile} />
 
               <InputWrapper>
                 <Input
