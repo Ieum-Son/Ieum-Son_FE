@@ -1,5 +1,5 @@
 import ProfileHeader from "@/components/header/ProfileHeader";
-import StreakHistoryList from "@/components/Profile/StreakHistory/StreakHistoryList";
+import StreakHistoryList from "@/components/Profile/User/StreakHistory/StreakHistoryList";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
