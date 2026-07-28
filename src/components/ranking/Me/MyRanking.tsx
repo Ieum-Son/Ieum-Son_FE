@@ -18,7 +18,7 @@ export default function MyRanking({
   coin,
 }: MyRankingProps) {
   return (
-    <Wrapper>
+    <Wrapper style={{ boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)" }}>
       <Left>
         <Rank>{ranking}</Rank>
 
@@ -46,7 +46,6 @@ const Wrapper = styled.View`
   justify-content: space-between;
   margin-left: 20px;
   margin-right: 20px;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
 `;
 
 const Left = styled.View`
