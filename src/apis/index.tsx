@@ -4,6 +4,9 @@ import {
   removeTokens,
   saveTokens,
 } from "@/utils/tokenStorage";
+import { queryClient } from "@/libs/queryClient";
+import { useSignupStore } from "@/stores/signupStore";
+import { useUserStore } from "@/stores/userStore";
 import axios, {
   create,
   isAxiosError,
@@ -121,6 +124,9 @@ api.interceptors.response.use(
             }
 
             await removeTokens();
+            useUserStore.getState().clearUser();
+            useSignupStore.getState().reset();
+            queryClient.clear();
             router.replace("/Login");
           })().finally(() => {
             refreshFailurePromise = null;
