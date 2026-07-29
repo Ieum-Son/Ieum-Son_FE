@@ -1,4 +1,4 @@
-import React from "react";
+import type { ReactNode } from "react";
 import { router, type Href } from "expo-router";
 import styled from "styled-components/native";
 import ProfileOption from "./ProfileOption";
@@ -8,27 +8,33 @@ const PROFILE_OPTIONS = [
   { content: "스트릭 사용처 조회", href: "/Profile/StreakHistoryPage" },
   { content: "즐겨찾기한 단어", href: "/Profile/FavoritesWords" },
   { content: "설정", href: "/Profile/Setting" },
-  { content: "로그아웃", destructive: true },
-  { content: "회원탈퇴", destructive: true },
 ] satisfies {
   content: string;
-  href?: Href;
-  destructive?: boolean;
+  href: Href;
 }[];
 
-export default function ProfileOptionList() {
+interface ProfileOptionListProps {
+  children?: ReactNode;
+}
+
+export default function ProfileOptionList({
+  children,
+}: ProfileOptionListProps) {
   return (
     <Wrapper>
-      {PROFILE_OPTIONS.map((option) => (
-        <ProfileOption
-          key={option.content}
-          content={option.content}
-          destructive={option.destructive}
-          onPress={
-            option.href ? () => router.push(option.href as Href) : undefined
-          }
-        />
-      ))}
+      {PROFILE_OPTIONS.map((option) => {
+        return (
+          <ProfileOption
+            key={option.content}
+            content={option.content}
+            onPress={
+              option.href ? () => router.push(option.href as Href) : undefined
+            }
+          />
+        );
+      })}
+      {children}
+      <ProfileOption content="회원탈퇴" destructive />
     </Wrapper>
   );
 }

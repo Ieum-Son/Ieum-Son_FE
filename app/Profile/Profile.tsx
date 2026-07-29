@@ -1,4 +1,5 @@
 import Header from "@/components/header/Header";
+import LogoutButton from "@/components/Profile/User/LogoutButton";
 import ProfileOptionList from "@/components/Profile/User/ProfileOptionList";
 import StreakOverview from "@/components/Profile/User/StreakOverview/StreakOverview";
 import User from "@/components/Profile/User/User";
@@ -19,7 +20,9 @@ export default function Profile() {
           <Header />
           <User />
           <StreakOverview />
-          <ProfileOptionList />
+          <ProfileOptionList>
+            <LogoutButton />
+          </ProfileOptionList>
         </Content>
         <Tab activeTab="profile" />
       </KeyboardAvoidingView>

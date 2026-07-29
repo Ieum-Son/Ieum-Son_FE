@@ -4,6 +4,9 @@ import {
   removeTokens,
   saveTokens,
 } from "@/utils/tokenStorage";
+import { queryClient } from "@/libs/queryClient";
+import { useSignupStore } from "@/stores/signupStore";
+import { useUserStore } from "@/stores/userStore";
 import axios, {
   create,
   isAxiosError,
@@ -108,20 +111,34 @@ api.interceptors.response.use(
             const status = isAxiosError(refreshError)
               ? refreshError.response?.status
               : undefined;
-
-            if (status === 401) {
-              Alert.alert("세션 만료", "다시 로그인해 주세요.");
-            } else if (status === 404) {
-              Alert.alert("로그인 정보 없음", "다시 로그인해 주세요.");
-            } else {
-              Alert.alert(
-                "인증 갱신 실패",
-                "인증 갱신에 실패했습니다. 다시 로그인해 주세요.",
-              );
-            }
+            const alertContent =
+              status === 401
+                ? {
+                    title: "세션 만료",
+                    message: "다시 로그인해 주세요.",
+                  }
+                : status === 404
+                  ? {
+                      title: "로그인 정보 없음",
+                      message: "다시 로그인해 주세요.",
+                    }
+                  : {
+                      title: "인증 갱신 실패",
+                      message:
+                        "인증 갱신에 실패했습니다. 다시 로그인해 주세요.",
+                    };
 
             await removeTokens();
-            router.replace("/Login");
+            useUserStore.getState().clearUser();
+            useSignupStore.getState().reset();
+            queryClient.clear();
+
+            Alert.alert(alertContent.title, alertContent.message, [
+              {
+                text: "확인",
+                onPress: () => router.replace("/Login"),
+              },
+            ]);
           })().finally(() => {
             refreshFailurePromise = null;
           });
