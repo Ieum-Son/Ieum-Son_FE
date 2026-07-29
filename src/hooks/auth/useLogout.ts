@@ -11,15 +11,32 @@ import type { ErrorResponse } from "./errorResponse";
 export const useLogout = () => {
   const queryClient = useQueryClient();
 
+  const removeTokensSafely = async () => {
+    try {
+      await removeTokens();
+    } catch (firstError) {
+      console.error("로그아웃 토큰 삭제 재시도:", firstError);
+
+      try {
+        await removeTokens();
+      } catch (finalError) {
+        console.error("로그아웃 토큰 삭제 실패:", finalError);
+      }
+    }
+  };
+
   return useMutation({
     mutationFn: logoutUser,
 
     onSuccess: async () => {
-      await removeTokens();
-      useUserStore.getState().clearUser();
-      useSignupStore.getState().reset();
-      queryClient.clear();
-      router.replace("/Splash");
+      try {
+        await removeTokensSafely();
+      } finally {
+        useUserStore.getState().clearUser();
+        useSignupStore.getState().reset();
+        queryClient.clear();
+        router.replace("/Splash");
+      }
     },
 
     onError: async (error: unknown) => {
