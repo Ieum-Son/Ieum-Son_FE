@@ -106,10 +106,15 @@ api.interceptors.response.use(
         config.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(config);
       } catch (refreshError: unknown) {
+        const isLogoutRequest =
+          config.url?.split("?")[0] === "/api/auth/logout";
+
+        if (isLogoutRequest) {
+          return Promise.reject(refreshError);
+        }
+
         if (!refreshFailurePromise) {
           refreshFailurePromise = (async () => {
-            const isLogoutRequest =
-              config.url?.split("?")[0] === "/api/auth/logout";
             const status = isAxiosError(refreshError)
               ? refreshError.response?.status
               : undefined;
@@ -135,14 +140,12 @@ api.interceptors.response.use(
             useSignupStore.getState().reset();
             queryClient.clear();
 
-            if (!isLogoutRequest) {
-              Alert.alert(alertContent.title, alertContent.message, [
-                {
-                  text: "확인",
-                  onPress: () => router.replace("/Login"),
-                },
-              ]);
-            }
+            Alert.alert(alertContent.title, alertContent.message, [
+              {
+                text: "확인",
+                onPress: () => router.replace("/Login"),
+              },
+            ]);
           })().finally(() => {
             refreshFailurePromise = null;
           });
