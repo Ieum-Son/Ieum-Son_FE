@@ -1,7 +1,7 @@
 import { logoutUser } from "@/apis/auth/logout";
 import { useSignupStore } from "@/stores/signupStore";
 import { useUserStore } from "@/stores/userStore";
-import { removeTokens } from "@/utils/tokenStorage";
+import { getAccessTokens, removeTokens } from "@/utils/tokenStorage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
@@ -22,7 +22,9 @@ export const useLogout = () => {
       router.replace("/Splash");
     },
 
-    onError: (error: unknown) => {
+    onError: async (error: unknown) => {
+      if (!(await getAccessTokens())) return;
+
       const message = isAxiosError<ErrorResponse>(error)
         ? error.response?.data?.message
         : undefined;

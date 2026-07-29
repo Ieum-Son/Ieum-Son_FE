@@ -106,13 +106,6 @@ api.interceptors.response.use(
         config.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(config);
       } catch (refreshError: unknown) {
-        const isLogoutRequest =
-          config.url?.split("?")[0] === "/api/auth/logout";
-
-        if (isLogoutRequest) {
-          return Promise.reject(refreshError);
-        }
-
         if (!refreshFailurePromise) {
           refreshFailurePromise = (async () => {
             const status = isAxiosError(refreshError)
