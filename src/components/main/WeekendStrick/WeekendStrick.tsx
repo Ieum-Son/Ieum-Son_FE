@@ -5,7 +5,13 @@ import React from "react";
 import styled from "styled-components/native";
 import ThList from "./ThList";
 
-export default function WeekendStrick() {
+interface WeekendStrickProps {
+  streakDays: number;
+}
+
+export default function WeekendStrick({ streakDays }: WeekendStrickProps) {
+  const hasStreak = streakDays > 0;
+
   return (
     <Wrapper>
       <Top>
@@ -15,7 +21,11 @@ export default function WeekendStrick() {
             resizeMode="contain"
             accessibilityLabel="연속 학습"
           />
-          <Content>0일 연속 학습 중이에요!</Content>
+          <Content>
+            <StreakCount $hasStreak={hasStreak}>{streakDays}</StreakCount>
+            <DayUnit>일</DayUnit>
+            {" 연속 학습 중이에요!"}
+          </Content>
         </TitleGroup>
         <SymbolView
           name="chevron.right"
@@ -49,7 +59,7 @@ const Wrapper = styled.View`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   border-radius: 12px;
   border: 1px solid ${colors.neutral100};
   background-color: ${colors.neutral50};
@@ -64,6 +74,18 @@ const Icon = styled.Image`
 
 const Content = styled.Text`
   color: ${colors.neutral700};
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const StreakCount = styled.Text<{ $hasStreak: boolean }>`
+  color: ${({ $hasStreak }) =>
+    $hasStreak ? colors.primary300 : colors.neutral1000};
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const DayUnit = styled.Text`
   font-size: 18px;
   font-weight: 600;
 `;
