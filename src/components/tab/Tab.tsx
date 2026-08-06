@@ -1,4 +1,3 @@
-import BlueHome from "@/assets/tab/blue/home.png";
 import BlueProfile from "@/assets/tab/blue/profile.png";
 import BlueRanking from "@/assets/tab/blue/ranking.png";
 import WhiteHome from "@/assets/tab/white/home.png";
@@ -26,7 +25,7 @@ const tabItems = [
   {
     name: "home",
     text: "홈",
-    activeImg: BlueHome,
+    activeImg: WhiteHome,
     inactiveImg: WhiteHome,
     href: "/" as Href,
   },
