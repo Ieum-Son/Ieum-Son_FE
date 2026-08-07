@@ -20,14 +20,40 @@ export default function RoadmapStep({ step, isLast }: RoadmapStepProps) {
   return (
     <Wrapper>
       <StageArea>
-        <Stage $locked={step.locked}>
+        <Stage
+          $locked={step.locked}
+          style={{
+            boxShadow: [
+              {
+                inset: true,
+                offsetX: 0,
+                offsetY: 2,
+                blurRadius: 5,
+                color: "rgba(255, 255, 255, 0.35)",
+              },
+              {
+                inset: true,
+                offsetX: 0,
+                offsetY: -4,
+                blurRadius: 0,
+                color: "rgba(0, 0, 0, 0.15)",
+              },
+            ],
+          }}
+        >
           {step.locked ? (
             <Ionicons name="chevron-down" size={38} color={colors.neutral0} />
           ) : (
             <StageNumber>{step.stepNumber}</StageNumber>
           )}
         </Stage>
-        {!isLast && <Connector $locked={step.locked} />}
+        {!isLast && (
+          <Connector>
+            <Dash />
+            <Dash />
+            <Dash />
+          </Connector>
+        )}
       </StageArea>
 
       <TextArea>
@@ -39,10 +65,10 @@ export default function RoadmapStep({ step, isLast }: RoadmapStepProps) {
 }
 
 const Wrapper = styled.View`
-  min-height: 84px;
+  min-height: 88px;
   flex-direction: row;
   align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
 `;
 
 const StageArea = styled.View`
@@ -51,16 +77,15 @@ const StageArea = styled.View`
 `;
 
 const Stage = styled.View<{ $locked?: boolean }>`
-  width: 72px;
-  height: 68px;
+  display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  border-bottom-width: 5px;
-  border-bottom-color: ${({ $locked }) =>
-    $locked ? colors.neutral500 : colors.primary500};
   background-color: ${({ $locked }) =>
     $locked ? colors.neutral300 : colors.primary300};
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
 `;
 
 const StageNumber = styled.Text`
@@ -69,13 +94,17 @@ const StageNumber = styled.Text`
   font-weight: 700;
 `;
 
-const Connector = styled.View<{ $locked?: boolean }>`
+const Connector = styled.View`
   width: 2px;
-  height: 21px;
-  border-left-width: 2px;
-  border-left-style: dashed;
-  border-left-color: ${({ $locked }) =>
-    $locked ? colors.neutral300 : colors.neutral300};
+  height: 24px;
+  justify-content: space-between;
+`;
+
+const Dash = styled.View`
+  width: 2px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: ${colors.neutral300};
 `;
 
 const TextArea = styled.View`
@@ -84,16 +113,14 @@ const TextArea = styled.View`
 `;
 
 const Title = styled.Text<{ $locked?: boolean }>`
-  color: ${({ $locked }) =>
-    $locked ? colors.neutral500 : colors.primary600};
+  color: ${({ $locked }) => ($locked ? colors.neutral500 : colors.primary600)};
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 700;
 `;
 
 const Description = styled.Text<{ $locked?: boolean }>`
-  margin-top: 2px;
-  color: ${({ $locked }) =>
-    $locked ? colors.neutral300 : colors.neutral600};
-  font-size: 15px;
-  font-weight: 500;
+  color: ${({ $locked }) => ($locked ? colors.neutral300 : colors.neutral600)};
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
 `;

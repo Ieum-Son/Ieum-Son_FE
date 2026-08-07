@@ -32,13 +32,20 @@ export default function LearningModeTabs({
 
   return (
     <Wrapper accessibilityRole="tablist">
-      {MODES.map((mode) => {
+      {MODES.map((mode, index) => {
         const isActive = mode.key === activeMode;
+        const layer = isActive
+          ? 3
+          : activeMode === "roadmap" && mode.key === "schedule"
+            ? 2
+            : 1;
 
         return (
           <ModeButton
             key={mode.key}
             $active={isActive}
+            $isFirst={index === 0}
+            $layer={layer}
             style={isActive ? { width: activeButtonWidth } : undefined}
             onPress={() => onChange(mode.key)}
             accessibilityRole="tab"
@@ -74,25 +81,41 @@ export default function LearningModeTabs({
 }
 
 const Wrapper = styled.View`
+  width: 235px;
   height: 32px;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: flex-start;
   align-self: center;
   overflow: visible;
+  z-index: 2;
+  transform: translateX(-35px);
 `;
 
-const ModeButton = styled.Pressable<{ $active: boolean }>`
+const ModeButton = styled.Pressable<{
+  $active: boolean;
+  $isFirst: boolean;
+  $layer: number;
+}>`
+  position: relative;
+  margin-left: ${({ $isFirst }) => ($isFirst ? "0" : "-12px")};
+  z-index: ${({ $layer }) => $layer};
   width: ${({ $active }) => ($active ? "auto" : "72px")};
-  height: ${({ $active }) => ($active ? "40px" : "32px")};
+  height: 32.979px;
   padding: ${({ $active }) => ($active ? "0 24px" : "0")};
   flex-shrink: 0;
   justify-content: center;
   align-items: center;
   gap: 2px;
   border-radius: 12px 12px 0 0;
-  border-top: 1px solid ${colors.neutral100};
-  border-right: 1px solid ${colors.neutral100};
-  border-left: 1px solid ${colors.neutral100};
+  border-top-width: 1px;
+  border-right-width: 1px;
+  border-left-width: 1px;
+  border-top-color: ${({ $active }) =>
+    $active ? colors.neutral100 : "rgba(110, 186, 229, 0.5)"};
+  border-right-color: ${({ $active }) =>
+    $active ? colors.neutral100 : "rgba(110, 186, 229, 0.5)"};
+  border-left-color: ${({ $active }) =>
+    $active ? colors.neutral100 : "rgba(110, 186, 229, 0.5)"};
   background-color: ${({ $active }) =>
     $active ? colors.neutral50 : colors.primary200};
   flex-direction: row;

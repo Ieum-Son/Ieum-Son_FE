@@ -18,8 +18,11 @@ const ROADMAP_STEPS: RoadmapStepData[] = [
 export default function RoadmapList() {
   return (
     <Wrapper
-      contentContainerStyle={{ paddingHorizontal: 22, paddingTop: 4 }}
+      contentContainerStyle={{ paddingTop: 0 }}
       showsVerticalScrollIndicator={false}
+      bounces={false}
+      alwaysBounceVertical={false}
+      overScrollMode="never"
     >
       {ROADMAP_STEPS.map((step, index) => (
         <RoadmapStep

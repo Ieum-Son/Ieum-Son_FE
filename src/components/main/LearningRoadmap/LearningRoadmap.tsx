@@ -1,9 +1,7 @@
 import { colors } from "@/constants/colors";
 import React, { useState } from "react";
 import { default as styled } from "styled-components/native";
-import LearningModeTabs, {
-  type LearningMode,
-} from "./LearningModeTabs";
+import LearningModeTabs, { type LearningMode } from "./LearningModeTabs";
 import RoadmapList from "./RoadmapList";
 
 interface LearningRoadmapProps {
@@ -22,6 +20,7 @@ export default function LearningRoadmap({
       <Panel>
         <RoadmapList />
         <StartButton
+          style={{ boxShadow: `0 6px 12px ${colors.primary100}` }}
           onPress={onStartLearning}
           disabled={!onStartLearning}
           accessibilityRole="button"
@@ -36,12 +35,12 @@ export default function LearningRoadmap({
 
 const Wrapper = styled.View`
   flex: 1;
-  margin: 1.51px 20px 20px;
+  margin: 0 20px 20px;
 `;
 
 const Panel = styled.View`
   flex: 1;
-  padding: 28px 14px 14px;
+  padding: 21px 21px 15px;
   border: 1px solid ${colors.neutral100};
   border-radius: 12px;
   background-color: ${colors.neutral50};
