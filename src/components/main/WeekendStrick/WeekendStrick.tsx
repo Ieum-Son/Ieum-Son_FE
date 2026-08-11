@@ -59,7 +59,7 @@ const Wrapper = styled.View`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 14px;
   border-radius: 12px;
   border: 1px solid ${colors.neutral100};
   background-color: ${colors.neutral50};
