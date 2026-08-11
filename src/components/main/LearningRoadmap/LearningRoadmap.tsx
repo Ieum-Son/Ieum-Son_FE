@@ -24,6 +24,7 @@ export default function LearningRoadmap({
         {activeMode === "schedule" && <TodayLearning />}
         {activeMode === "progress" && <WeeklyLearning />}
         <StartButton
+          $mode={activeMode}
           style={{ boxShadow: `0 6px 12px ${colors.primary100}` }}
           onPress={onStartLearning}
           disabled={!onStartLearning}
@@ -51,9 +52,10 @@ const Panel = styled.View<{ $mode: LearningMode }>`
   background-color: ${colors.neutral50};
 `;
 
-const StartButton = styled.Pressable`
+const StartButton = styled.Pressable<{ $mode: LearningMode }>`
   flex-shrink: 0;
   height: 48px;
+  margin: ${({ $mode }) => ($mode === "roadmap" ? "0" : "0 -3px")};
   align-items: center;
   justify-content: center;
   border-radius: 12px;
