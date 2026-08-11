@@ -16,6 +16,7 @@ export default function Th({
   return (
     <Wrapper
       $isLearned={isLearned}
+      accessible
       accessibilityLabel={`${day}요일${isLearned ? ", 학습 완료" : ""}${isToday ? ", 오늘" : ""}`}
     >
       {isToday && <TodayDot />}
