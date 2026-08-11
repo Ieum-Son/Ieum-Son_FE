@@ -3,13 +3,17 @@ import { colors } from "@/constants/colors";
 import { SymbolView } from "expo-symbols";
 import React from "react";
 import styled from "styled-components/native";
-import ThList from "./ThList";
+import ThList, { type Weekday } from "./ThList";
 
 interface WeekendStrickProps {
   streakDays: number;
+  learnedDays?: readonly Weekday[];
 }
 
-export default function WeekendStrick({ streakDays }: WeekendStrickProps) {
+export default function WeekendStrick({
+  streakDays,
+  learnedDays,
+}: WeekendStrickProps) {
   const hasStreak = streakDays > 0;
 
   return (
@@ -36,7 +40,7 @@ export default function WeekendStrick({ streakDays }: WeekendStrickProps) {
         />
       </Top>
 
-      <ThList />
+      <ThList learnedDays={learnedDays} />
     </Wrapper>
   );
 }
