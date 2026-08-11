@@ -1,0 +1,26 @@
+import Header from "@/components/header/Header";
+import LearningRoadmap from "@/components/main/LearningRoadmap/LearningRoadmap";
+import WeekendStrick from "@/components/main/WeekendStrick/WeekendStrick";
+import Tab from "@/components/tab/Tab";
+import React from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+export default function Main() {
+  return (
+    <>
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+        <View style={{ flex: 1 }}>
+          <View style={{ paddingTop: 10, paddingHorizontal: 10 }}>
+            <Header />
+          </View>
+
+          <WeekendStrick streakDays={2} />
+          <LearningRoadmap />
+        </View>
+
+        <Tab activeTab="home" />
+      </SafeAreaView>
+    </>
+  );
+}

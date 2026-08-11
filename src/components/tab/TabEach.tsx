@@ -23,7 +23,11 @@ export default function TabEach({
       accessibilityRole="tab"
       accessibilityState={{ selected: isActive }}
     >
-      <Icon source={img} contentFit="contain" />
+      <Icon
+        source={img}
+        contentFit="contain"
+        tintColor={isActive ? colors.primary300 : undefined}
+      />
       <Title $isActive={isActive}>{text}</Title>
     </Wrapper>
   );

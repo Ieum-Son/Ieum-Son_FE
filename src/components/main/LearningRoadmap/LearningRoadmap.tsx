@@ -1,0 +1,69 @@
+import { colors } from "@/constants/colors";
+import React, { useState } from "react";
+import { default as styled } from "styled-components/native";
+import LearningModeTabs, { type LearningMode } from "./LearningModeTabs";
+import RoadmapList from "./RoadmapList";
+import TodayLearning from "./TodayLearning";
+import WeeklyLearning from "./WeeklyLearning";
+
+interface LearningRoadmapProps {
+  onStartLearning?: () => void;
+}
+
+export default function LearningRoadmap({
+  onStartLearning,
+}: LearningRoadmapProps) {
+  const [activeMode, setActiveMode] = useState<LearningMode>("roadmap");
+
+  return (
+    <Wrapper>
+      <LearningModeTabs activeMode={activeMode} onChange={setActiveMode} />
+
+      <Panel $mode={activeMode}>
+        {activeMode === "roadmap" && <RoadmapList />}
+        {activeMode === "schedule" && <TodayLearning />}
+        {activeMode === "progress" && <WeeklyLearning />}
+        <StartButton
+          $mode={activeMode}
+          style={{ boxShadow: `0 6px 12px ${colors.primary100}` }}
+          onPress={onStartLearning}
+          disabled={!onStartLearning}
+          accessibilityRole="button"
+          accessibilityLabel="오늘의 학습 시작하기"
+        >
+          <StartButtonText>오늘의 학습 시작하기</StartButtonText>
+        </StartButton>
+      </Panel>
+    </Wrapper>
+  );
+}
+
+const Wrapper = styled.View`
+  flex: 1;
+  margin: 0 20px 20px;
+`;
+
+const Panel = styled.View<{ $mode: LearningMode }>`
+  flex: 1;
+  padding: ${({ $mode }) =>
+    $mode === "roadmap" ? "21px 21px 15px" : "32px 24px 15px"};
+  border: 1px solid ${colors.neutral100};
+  border-radius: 12px;
+  background-color: ${colors.neutral50};
+`;
+
+const StartButton = styled.Pressable<{ $mode: LearningMode }>`
+  flex-shrink: 0;
+  height: 48px;
+  margin: ${({ $mode }) => ($mode === "roadmap" ? "0" : "0 -3px")};
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: ${colors.primary300};
+`;
+
+const StartButtonText = styled.Text`
+  color: ${colors.neutral0};
+  font-size: 16px;
+  font-weight: 600;
+`;
