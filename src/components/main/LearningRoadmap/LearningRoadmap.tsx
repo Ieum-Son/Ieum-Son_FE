@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { default as styled } from "styled-components/native";
 import LearningModeTabs, { type LearningMode } from "./LearningModeTabs";
 import RoadmapList from "./RoadmapList";
+import TodayLearning from "./TodayLearning";
+import WeeklyLearning from "./WeeklyLearning";
 
 interface LearningRoadmapProps {
   onStartLearning?: () => void;
@@ -17,8 +19,10 @@ export default function LearningRoadmap({
     <Wrapper>
       <LearningModeTabs activeMode={activeMode} onChange={setActiveMode} />
 
-      <Panel>
-        <RoadmapList />
+      <Panel $mode={activeMode}>
+        {activeMode === "roadmap" && <RoadmapList />}
+        {activeMode === "schedule" && <TodayLearning />}
+        {activeMode === "progress" && <WeeklyLearning />}
         <StartButton
           style={{ boxShadow: `0 6px 12px ${colors.primary100}` }}
           onPress={onStartLearning}
@@ -38,9 +42,10 @@ const Wrapper = styled.View`
   margin: 0 20px 20px;
 `;
 
-const Panel = styled.View`
+const Panel = styled.View<{ $mode: LearningMode }>`
   flex: 1;
-  padding: 21px 21px 15px;
+  padding: ${({ $mode }) =>
+    $mode === "roadmap" ? "21px 21px 15px" : "32px 24px 15px"};
   border: 1px solid ${colors.neutral100};
   border-radius: 12px;
   background-color: ${colors.neutral50};
