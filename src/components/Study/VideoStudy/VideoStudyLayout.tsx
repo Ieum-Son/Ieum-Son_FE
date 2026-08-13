@@ -3,12 +3,12 @@ import { router } from "expo-router";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-import DayHeader from "./DayHeader";
-import DescriptionBox from "./DescriptionBox";
-import NextButton from "./NextButton";
-import SelectionBox from "./SelectionBox";
+import DayHeader from "../DayHeader";
+import DescriptionBox from "../DescriptionBox";
+import NextButton from "../NextButton";
+import VideoSelectionBox from "./VideoSelectionBox";
 
-interface StudyLayoutProps {
+interface VideoStudyLayoutProps {
   day: number;
   step: number;
   totalSteps: number;
@@ -18,7 +18,7 @@ interface StudyLayoutProps {
   onNext?: () => void;
 }
 
-export default function StudyLayout({
+export default function VideoStudyLayout({
   day,
   step,
   totalSteps,
@@ -26,7 +26,7 @@ export default function StudyLayout({
   guide,
   description,
   onNext,
-}: StudyLayoutProps) {
+}: VideoStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
 
   return (
@@ -48,7 +48,7 @@ export default function StudyLayout({
               {step}. {word}
             </Heading>
             <Guide selectable>{guide}</Guide>
-            <SelectionBox />
+            <VideoSelectionBox />
             <DescriptionBox description={description} />
           </LessonContent>
 
