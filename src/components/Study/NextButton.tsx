@@ -4,11 +4,13 @@ import styled from "styled-components/native";
 interface NextButtonProps {
   onPress?: () => void;
   disabled?: boolean;
+  label?: string;
 }
 
 export default function NextButton({
   onPress,
   disabled = false,
+  label = "다음",
 }: NextButtonProps) {
   return (
     <Button
@@ -18,7 +20,7 @@ export default function NextButton({
       $disabled={disabled}
       onPress={onPress}
     >
-      <ButtonText>다음</ButtonText>
+      <ButtonText>{label}</ButtonText>
       <Arrow aria-hidden>›</Arrow>
     </Button>
   );
