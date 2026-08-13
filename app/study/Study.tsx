@@ -1,4 +1,4 @@
-import StudyLayout from "@/components/Study/StudyLayout";
+import VideoStudyLayout from "@/components/Study/VideoStudy/VideoStudyLayout";
 import { useState } from "react";
 
 const TOTAL_STEPS = 5;
@@ -7,7 +7,7 @@ export default function Study() {
   const [step, setStep] = useState(1);
 
   return (
-    <StudyLayout
+    <VideoStudyLayout
       day={1}
       step={step}
       totalSteps={TOTAL_STEPS}
