@@ -3,6 +3,8 @@ import CameraStudyLayout from "@/components/Study/CameraStudy/CameraStudyLayout"
 import { useState } from "react";
 
 const TOTAL_STEPS = 5;
+//0은 가깝거나 멂, 1은 인식 불가로 임시 처리
+const MOCK_RECOGNITION_RATE = 0;
 
 export default function StudyCamera() {
   const [step, setStep] = useState(1);
@@ -18,7 +20,7 @@ export default function StudyCamera() {
       }
       description="오른 주먹의 1-2지를 펴서 바닥이 왼쪽으로 향하게 비스듬히 세워 위로 올리며 동시에 올린 왼쪽으로 잡는다."
       imageSource={CameraImageSource}
-      recognitionRate={92}
+      recognitionRate={MOCK_RECOGNITION_RATE}
       onNext={() =>
         setStep((currentStep) => Math.min(currentStep + 1, TOTAL_STEPS))
       }
