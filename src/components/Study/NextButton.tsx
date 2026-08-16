@@ -5,12 +5,14 @@ interface NextButtonProps {
   onPress?: () => void;
   disabled?: boolean;
   label?: string;
+  showArrow?: boolean;
 }
 
 export default function NextButton({
   onPress,
   disabled = false,
   label = "다음",
+  showArrow = true,
 }: NextButtonProps) {
   return (
     <Button
@@ -21,7 +23,7 @@ export default function NextButton({
       onPress={onPress}
     >
       <ButtonText>{label}</ButtonText>
-      <Arrow aria-hidden>›</Arrow>
+      {showArrow && <Arrow aria-hidden>›</Arrow>}
     </Button>
   );
 }
