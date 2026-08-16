@@ -2,12 +2,15 @@ import { colors } from "@/constants/colors";
 import { useEffect } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, {
+  cancelAnimation,
   Extrapolation,
   interpolate,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
   withDelay,
+  withRepeat,
+  withSequence,
   withTiming,
 } from "react-native-reanimated";
 
@@ -43,7 +46,16 @@ function Particle({
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withDelay(delay, withTiming(1, { duration }));
+    progress.value = withRepeat(
+      withSequence(
+        withDelay(delay, withTiming(1, { duration })),
+        withTiming(0, { duration: 1 }),
+      ),
+      -1,
+      false,
+    );
+
+    return () => cancelAnimation(progress);
   }, [delay, duration, progress]);
 
   const animatedStyle = useAnimatedStyle(() => ({

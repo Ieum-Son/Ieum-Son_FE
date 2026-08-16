@@ -27,7 +27,7 @@ export default function StudyReview() {
       day={1}
       step={STUDY_TOTAL_STEPS}
       totalSteps={STUDY_TOTAL_STEPS}
-      title={`${lesson.word}를 복습해요`}
+      title="2일 전 학습했어요."
       guide="아래 영상과 일치하는 뜻의 단어를 선택해주세요"
       mediaSource={ReviewMediaSource}
       answers={answers}
