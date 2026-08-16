@@ -100,6 +100,7 @@ const Guide = styled.Text`
   font-weight: 400;
   line-height: 22px;
   text-align: center;
+  margin-top: -5px;
 `;
 
 const ButtonArea = styled.View`
