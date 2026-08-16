@@ -2,6 +2,7 @@ import Header from "@/components/header/Header";
 import LearningRoadmap from "@/components/main/LearningRoadmap/LearningRoadmap";
 import WeekendStrick from "@/components/main/WeekendStrick/WeekendStrick";
 import Tab from "@/components/tab/Tab";
+import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,7 +17,14 @@ export default function Main() {
           </View>
 
           <WeekendStrick streakDays={2} />
-          <LearningRoadmap />
+          <LearningRoadmap
+            onStartLearning={() =>
+              router.push({
+                pathname: "/study/Study",
+                params: { wordIndex: "0" },
+              })
+            }
+          />
         </View>
 
         <Tab activeTab="home" />
