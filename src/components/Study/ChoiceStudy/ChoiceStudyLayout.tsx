@@ -28,6 +28,7 @@ export default function ChoiceStudyLayout({
   onNext,
 }: ChoiceStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
+  const initialProgress = totalSteps > 0 ? (step - 1) / totalSteps : 0;
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -35,6 +36,7 @@ export default function ChoiceStudyLayout({
         <DayHeader
           day={day}
           progress={progress}
+          initialProgress={initialProgress}
           onBack={() => router.back()}
         />
 

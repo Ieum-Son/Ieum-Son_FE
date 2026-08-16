@@ -31,6 +31,7 @@ export default function ImageStudyLayout({
   onNext,
 }: ImageStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
+  const initialProgress = totalSteps > 0 ? (step - 1) / totalSteps : 0;
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -44,6 +45,7 @@ export default function ImageStudyLayout({
           <DayHeader
             day={day}
             progress={progress}
+            initialProgress={initialProgress}
             onBack={() => router.back()}
           />
 

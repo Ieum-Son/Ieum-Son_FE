@@ -1,16 +1,49 @@
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { colors } from "@/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
+import { useEffect } from "react";
+import Animated, {
+  Easing,
+  ReduceMotion,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import styled from "styled-components/native";
+
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 interface DayHeaderProps {
   day: number;
   progress: number;
+  initialProgress?: number;
   onBack?: () => void;
 }
 
-export default function DayHeader({ day, progress, onBack }: DayHeaderProps) {
+export default function DayHeader({
+  day,
+  progress,
+  initialProgress = 0,
+  onBack,
+}: DayHeaderProps) {
   const normalizedProgress = Math.min(Math.max(progress, 0), 1);
+  const normalizedInitialProgress = Math.min(
+    Math.max(initialProgress, 0),
+    normalizedProgress,
+  );
+  const animatedProgress = useSharedValue(normalizedInitialProgress);
+
+  useEffect(() => {
+    animatedProgress.value = withTiming(normalizedProgress, {
+      duration: 280,
+      easing: Easing.out(Easing.cubic),
+      reduceMotion: ReduceMotion.System,
+    });
+  }, [animatedProgress, normalizedProgress]);
+
+  const animatedProgressStyle = useAnimatedStyle(() => ({
+    width: `${animatedProgress.value * 100}%`,
+  }));
 
   return (
     <Wrapper>
@@ -31,7 +64,7 @@ export default function DayHeader({ day, progress, onBack }: DayHeaderProps) {
           colors={[colors.primary200, colors.primary500]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
-          style={{ width: `${normalizedProgress * 100}%` }}
+          style={animatedProgressStyle}
         />
       </ProgressTrack>
     </Wrapper>
@@ -56,7 +89,7 @@ const ProgressTrack = styled.View`
   align-self: stretch;
 `;
 
-const ProgressFill = styled(LinearGradient)`
+const ProgressFill = styled(AnimatedLinearGradient)`
   height: 100%;
   border-radius: 9999px;
 `;

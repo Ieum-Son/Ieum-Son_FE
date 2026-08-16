@@ -33,6 +33,7 @@ export default function CameraStudyLayout({
   onNext,
 }: CameraStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
+  const initialProgress = totalSteps > 0 ? (step - 1) / totalSteps : 0;
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -43,7 +44,12 @@ export default function CameraStudyLayout({
         showsVerticalScrollIndicator={false}
       >
         <Content>
-          <DayHeader day={day} progress={progress} onBack={() => router.back()} />
+          <DayHeader
+            day={day}
+            progress={progress}
+            initialProgress={initialProgress}
+            onBack={() => router.back()}
+          />
 
           <LessonContent>
             <Heading selectable>{word}</Heading>
