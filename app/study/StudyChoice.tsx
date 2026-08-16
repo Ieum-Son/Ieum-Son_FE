@@ -6,7 +6,7 @@ const VIDEO_OPTIONS = ["영상 1", "영상 2", "영상 3", "영상 4"];
 
 export default function StudyChoice() {
   const [step, setStep] = useState(4);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(2);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   return (
     <ChoiceStudyLayout

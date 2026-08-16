@@ -1,4 +1,5 @@
 import styled from "styled-components/native";
+import VideoPreview from "./VideoPreview";
 import VideoChoiceOption from "./VideoChoiceOption";
 
 interface VideoChoiceListProps {
@@ -15,12 +16,14 @@ export default function VideoChoiceList({
   return (
     <Wrapper accessibilityRole="radiogroup">
       {options.map((option, index) => (
-        <VideoChoiceOption
-          key={option}
-          label={option}
-          selected={selectedIndex === index}
-          onPress={() => onSelect(index)}
-        />
+        <ChoiceItem key={option}>
+          <VideoChoiceOption
+            label={option}
+            selected={selectedIndex === index}
+            onPress={() => onSelect(index)}
+          />
+          {selectedIndex === index && <VideoPreview label={option} />}
+        </ChoiceItem>
       ))}
     </Wrapper>
   );
@@ -29,4 +32,9 @@ export default function VideoChoiceList({
 const Wrapper = styled.View`
   width: 100%;
   gap: 12px;
+`;
+
+const ChoiceItem = styled.View`
+  width: 100%;
+  gap: 10px;
 `;

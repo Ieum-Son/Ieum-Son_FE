@@ -31,41 +31,44 @@ export default function ChoiceStudyLayout({
 
   return (
     <Screen edges={["top", "bottom"]}>
+      <FixedTop>
+        <DayHeader
+          day={day}
+          progress={progress}
+          onBack={() => router.back()}
+        />
+
+        <Question>
+          <Title selectable>
+            오늘 친구를 <Highlight>즐겁게</Highlight> 만나요
+          </Title>
+          <Guide selectable>
+            위 문장 중 파란 단어를 표현하는 영상을 골라주세요.
+          </Guide>
+        </Question>
+      </FixedTop>
+
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingBottom: 24,
+        }}
         showsVerticalScrollIndicator={false}
       >
-        <Content>
-          <DayHeader
-            day={day}
-            progress={progress}
-            onBack={() => router.back()}
-          />
+        <VideoChoiceList
+          options={options}
+          selectedIndex={selectedIndex}
+          onSelect={onSelect}
+        />
 
-          <Question>
-            <Title selectable>
-              오늘 친구를 <Highlight>즐겁게</Highlight> 만나요
-            </Title>
-            <Guide selectable>
-              위 문장 중 파란 단어를 표현하는 영상을 골라주세요.
-            </Guide>
-          </Question>
-
-          <VideoChoiceList
-            options={options}
-            selectedIndex={selectedIndex}
-            onSelect={onSelect}
-          />
-
-          <HintArea>
-            <HintBox>
-              {
-                "힌트가 되는 것이 있다면 적으면 될 것 같아요.\n없다면 생략해도 되는 부분입니다."
-              }
-            </HintBox>
-          </HintArea>
-        </Content>
+        <HintArea>
+          <HintBox>
+            {
+              "힌트가 되는 것이 있다면 적으면 될 것 같아요.\n없다면 생략해도 되는 부분입니다."
+            }
+          </HintBox>
+        </HintArea>
       </ScrollView>
 
       <ButtonArea>
@@ -80,9 +83,8 @@ const Screen = styled(SafeAreaView)`
   background-color: ${colors.neutral0};
 `;
 
-const Content = styled.View`
-  flex: 1;
-  padding: 10px 20px 24px;
+const FixedTop = styled.View`
+  padding: 10px 20px 0;
 `;
 
 const Question = styled.View`
