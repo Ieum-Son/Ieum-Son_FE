@@ -4,7 +4,7 @@ import { router } from "expo-router";
 export default function StudyReviewIntro() {
   return (
     <ReviewIntroStudyLayout
-      onReview={() => router.push("/study/StudyChoice")}
+      onReview={() => router.push("/study/StudyReview")}
     />
   );
 }
