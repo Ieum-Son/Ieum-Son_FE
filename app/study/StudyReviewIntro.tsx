@@ -1,10 +1,21 @@
 import ReviewIntroStudyLayout from "@/components/Study/ReviewIntroStudy/ReviewIntroStudyLayout";
-import { router } from "expo-router";
+import { getStudyWordIndex } from "@/constants/studyLessons";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function StudyReviewIntro() {
+  const { wordIndex: wordIndexParam } = useLocalSearchParams<{
+    wordIndex?: string;
+  }>();
+  const wordIndex = getStudyWordIndex(wordIndexParam);
+
   return (
     <ReviewIntroStudyLayout
-      onReview={() => router.push("/study/StudyReview")}
+      onReview={() =>
+        router.push({
+          pathname: "/study/StudyReview",
+          params: { wordIndex: String(wordIndex) },
+        })
+      }
     />
   );
 }

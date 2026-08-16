@@ -1,6 +1,6 @@
 import { colors } from "@/constants/colors";
 import { router } from "expo-router";
-import { ScrollView } from "react-native";
+import { type ImageSourcePropType, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import DayHeader from "../DayHeader";
@@ -12,6 +12,9 @@ interface ReviewStudyLayoutProps {
   day: number;
   step: number;
   totalSteps: number;
+  title: string;
+  guide: string;
+  mediaSource: ImageSourcePropType;
   answers: string[];
   selectedIndex: number | null;
   onSelect: (index: number) => void;
@@ -22,6 +25,9 @@ export default function ReviewStudyLayout({
   day,
   step,
   totalSteps,
+  title,
+  guide,
+  mediaSource,
   answers,
   selectedIndex,
   onSelect,
@@ -47,13 +53,11 @@ export default function ReviewStudyLayout({
         showsVerticalScrollIndicator={false}
       >
         <Question>
-          <Title selectable>2일 전 학습했어요</Title>
-          <Guide selectable>
-            아래 영상과 일치하는 뜻의 단어를 선택해주세요
-          </Guide>
+          <Title selectable>{title}</Title>
+          <Guide selectable>{guide}</Guide>
         </Question>
 
-        <ReviewVideo />
+        <ReviewVideo source={mediaSource} word={answers[0]} />
 
         <AnswerArea>
           <ReviewAnswerList

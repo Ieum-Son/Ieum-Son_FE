@@ -1,14 +1,20 @@
 import { colors } from "@/constants/colors";
+import type { ImageSourcePropType } from "react-native";
 import styled from "styled-components/native";
 
-export default function ReviewVideo() {
+interface ReviewVideoProps {
+  source: ImageSourcePropType;
+  word: string;
+}
+
+export default function ReviewVideo({ source, word }: ReviewVideoProps) {
   return (
     <Wrapper
       accessible
       accessibilityRole="image"
-      accessibilityLabel="복습 문제 수어 영상"
+      accessibilityLabel={`${word} 복습 문제 수어 자료`}
     >
-      <VideoLabel>수어 영상</VideoLabel>
+      <Preview source={source} resizeMode="contain" />
       <Controls accessibilityElementsHidden>
         <PlayIcon>▶</PlayIcon>
         <Time>0:00 / 0:03</Time>
@@ -31,10 +37,10 @@ const Wrapper = styled.View`
   background-color: ${colors.neutral800};
 `;
 
-const VideoLabel = styled.Text`
-  color: ${colors.neutral400};
-  font-size: 14px;
-  font-weight: 500;
+const Preview = styled.Image`
+  width: 100%;
+  height: 100%;
+  background-color: ${colors.neutral0};
 `;
 
 const Controls = styled.View`

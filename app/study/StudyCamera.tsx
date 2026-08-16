@@ -21,7 +21,10 @@ export default function StudyCamera() {
 
   const handleNext = () => {
     if (isLastWord) {
-      router.push("/study/StudyChoice");
+      router.push({
+        pathname: "/study/StudyChoice",
+        params: { wordIndex: String(wordIndex) },
+      });
       return;
     }
 
