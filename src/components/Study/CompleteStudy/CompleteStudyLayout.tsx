@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import NextButton from "../NextButton";
+import CelebrationParticles from "./CelebrationParticles";
 import CompletionStats from "./CompletionStats";
 
 interface CompleteStudyLayoutProps {
@@ -23,6 +24,8 @@ export default function CompleteStudyLayout({
 }: CompleteStudyLayoutProps) {
   return (
     <Screen edges={["top", "bottom"]}>
+      <CelebrationParticles />
+
       <Content>
         <CompletionStats learnedWords={learnedWords} earnedGold={earnedGold} />
 
