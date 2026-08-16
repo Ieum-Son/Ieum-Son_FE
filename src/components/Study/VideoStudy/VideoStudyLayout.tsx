@@ -44,9 +44,7 @@ export default function VideoStudyLayout({
           />
 
           <LessonContent>
-            <Heading selectable>
-              {step}. {word}
-            </Heading>
+            <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
             <VideoSelectionBox />
             <DescriptionBox description={description} />

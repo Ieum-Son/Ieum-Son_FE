@@ -1,4 +1,5 @@
 import ReviewStudyLayout from "@/components/Study/ReviewStudy/ReviewStudyLayout";
+import { STUDY_TOTAL_STEPS } from "@/constants/studyLessons";
 import { router } from "expo-router";
 import { useState } from "react";
 
@@ -10,12 +11,12 @@ export default function StudyReview() {
   return (
     <ReviewStudyLayout
       day={1}
-      step={5}
-      totalSteps={6}
+      step={STUDY_TOTAL_STEPS}
+      totalSteps={STUDY_TOTAL_STEPS}
       answers={ANSWERS}
       selectedIndex={selectedIndex}
       onSelect={setSelectedIndex}
-      onNext={() => router.push("/study/StudyChoice")}
+      onNext={() => router.push("/study/StudyComplete")}
     />
   );
 }

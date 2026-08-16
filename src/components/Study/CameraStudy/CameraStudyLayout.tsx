@@ -7,9 +7,7 @@ import styled from "styled-components/native";
 import DayHeader from "../DayHeader";
 import DescriptionBox from "../DescriptionBox";
 import NextButton from "../NextButton";
-import CameraSelectionBox, {
-  getCameraPositionError,
-} from "./CameraSelectionBox";
+import CameraSelectionBox from "./CameraSelectionBox";
 
 interface CameraStudyLayoutProps {
   day: number;
@@ -35,9 +33,6 @@ export default function CameraStudyLayout({
   onNext,
 }: CameraStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
-  const hasPositionError = Boolean(
-    getCameraPositionError(recognitionRate),
-  );
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -51,9 +46,7 @@ export default function CameraStudyLayout({
           <DayHeader day={day} progress={progress} onBack={() => router.back()} />
 
           <LessonContent>
-            <Heading selectable>
-              {step}. {word}
-            </Heading>
+            <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
             <CameraSelectionBox
               source={imageSource}
@@ -68,7 +61,7 @@ export default function CameraStudyLayout({
         <NextButton
           label="다음 학습으로 넘어가기"
           onPress={onNext}
-          disabled={!onNext || hasPositionError}
+          disabled={false}
         />
       </ButtonArea>
     </Screen>

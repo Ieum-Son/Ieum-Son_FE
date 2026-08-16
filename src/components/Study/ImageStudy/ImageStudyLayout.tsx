@@ -48,9 +48,7 @@ export default function ImageStudyLayout({
           />
 
           <LessonContent>
-            <Heading selectable>
-              {step}. {word}
-            </Heading>
+            <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
             <ImageSelectionBox source={imageSource} />
             <DescriptionBox description={description} />
