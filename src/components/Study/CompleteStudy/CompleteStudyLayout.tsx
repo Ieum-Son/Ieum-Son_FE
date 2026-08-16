@@ -9,8 +9,8 @@ import CompletionStats from "./CompletionStats";
 
 interface CompleteStudyLayoutProps {
   learnedWords: number;
-  earnedGold: number;
-  streakDays: number;
+  earnedGold?: number;
+  streakDays?: number;
   userName: string;
   onComplete: () => void;
 }
@@ -32,7 +32,9 @@ export default function CompleteStudyLayout({
         <CopyGroup>
           <Title selectable>Day1 완료{"\n"}내일도 학습하러 와 주실 거죠?</Title>
           <Subtitle selectable>
-            {userName}님은 {streakDays}일 연속으로 학습 중이에요!
+            {typeof streakDays === "number"
+              ? `${userName}님은 ${streakDays}일 연속으로 학습 중이에요!`
+              : `${userName}님, 오늘의 학습을 완료했어요!`}
           </Subtitle>
         </CopyGroup>
 

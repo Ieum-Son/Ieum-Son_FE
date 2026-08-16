@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 
 interface CompletionStatsProps {
   learnedWords: number;
-  earnedGold: number;
+  earnedGold?: number;
 }
 
 export default function CompletionStats({
@@ -19,13 +19,15 @@ export default function CompletionStats({
         <Label>오늘 배운 단어</Label>
         <Value>+ {learnedWords}</Value>
       </StatCard>
-      <StatCard
-        accessible
-        accessibilityLabel={`오늘 얻은 금조각 ${earnedGold}개`}
-      >
-        <Label>오늘 얻은 금조각</Label>
-        <Value>+ {earnedGold}</Value>
-      </StatCard>
+      {typeof earnedGold === "number" && (
+        <StatCard
+          accessible
+          accessibilityLabel={`오늘 얻은 금조각 ${earnedGold}개`}
+        >
+          <Label>오늘 얻은 금조각</Label>
+          <Value>+ {earnedGold}</Value>
+        </StatCard>
+      )}
     </Wrapper>
   );
 }
