@@ -34,7 +34,6 @@ export default function ProfileOptionList({
         );
       })}
       {children}
-      <ProfileOption content="회원탈퇴" destructive />
     </Wrapper>
   );
 }
