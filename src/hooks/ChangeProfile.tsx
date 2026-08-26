@@ -34,6 +34,8 @@ export const useChangeProfile = () => {
         console.error("프로필 이미지 업로드에 실패했습니다.");
       } else if (status === 401) {
         console.error("유효하지 않은 토큰입니다.");
+      } else if (status === 404) {
+        console.error("해당 유저가 존재하지 않습니다.");
       }
     },
   });
