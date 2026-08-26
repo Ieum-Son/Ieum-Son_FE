@@ -4,7 +4,7 @@ import { useUserStore } from "@/stores/userStore";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
-import type { ErrorResponse } from "./errorResponse";
+import type { ErrorResponse } from "../errorResponse";
 
 export const useVerifyEmail = () => {
   return useMutation({
