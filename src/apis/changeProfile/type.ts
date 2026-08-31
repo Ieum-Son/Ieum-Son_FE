@@ -1,9 +1,13 @@
-import type { ProfileImage } from "@/apis/auth/signup/type";
-
 export interface ChangeProfileResponse {
   profileImageUrl: string;
 }
 
+export interface ProfileImage {
+  uri?: string | null;
+  name?: string | null;
+  type?: string | null;
+}
+
 export interface ChangeProfileProps {
-  img: ProfileImage;
+  img?: ProfileImage | null;
 }

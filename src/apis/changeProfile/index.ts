@@ -5,9 +5,9 @@ const ChangeProfile = async ({ img }: ChangeProfileProps) => {
   const formData = new FormData();
 
   formData.append("image", {
-    uri: img.uri,
-    name: img.name,
-    type: img.type,
+    uri: img?.uri || null,
+    name: img?.name || null,
+    type: img?.type || null,
   } as any);
 
   const response = await api.patch<ChangeProfileResponse>(
