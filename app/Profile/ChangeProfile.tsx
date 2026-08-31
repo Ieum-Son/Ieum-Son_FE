@@ -1,9 +1,10 @@
-import AuthButton from "@/components/auth/AuthButton";
 import type { ProfileImage } from "@/apis/auth/signup/type";
+import AuthButton from "@/components/auth/AuthButton";
 import Input from "@/components/auth/LoginInput";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
+import { useChangeProfile } from "@/hooks/ChangeProfile";
 import { useUserStore } from "@/stores/userStore";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -14,6 +15,7 @@ import styled from "styled-components/native";
 export default function ChangeProfile() {
   const [errorMessage, setErrorMessage] = useState("");
   const user = useUserStore((state) => state.user);
+  const { mutateAsync: changeProfile } = useChangeProfile();
   const setUser = useUserStore((state) => state.setUser);
   const [initialName] = useState(() => user?.name ?? "");
   const [initialProfileImageUrl] = useState(
@@ -36,6 +38,9 @@ export default function ChangeProfile() {
 
   const handleChangeProfile = () => {
     setErrorMessage("");
+    if (profile) {
+      changeProfile({ img: profile });
+    }
     setUser({
       email: user?.email ?? "",
       loginId: user?.loginId ?? "",
@@ -80,10 +85,7 @@ export default function ChangeProfile() {
         style={{ flexGrow: 1 }}
       >
         <Container>
-          <ProfileHeader
-            title="프로필 변경"
-            onBackPress={handleBackPress}
-          />
+          <ProfileHeader title="프로필 변경" onBackPress={handleBackPress} />
 
           <TitleWrapper>
             <LineText>
