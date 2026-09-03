@@ -3,11 +3,12 @@ export interface ChangeProfileResponse {
 }
 
 export interface ProfileImage {
-  uri?: string | null;
-  name?: string | null;
-  type?: string | null;
+  uri: string;
+  name: string;
+  type: string;
+  size?: number;
 }
 
 export interface ChangeProfileProps {
-  img?: ProfileImage | null;
+  img: ProfileImage;
 }
