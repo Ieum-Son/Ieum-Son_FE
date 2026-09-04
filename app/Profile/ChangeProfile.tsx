@@ -40,7 +40,7 @@ export default function ChangeProfile() {
   const isActive = hasChanges && !isPending;
 
   const handleChangeProfile = async () => {
-    if (isPending) return;
+    if (isPending || !user) return;
     setErrorMessage("");
 
     let nextProfileImageUrl = user?.profileImageUrl ?? null;
