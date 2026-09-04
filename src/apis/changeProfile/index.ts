@@ -15,7 +15,6 @@ const ChangeProfile = async ({ img }: ChangeProfileProps) => {
   const response = await api.patch<ChangeProfileResponse>(
     "/api/members/me/profile",
     formData,
-    { headers: { "Content-Type": "multipart/form-data" } },
   );
 
   return response.data;
