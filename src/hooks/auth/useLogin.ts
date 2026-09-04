@@ -4,7 +4,7 @@ import { useUserStore } from "@/stores/userStore";
 import { saveTokens } from "@/utils/tokenStorage";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import type { ErrorResponse } from "./errorResponse";
+import type { ErrorResponse } from "../errorResponse";
 
 export const useLogin = () => {
   return useMutation({

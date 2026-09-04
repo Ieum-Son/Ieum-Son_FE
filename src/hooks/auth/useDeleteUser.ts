@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { Alert } from "react-native";
-import type { ErrorResponse } from "./errorResponse";
+import type { ErrorResponse } from "../errorResponse";
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();

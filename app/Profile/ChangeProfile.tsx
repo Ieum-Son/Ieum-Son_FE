@@ -1,9 +1,13 @@
-import AuthButton from "@/components/auth/AuthButton";
 import type { ProfileImage } from "@/apis/auth/signup/type";
+import AuthButton from "@/components/auth/AuthButton";
 import Input from "@/components/auth/LoginInput";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
+import {
+  getChangeProfileErrorMessage,
+  useChangeProfile,
+} from "@/hooks/ChangeProfile";
 import { useUserStore } from "@/stores/userStore";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -14,6 +18,7 @@ import styled from "styled-components/native";
 export default function ChangeProfile() {
   const [errorMessage, setErrorMessage] = useState("");
   const user = useUserStore((state) => state.user);
+  const { mutateAsync: changeProfile, isPending } = useChangeProfile();
   const setUser = useUserStore((state) => state.setUser);
   const [initialName] = useState(() => user?.name ?? "");
   const [initialProfileImageUrl] = useState(
@@ -32,15 +37,29 @@ export default function ChangeProfile() {
   const profileChanged = profile?.uri !== initialProfileImageUrl;
   const nameChanged = name !== initialName;
   const hasChanges = nameChanged || profileChanged;
-  const isActive = hasChanges;
+  const isActive = hasChanges && !isPending;
 
-  const handleChangeProfile = () => {
+  const handleChangeProfile = async () => {
+    if (isPending || !user) return;
     setErrorMessage("");
+
+    let nextProfileImageUrl = user?.profileImageUrl ?? null;
+
+    if (profileChanged && profile?.uri) {
+      try {
+        const { profileImageUrl } = await changeProfile({ img: profile });
+        nextProfileImageUrl = profileImageUrl;
+      } catch (error) {
+        setErrorMessage(getChangeProfileErrorMessage(error));
+        return;
+      }
+    }
+
     setUser({
       email: user?.email ?? "",
       loginId: user?.loginId ?? "",
       name: name || user?.name || "사용자명",
-      profileImageUrl: profile?.uri ?? user?.profileImageUrl ?? null,
+      profileImageUrl: nextProfileImageUrl,
     });
     router.replace("/Profile/Profile");
   };
@@ -80,10 +99,7 @@ export default function ChangeProfile() {
         style={{ flexGrow: 1 }}
       >
         <Container>
-          <ProfileHeader
-            title="프로필 변경"
-            onBackPress={handleBackPress}
-          />
+          <ProfileHeader title="프로필 변경" onBackPress={handleBackPress} />
 
           <TitleWrapper>
             <LineText>

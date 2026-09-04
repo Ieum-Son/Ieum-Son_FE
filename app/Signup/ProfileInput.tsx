@@ -3,8 +3,8 @@ import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
 import { BackIcon, Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
-import type { ErrorResponse } from "@/hooks/auth/errorResponse";
 import { useSignup } from "@/hooks/auth/useSignup";
+import type { ErrorResponse } from "@/hooks/errorResponse";
 import { useSignupStore } from "@/stores/signupStore";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
@@ -53,22 +53,18 @@ export default function ProfileInput() {
       return;
     }
 
-    submitSignup(
-      signupPayload,
-      {
-        onError: (error) => {
-          if (!isAxiosError<ErrorResponse>(error)) {
-            setErrorMessage("회원가입 중 오류가 발생했습니다.");
-            return;
-          }
+    submitSignup(signupPayload, {
+      onError: (error) => {
+        if (!isAxiosError<ErrorResponse>(error)) {
+          setErrorMessage("회원가입 중 오류가 발생했습니다.");
+          return;
+        }
 
-          setErrorMessage(
-            error.response?.data?.message ??
-              "회원가입 중 오류가 발생했습니다.",
-          );
-        },
+        setErrorMessage(
+          error.response?.data?.message ?? "회원가입 중 오류가 발생했습니다.",
+        );
       },
-    );
+    });
   };
 
   const InputId = (text: string) => {
