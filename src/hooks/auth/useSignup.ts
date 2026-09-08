@@ -1,6 +1,5 @@
 import { signup, verifyCode, verifyEmail } from "@/apis/auth/signup";
 import { useSignupStore } from "@/stores/signupStore";
-import { useUserStore } from "@/stores/userStore";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
@@ -74,12 +73,7 @@ export const useSignup = () => {
   return useMutation({
     mutationFn: signup,
 
-    onSuccess: (data, signupPayload) => {
-      useUserStore.getState().setUser({
-        name: signupPayload.name,
-        gold: 0,
-        profileImageUrl: data.profileImageUrl,
-      });
+    onSuccess: () => {
       useSignupStore.getState().reset();
       console.log("회원가입 성공!");
       router.push("/Login");
