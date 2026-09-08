@@ -2,7 +2,7 @@ export interface UserInfoResponse {
   name: string;
   email: string;
   loginId: string;
-  profileImageurl: string;
+  profileImageUrl: string | null;
   gold: number;
   streakCount: number;
 }
