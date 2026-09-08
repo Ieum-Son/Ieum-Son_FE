@@ -34,6 +34,8 @@ export const useUserInfo = () => {
       name: user.data.name,
       loginId: user.data.loginId,
       profileImageUrl: user.data.profileImageUrl ?? null,
+      gold: user.data.gold,
+      streakCount: user.data.streakCount,
     });
   }, [user.data, setUser]);
 

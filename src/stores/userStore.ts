@@ -5,6 +5,8 @@ export interface UserProfile {
   name: string;
   loginId: string;
   profileImageUrl: string | null;
+  gold?: number;
+  streakCount?: number;
 }
 
 interface UserState {
