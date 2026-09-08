@@ -60,6 +60,8 @@ export default function ChangeProfile() {
       loginId: user?.loginId ?? "",
       name: name || user?.name || "사용자명",
       profileImageUrl: nextProfileImageUrl,
+      gold: user?.gold,
+      streakCount: user?.streakCount,
     });
     router.replace("/Profile/Profile");
   };
