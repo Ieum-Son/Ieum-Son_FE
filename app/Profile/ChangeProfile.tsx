@@ -8,22 +8,52 @@ import {
   getChangeProfileErrorMessage,
   useChangeProfile,
 } from "@/hooks/ChangeProfile";
-import { useUserStore } from "@/stores/userStore";
+import { getUserInfoErrorMessage, useUserInfo } from "@/hooks/UserInfo";
+import { useUserStore, type UserProfile } from "@/stores/userStore";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function ChangeProfile() {
-  const [errorMessage, setErrorMessage] = useState("");
+  const { error } = useUserInfo();
   const user = useUserStore((state) => state.user);
+
+  if (!user) {
+    return (
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+        <Container>
+          <ProfileHeader
+            title="프로필 변경"
+            onBackPress={() => router.back()}
+          />
+          <Placeholder>
+            {error ? (
+              <ErrorText>{getUserInfoErrorMessage(error)}</ErrorText>
+            ) : (
+              <ActivityIndicator color={colors.primary400} />
+            )}
+          </Placeholder>
+        </Container>
+      </SafeAreaView>
+    );
+  }
+
+  return <ChangeProfileForm user={user} />;
+}
+
+function ChangeProfileForm({ user }: { user: UserProfile }) {
+  const [errorMessage, setErrorMessage] = useState("");
   const { mutateAsync: changeProfile, isPending } = useChangeProfile();
   const updateUser = useUserStore((state) => state.updateUser);
-  const [initialName] = useState(() => user?.name ?? "");
-  const [initialProfileImageUrl] = useState(
-    () => user?.profileImageUrl ?? null,
-  );
+  const [initialName] = useState(user.name);
+  const [initialProfileImageUrl] = useState(user.profileImageUrl);
   const [name, setName] = useState(initialName);
   const [profile, setProfile] = useState<ProfileImage | null>(() =>
     initialProfileImageUrl
@@ -40,10 +70,10 @@ export default function ChangeProfile() {
   const isActive = hasChanges && !isPending;
 
   const handleChangeProfile = async () => {
-    if (isPending || !user) return;
+    if (isPending) return;
     setErrorMessage("");
 
-    let nextProfileImageUrl = user.profileImageUrl ?? null;
+    let nextProfileImageUrl = user.profileImageUrl;
 
     if (profileChanged && profile?.uri) {
       try {
@@ -135,6 +165,12 @@ export default function ChangeProfile() {
     </SafeAreaView>
   );
 }
+
+const Placeholder = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
 
 const Center = styled.View`
   display: flex;
