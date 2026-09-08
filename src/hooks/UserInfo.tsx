@@ -45,7 +45,7 @@ export const useUserInfo = () => {
   });
 
   useEffect(() => {
-    if (!user.data) return;
+    if (hasAccessToken !== true || !user.data) return;
 
     const next = {
       name: user.data.name,
@@ -63,7 +63,7 @@ export const useUserInfo = () => {
     }
 
     setUser(next);
-  }, [user.data, setUser]);
+  }, [hasAccessToken, user.data, setUser]);
 
   useEffect(() => {
     if (!user.error) return;
