@@ -4,6 +4,7 @@ import { useUserStore } from "@/stores/userStore";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { ErrorResponse } from "./errorResponse";
+import { USER_INFO_QUERY_KEY } from "./UserInfo";
 
 export const getChangeProfileErrorMessage = (error: unknown) => {
   if (!isAxiosError<ErrorResponse>(error)) {
@@ -25,14 +26,10 @@ export const useChangeProfile = () => {
   return useMutation({
     mutationFn: ChangeProfile,
     onSuccess: (data) => {
-      const user = useUserStore.getState().user;
-      if (user) {
-        useUserStore.getState().setUser({
-          ...user,
-          profileImageUrl: data.profileImageUrl,
-        });
-      }
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      useUserStore.getState().updateUser({
+        profileImageUrl: data.profileImageUrl,
+      });
+      queryClient.invalidateQueries({ queryKey: USER_INFO_QUERY_KEY });
     },
     onError: (error) => console.error(getChangeProfileErrorMessage(error)),
   });

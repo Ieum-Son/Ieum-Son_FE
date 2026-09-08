@@ -19,7 +19,7 @@ export default function ChangeProfile() {
   const [errorMessage, setErrorMessage] = useState("");
   const user = useUserStore((state) => state.user);
   const { mutateAsync: changeProfile, isPending } = useChangeProfile();
-  const setUser = useUserStore((state) => state.setUser);
+  const updateUser = useUserStore((state) => state.updateUser);
   const [initialName] = useState(() => user?.name ?? "");
   const [initialProfileImageUrl] = useState(
     () => user?.profileImageUrl ?? null,
@@ -43,7 +43,7 @@ export default function ChangeProfile() {
     if (isPending || !user) return;
     setErrorMessage("");
 
-    let nextProfileImageUrl = user?.profileImageUrl ?? null;
+    let nextProfileImageUrl = user.profileImageUrl ?? null;
 
     if (profileChanged && profile?.uri) {
       try {
@@ -55,13 +55,9 @@ export default function ChangeProfile() {
       }
     }
 
-    setUser({
-      email: user?.email ?? "",
-      loginId: user?.loginId ?? "",
-      name: name || user?.name || "사용자명",
+    updateUser({
+      name: name || user.name || "사용자명",
       profileImageUrl: nextProfileImageUrl,
-      gold: user?.gold,
-      streakCount: user?.streakCount,
     });
     router.replace("/Profile/Profile");
   };

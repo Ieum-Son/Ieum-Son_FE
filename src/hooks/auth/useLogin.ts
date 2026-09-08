@@ -1,10 +1,12 @@
 import { login } from "@/apis/auth/login/index";
 import type { LoginRequestProps } from "@/apis/auth/login/type";
+import { queryClient } from "@/libs/queryClient";
 import { useUserStore } from "@/stores/userStore";
 import { saveTokens } from "@/utils/tokenStorage";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import type { ErrorResponse } from "../errorResponse";
+import { USER_INFO_QUERY_KEY } from "../UserInfo";
 
 export const useLogin = () => {
   return useMutation({
@@ -14,17 +16,9 @@ export const useLogin = () => {
       return tokens;
     },
 
-    onSuccess: (_tokens, credentials) => {
-      const currentUser = useUserStore.getState().user;
-
-      if (currentUser?.loginId !== credentials.loginId) {
-        useUserStore.getState().setUser({
-          email: "",
-          name: credentials.loginId,
-          loginId: credentials.loginId,
-          profileImageUrl: null,
-        });
-      }
+    onSuccess: () => {
+      useUserStore.getState().clearUser();
+      queryClient.invalidateQueries({ queryKey: USER_INFO_QUERY_KEY });
 
       console.log("로그인 성공!");
       //메인 페이지로 이동 router.push

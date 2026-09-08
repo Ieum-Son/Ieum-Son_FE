@@ -76,9 +76,8 @@ export const useSignup = () => {
 
     onSuccess: (data, signupPayload) => {
       useUserStore.getState().setUser({
-        email: signupPayload.email,
         name: signupPayload.name,
-        loginId: signupPayload.loginId,
+        gold: 0,
         profileImageUrl: data.profileImageUrl,
       });
       useSignupStore.getState().reset();
