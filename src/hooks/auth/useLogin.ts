@@ -18,7 +18,7 @@ export const useLogin = () => {
 
     onSuccess: () => {
       useUserStore.getState().clearUser();
-      queryClient.invalidateQueries({ queryKey: USER_INFO_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: USER_INFO_QUERY_KEY });
 
       console.log("로그인 성공!");
       //메인 페이지로 이동 router.push
