@@ -1,10 +1,12 @@
-import { useEffect } from "react";
 import UserInfo from "@/apis/userInfo";
 import { UserInfoResponse } from "@/apis/userInfo/type";
+import { useUserStore } from "@/stores/userStore";
 import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useEffect } from "react";
 import { ErrorResponse } from "./errorResponse";
-import { useUserStore } from "@/stores/userStore";
+
+export const USER_INFO_QUERY_KEY = ["user"];
 
 export const getUserInfo = (error: unknown) => {
   if (!isAxiosError<ErrorResponse>(error)) {
@@ -22,7 +24,7 @@ export const getUserInfo = (error: unknown) => {
 export const useUserInfo = () => {
   const setUser = useUserStore((state) => state.setUser);
   const user = useQuery<UserInfoResponse, Error>({
-    queryKey: ["user"],
+    queryKey: USER_INFO_QUERY_KEY,
     queryFn: UserInfo,
   });
 
@@ -30,12 +32,9 @@ export const useUserInfo = () => {
     if (!user.data) return;
 
     setUser({
-      email: user.data.email,
       name: user.data.name,
-      loginId: user.data.loginId,
-      profileImageUrl: user.data.profileImageUrl ?? null,
       gold: user.data.gold,
-      streakCount: user.data.streakCount,
+      profileImageUrl: user.data.profileImageUrl ?? null,
     });
   }, [user.data, setUser]);
 
