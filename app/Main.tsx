@@ -2,12 +2,16 @@ import Header from "@/components/header/Header";
 import LearningRoadmap from "@/components/main/LearningRoadmap/LearningRoadmap";
 import WeekendStrick from "@/components/main/WeekendStrick/WeekendStrick";
 import Tab from "@/components/tab/Tab";
+import { useUserInfo } from "@/hooks/UserInfo";
 import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Main() {
+  const { data: userInfo } = useUserInfo();
+  const streakCount = userInfo?.streakCount ?? 0;
+
   return (
     <>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
@@ -16,7 +20,7 @@ export default function Main() {
             <Header />
           </View>
 
-          <WeekendStrick streakDays={2} />
+          <WeekendStrick streakDays={streakCount} />
           <LearningRoadmap
             onStartLearning={() =>
               router.push({

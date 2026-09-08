@@ -29,8 +29,8 @@ export default function Ranking() {
       <MyRanking
         ranking="-"
         profile={profileSource}
-        name={user?.name || user?.loginId || "사용자명"}
-        coin={988}
+        name={user?.name || "사용자명"}
+        coin={user?.gold ?? 0}
       />
       <Tab activeTab="ranking" />
     </SafeAreaView>

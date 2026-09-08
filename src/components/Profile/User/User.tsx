@@ -1,20 +1,27 @@
 import { colors } from "@/constants/colors";
+import { getUserInfoErrorMessage, useUserInfo } from "@/hooks/UserInfo";
 import { useUserStore } from "@/stores/userStore";
 import React from "react";
 import styled from "styled-components/native";
 
 export default function User() {
-  const user = useUserStore((state) => state.user);
-  const profileSource = user?.profileImageUrl
-    ? { uri: user.profileImageUrl }
+  const name = useUserStore((state) => state.user?.name);
+  const profileImageUrl = useUserStore((state) => state.user?.profileImageUrl);
+  const { data: userInfo, error } = useUserInfo();
+  const profileSource = profileImageUrl
+    ? { uri: profileImageUrl }
     : require("@/assets/user/defaultProfile.png");
 
   return (
     <Wrapper>
       <Profile source={profileSource} />
       <Info>
-        <Name>{user?.name || "사용자명"}</Name>
-        <Email>{user?.email || user?.loginId || "이메일 정보 없음"}</Email>
+        <Name>{name || "사용자명 정보 없음"}</Name>
+        <Email>
+          {error
+            ? getUserInfoErrorMessage(error)
+            : userInfo?.email || "이메일 정보 없음"}
+        </Email>
       </Info>
     </Wrapper>
   );

@@ -1,4 +1,5 @@
 import { colors } from "@/constants/colors";
+import { useUserInfo } from "@/hooks/UserInfo";
 import React from "react";
 import styled from "styled-components/native";
 import LearningHeatmap from "./LearningHeatmap";
@@ -6,21 +7,19 @@ import StreakStatCard from "./StreakStatCard";
 
 interface StreakOverviewProps {
   activity?: boolean[][];
-  longestStreak?: number;
-  monthlyLearningDays?: number;
 }
 
-export default function StreakOverview({
-  activity,
-  longestStreak = 32,
-  monthlyLearningDays = 14,
-}: StreakOverviewProps) {
+export default function StreakOverview({ activity }: StreakOverviewProps) {
+  const { data: userInfo } = useUserInfo();
+  const longestStreakCount = userInfo?.longestStreakCount ?? 0;
+  const monthStudyCount = userInfo?.monthStudyCount ?? 0;
+
   return (
     <Wrapper>
       <LearningHeatmap activity={activity} />
       <Stats>
-        <StreakStatCard title="최장 연속 기록" value={longestStreak} />
-        <StreakStatCard title="이번 달 학습일" value={monthlyLearningDays} />
+        <StreakStatCard title="최장 연속 기록" value={longestStreakCount} />
+        <StreakStatCard title="이번 달 학습일" value={monthStudyCount} />
       </Stats>
     </Wrapper>
   );
