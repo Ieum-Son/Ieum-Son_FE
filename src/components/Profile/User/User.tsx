@@ -13,8 +13,8 @@ export default function User() {
     <Wrapper>
       <Profile source={profileSource} />
       <Info>
-        <Name>{user?.name || "사용자명"}</Name>
-        <Email>{user?.email || user?.loginId || "이메일 정보 없음"}</Email>
+        <Name>{user?.name || "사용자명 정보 없음"}</Name>
+        <Email>{user?.email || "이메일 정보 없음"}</Email>
       </Info>
     </Wrapper>
   );
