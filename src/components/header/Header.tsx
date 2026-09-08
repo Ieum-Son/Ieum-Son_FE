@@ -2,8 +2,13 @@ import { colors } from "@/constants/colors";
 import { router } from "expo-router";
 import React from "react";
 import styled from "styled-components/native";
+import { useUserStore } from "@/stores/userStore";
+import { useUserInfo } from "@/hooks/UserInfo";
 
 export default function Header() {
+  useUserInfo();
+  const gold = useUserStore((state) => state.user?.gold ?? 0);
+
   return (
     <>
       <Wrapper>
@@ -11,7 +16,7 @@ export default function Header() {
           <CoinImg
             source={require("@/assets/header/mode_heat/베리언트3.png")}
           ></CoinImg>
-          <Coin>168</Coin>
+          <Coin>{gold}</Coin>
         </Left>
         <Right
           onPress={() => router.push("/Profile/Setting")}
