@@ -1,14 +1,15 @@
 import UserInfo from "@/apis/userInfo";
 import { UserInfoResponse } from "@/apis/userInfo/type";
 import { useUserStore } from "@/stores/userStore";
+import { getAccessTokens } from "@/utils/tokenStorage";
 import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ErrorResponse } from "./errorResponse";
 
 export const USER_INFO_QUERY_KEY = ["user"];
 
-export const getUserInfo = (error: unknown) => {
+export const getUserInfoErrorMessage = (error: unknown) => {
   if (!isAxiosError<ErrorResponse>(error)) {
     return error instanceof Error
       ? error.message
@@ -23,20 +24,52 @@ export const getUserInfo = (error: unknown) => {
 
 export const useUserInfo = () => {
   const setUser = useUserStore((state) => state.setUser);
+  const [hasAccessToken, setHasAccessToken] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    getAccessTokens()
+      .then((token) => mounted && setHasAccessToken(!!token))
+      .catch(() => mounted && setHasAccessToken(false));
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const user = useQuery<UserInfoResponse, Error>({
     queryKey: USER_INFO_QUERY_KEY,
     queryFn: UserInfo,
+    enabled: hasAccessToken === true,
   });
 
   useEffect(() => {
     if (!user.data) return;
 
-    setUser({
+    const next = {
       name: user.data.name,
       gold: user.data.gold,
       profileImageUrl: user.data.profileImageUrl ?? null,
-    });
+    };
+    const current = useUserStore.getState().user;
+
+    if (
+      current?.name === next.name &&
+      current?.gold === next.gold &&
+      current?.profileImageUrl === next.profileImageUrl
+    ) {
+      return;
+    }
+
+    setUser(next);
   }, [user.data, setUser]);
+
+  useEffect(() => {
+    if (!user.error) return;
+
+    console.error(getUserInfoErrorMessage(user.error));
+  }, [user.error]);
 
   return user;
 };
