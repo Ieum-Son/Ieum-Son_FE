@@ -8,7 +8,11 @@ import {
   getChangeProfileErrorMessage,
   useChangeProfile,
 } from "@/hooks/ChangeProfile";
-import { getUserInfoErrorMessage, useUserInfo } from "@/hooks/UserInfo";
+import {
+  getTokenStatusMessage,
+  getUserInfoErrorMessage,
+  useUserInfo,
+} from "@/hooks/UserInfo";
 import { useUserStore, type UserProfile } from "@/stores/userStore";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -22,10 +26,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function ChangeProfile() {
-  const { error } = useUserInfo();
+  const { error, tokenStatus } = useUserInfo();
   const user = useUserStore((state) => state.user);
 
   if (!user) {
+    const message = error
+      ? getUserInfoErrorMessage(error)
+      : getTokenStatusMessage(tokenStatus);
+
     return (
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <Container>
@@ -34,8 +42,8 @@ export default function ChangeProfile() {
             onBackPress={() => router.back()}
           />
           <Placeholder>
-            {error ? (
-              <ErrorText>{getUserInfoErrorMessage(error)}</ErrorText>
+            {message ? (
+              <ErrorText>{message}</ErrorText>
             ) : (
               <ActivityIndicator color={colors.primary400} />
             )}
