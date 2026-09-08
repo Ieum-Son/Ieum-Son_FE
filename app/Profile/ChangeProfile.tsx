@@ -59,7 +59,6 @@ export default function ChangeProfile() {
 function ChangeProfileForm({ user }: { user: UserProfile }) {
   const [errorMessage, setErrorMessage] = useState("");
   const { mutateAsync: changeProfile, isPending } = useChangeProfile();
-  const updateUser = useUserStore((state) => state.updateUser);
   const [initialName] = useState(user.name);
   const [initialProfileImageUrl] = useState(user.profileImageUrl);
   const [name, setName] = useState(initialName);
@@ -75,28 +74,22 @@ function ChangeProfileForm({ user }: { user: UserProfile }) {
   const profileChanged = profile?.uri !== initialProfileImageUrl;
   const nameChanged = name !== initialName;
   const hasChanges = nameChanged || profileChanged;
-  const isActive = hasChanges && !isPending;
+  const isActive = hasChanges && name.length > 0 && !isPending;
 
   const handleChangeProfile = async () => {
-    if (isPending) return;
+    if (!isActive) return;
     setErrorMessage("");
 
-    let nextProfileImageUrl = user.profileImageUrl;
-
-    if (profileChanged && profile?.uri) {
-      try {
-        const { profileImageUrl } = await changeProfile({ img: profile });
-        nextProfileImageUrl = profileImageUrl;
-      } catch (error) {
-        setErrorMessage(getChangeProfileErrorMessage(error));
-        return;
-      }
+    try {
+      await changeProfile({
+        ...(nameChanged ? { name } : {}),
+        ...(profileChanged && profile?.uri ? { img: profile } : {}),
+      });
+    } catch (error) {
+      setErrorMessage(getChangeProfileErrorMessage(error));
+      return;
     }
 
-    updateUser({
-      name: name || user.name || "사용자명",
-      profileImageUrl: nextProfileImageUrl,
-    });
     router.replace("/Profile/Profile");
   };
 

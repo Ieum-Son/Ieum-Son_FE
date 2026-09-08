@@ -10,5 +10,6 @@ export interface ProfileImage {
 }
 
 export interface ChangeProfileProps {
-  img: ProfileImage;
+  name?: string;
+  img?: ProfileImage;
 }
