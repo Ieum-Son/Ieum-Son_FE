@@ -11,15 +11,15 @@ interface StreakOverviewProps {
 
 export default function StreakOverview({ activity }: StreakOverviewProps) {
   const { data: userInfo } = useUserInfo();
-  const streakCount = userInfo?.streakCount ?? 0;
   const longestStreakCount = userInfo?.longestStreakCount ?? 0;
+  const monthStudyCount = userInfo?.monthStudyCount ?? 0;
 
   return (
     <Wrapper>
       <LearningHeatmap activity={activity} />
       <Stats>
         <StreakStatCard title="최장 연속 기록" value={longestStreakCount} />
-        <StreakStatCard title="이번 달 학습일" value={streakCount} />
+        <StreakStatCard title="이번 달 학습일" value={monthStudyCount} />
       </Stats>
     </Wrapper>
   );

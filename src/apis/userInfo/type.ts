@@ -6,4 +6,5 @@ export interface UserInfoResponse {
   gold: number;
   streakCount: number;
   longestStreakCount: number;
+  monthStudyCount: number;
 }
