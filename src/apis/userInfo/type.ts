@@ -5,4 +5,5 @@ export interface UserInfoResponse {
   profileImageUrl: string | null;
   gold: number;
   streakCount: number;
+  longestStreakCount: number;
 }

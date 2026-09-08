@@ -2,15 +2,15 @@ import Header from "@/components/header/Header";
 import LearningRoadmap from "@/components/main/LearningRoadmap/LearningRoadmap";
 import WeekendStrick from "@/components/main/WeekendStrick/WeekendStrick";
 import Tab from "@/components/tab/Tab";
-import { useUserStore } from "@/stores/userStore";
+import { useUserInfo } from "@/hooks/UserInfo";
 import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Main() {
-  const user = useUserStore((state) => state.user);
-  const streakCount = user?.streakCount ?? 0;
+  const { data: userInfo } = useUserInfo();
+  const streakCount = userInfo?.streakCount ?? 0;
 
   return (
     <>
