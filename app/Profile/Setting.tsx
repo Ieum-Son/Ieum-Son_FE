@@ -3,6 +3,12 @@ import SettingBlock from "@/components/Profile/setting/SettingBlock";
 import SettingSection from "@/components/Profile/setting/SettingSection";
 import SoundSettingControl from "@/components/Profile/setting/SoundSettingControl";
 import { colors } from "@/constants/colors";
+import {
+  getSettingErrorMessage,
+  getUpdateSettingErrorMessage,
+  useSetting,
+  useUpdateSetting,
+} from "@/hooks/Setting";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -10,7 +16,21 @@ import styled from "styled-components/native";
 export default function Setting() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [volume, setVolume] = useState(0.68);
-  const [notificationEnabled, setNotificationEnabled] = useState(true);
+
+  const { data: setting, isPending, isError, error } = useSetting();
+  const {
+    mutate: updateSetting,
+    isPending: isUpdating,
+    error: updateError,
+  } = useUpdateSetting();
+
+  const notificationEnabled = setting?.alarmEnabled ?? false;
+  const canChangeNotification = !isPending && !isError && !isUpdating;
+  const errorMessage = isError
+    ? getSettingErrorMessage(error)
+    : updateError
+      ? getUpdateSettingErrorMessage(updateError)
+      : null;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
@@ -42,8 +62,13 @@ export default function Setting() {
               text="알림"
               option="toggle"
               value={notificationEnabled}
-              onValueChange={setNotificationEnabled}
+              onValueChange={
+                canChangeNotification
+                  ? (value) => updateSetting({ alarmEnabled: value })
+                  : undefined
+              }
             />
+            {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
           </SettingSection>
         </Content>
       </Container>
@@ -59,4 +84,12 @@ const Container = styled.View`
 
 const Content = styled.ScrollView`
   flex: 1;
+`;
+
+const ErrorText = styled.Text`
+  margin: 0px 12px;
+  color: ${colors.errorRed};
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
 `;
