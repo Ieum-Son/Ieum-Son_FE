@@ -3,10 +3,8 @@ import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
 import { BackIcon, Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
-import { useSignup } from "@/hooks/auth/useSignup";
-import type { ErrorResponse } from "@/hooks/errorResponse";
+import { getSignupErrorMessage, useSignup } from "@/hooks/auth/useSignup";
 import { useSignupStore } from "@/stores/signupStore";
-import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -54,16 +52,7 @@ export default function ProfileInput() {
     }
 
     submitSignup(signupPayload, {
-      onError: (error) => {
-        if (!isAxiosError<ErrorResponse>(error)) {
-          setErrorMessage("회원가입 중 오류가 발생했습니다.");
-          return;
-        }
-
-        setErrorMessage(
-          error.response?.data?.message ?? "회원가입 중 오류가 발생했습니다.",
-        );
-      },
+      onError: (error) => setErrorMessage(getSignupErrorMessage(error)),
     });
   };
 

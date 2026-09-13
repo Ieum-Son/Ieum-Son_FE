@@ -3,10 +3,8 @@ import Input from "@/components/auth/LoginInput";
 import Question from "@/components/auth/Question";
 import { BackIcon } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import { useLogin } from "@/hooks/auth/useLogin";
-import type { ErrorResponse } from "@/hooks/errorResponse";
+import { getLoginErrorMessage, useLogin } from "@/hooks/auth/useLogin";
 import { useSignupStore } from "@/stores/signupStore";
-import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -38,14 +36,7 @@ export default function Login() {
       setErrorMessage("");
       // main으로 이동 router
     } catch (error) {
-      if (!isAxiosError<ErrorResponse>(error)) {
-        setErrorMessage("로그인 정보를 저장하는 중 오류가 발생했습니다.");
-        return;
-      }
-
-      setErrorMessage(
-        error.response?.data?.message ?? "로그인 중 오류가 발생했습니다.",
-      );
+      setErrorMessage(getLoginErrorMessage(error));
     }
   };
 

@@ -3,10 +3,15 @@ import { useSignupStore } from "@/stores/signupStore";
 import { useUserStore } from "@/stores/userStore";
 import { removeTokens } from "@/utils/tokenStorage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { Alert } from "react-native";
-import type { ErrorResponse } from "../errorResponse";
+import { createErrorMessage, getErrorStatus } from "../errorResponse";
+
+export const getDeleteUserErrorMessage = createErrorMessage({
+  preferServerMessage: true,
+  unknownMessage: "회원탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.",
+  fallback: "회원탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.",
+});
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
@@ -26,12 +31,7 @@ export const useDeleteUser = () => {
       }
     },
     onError: (error: unknown) => {
-      const status = isAxiosError<ErrorResponse>(error)
-        ? error.response?.status
-        : undefined;
-      const message = isAxiosError<ErrorResponse>(error)
-        ? error.response?.data?.message
-        : undefined;
+      const status = getErrorStatus(error);
 
       const title =
         status === 401
@@ -40,10 +40,7 @@ export const useDeleteUser = () => {
             ? "회원 정보 없음"
             : "회원탈퇴 실패";
 
-      Alert.alert(
-        title,
-        message ?? "회원탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.",
-      );
+      Alert.alert(title, getDeleteUserErrorMessage(error));
     },
   });
 };

@@ -3,24 +3,15 @@ import { BackIcon, CodeInput, Input } from "@/components/Signup/index";
 import VerifyTimer from "@/components/Signup/VerifyTimer";
 import { colors } from "@/constants/colors";
 import { useVerifyCode, useVerifyEmail } from "@/hooks/auth/useSignup";
-import type { ErrorResponse } from "@/hooks/errorResponse";
+import { getServerErrorMessage } from "@/hooks/errorResponse";
 import { useTimer } from "@/hooks/useTimer";
 import { useSignupStore } from "@/stores/signupStore";
 import { isValidEmail } from "@/utils/isValidEmail";
-import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-
-const getErrorMessage = (error: unknown, fallback: string) => {
-  if (!isAxiosError<ErrorResponse>(error)) {
-    return fallback;
-  }
-
-  return error.response?.data?.message ?? fallback;
-};
 
 export default function EmailInput() {
   const verifyEmailMutation = useVerifyEmail();
@@ -83,7 +74,9 @@ export default function EmailInput() {
         return;
       }
       setIsError(true);
-      setErrorMessage(getErrorMessage(error, "인증 메일 전송에 실패했습니다."));
+      setErrorMessage(
+        getServerErrorMessage(error) ?? "인증 메일 전송에 실패했습니다.",
+      );
     }
   };
 
@@ -109,7 +102,8 @@ export default function EmailInput() {
       router.push("/Signup/IdSetting");
     } catch (error) {
       setErrorMessage(
-        getErrorMessage(error, "인증 코드가 올바르지 않거나 만료되었습니다."),
+        getServerErrorMessage(error) ??
+          "인증 코드가 올바르지 않거나 만료되었습니다.",
       );
     }
   };
