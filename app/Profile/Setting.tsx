@@ -5,6 +5,7 @@ import SoundSettingControl from "@/components/Profile/setting/SoundSettingContro
 import { colors } from "@/constants/colors";
 import {
   getSettingErrorMessage,
+  getUpdateSettingErrorMessage,
   useSetting,
   useUpdateSetting,
 } from "@/hooks/Setting";
@@ -17,10 +18,19 @@ export default function Setting() {
   const [volume, setVolume] = useState(0.68);
 
   const { data: setting, isPending, isError, error } = useSetting();
-  const { mutate: updateSetting } = useUpdateSetting();
+  const {
+    mutate: updateSetting,
+    isPending: isUpdating,
+    error: updateError,
+  } = useUpdateSetting();
 
   const notificationEnabled = setting?.alarmEnabled ?? false;
-  const canChangeNotification = !isPending && !isError;
+  const canChangeNotification = !isPending && !isError && !isUpdating;
+  const errorMessage = isError
+    ? getSettingErrorMessage(error)
+    : updateError
+      ? getUpdateSettingErrorMessage(updateError)
+      : null;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
@@ -58,7 +68,7 @@ export default function Setting() {
                   : undefined
               }
             />
-            {isError && <ErrorText>{getSettingErrorMessage(error)}</ErrorText>}
+            {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
           </SettingSection>
         </Content>
       </Container>

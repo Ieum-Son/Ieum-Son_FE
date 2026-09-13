@@ -24,14 +24,11 @@ export const getUpdateSettingErrorMessage = createErrorMessage({
   fallback: "설정 변경에 실패했습니다. 잠시 후 다시 시도해주세요.",
 });
 
-export const useSetting = () => {
-  const setting = useQuery<GetSettingResponse, Error>({
+export const useSetting = () =>
+  useQuery<GetSettingResponse, Error>({
     queryKey: SETTING_QUERY_KEY,
     queryFn: GetSetting,
   });
-
-  return setting;
-};
 
 export const useUpdateSetting = () => {
   return useMutation({
@@ -49,14 +46,13 @@ export const useUpdateSetting = () => {
 
       return { previous };
     },
+    onSuccess: (data) => queryClient.setQueryData(SETTING_QUERY_KEY, data),
     onError: (error, _variables, context) => {
       if (context?.previous) {
         queryClient.setQueryData(SETTING_QUERY_KEY, context.previous);
       }
+      queryClient.invalidateQueries({ queryKey: SETTING_QUERY_KEY });
       console.error(getUpdateSettingErrorMessage(error));
     },
-    onSuccess: (data) => queryClient.setQueryData(SETTING_QUERY_KEY, data),
-    onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: SETTING_QUERY_KEY }),
   });
 };
