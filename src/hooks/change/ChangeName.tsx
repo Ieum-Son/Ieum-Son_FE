@@ -3,8 +3,8 @@ import type { UserInfoResponse } from "@/apis/userInfo/type";
 import { queryClient } from "@/libs/queryClient";
 import { useUserStore } from "@/stores/userStore";
 import { useMutation } from "@tanstack/react-query";
-import { createErrorMessage } from "./errorResponse";
-import { USER_INFO_QUERY_KEY } from "./UserInfo";
+import { createErrorMessage } from "../errorResponse";
+import { USER_INFO_QUERY_KEY } from "../UserInfo";
 
 export const getChangeNameErrorMessage = createErrorMessage({
   status: {
