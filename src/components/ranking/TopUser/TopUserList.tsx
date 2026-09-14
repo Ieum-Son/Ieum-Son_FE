@@ -1,31 +1,26 @@
+import type { RankingItem } from "@/apis/ranking/type";
 import styled from "styled-components/native";
+import { getProfileSource } from "../profileSource";
 import TopUserCard, { type TopUser } from "./TopUserCard";
 
 const displayOrder = [2, 1, 3] as const;
 
-const topUsers: TopUser[] = [
-  {
-    ranking: 1,
-    profile: require("@/assets/user/defaultProfile.png"),
-    name: "사용자명",
-    coin: 168455,
-  },
-  {
-    ranking: 2,
-    profile: require("@/assets/user/defaultProfile.png"),
-    name: "사용자명",
-    coin: 168244,
-  },
-  {
-    ranking: 3,
-    profile: require("@/assets/user/defaultProfile.png"),
-    name: "사용자명",
-    coin: 55554,
-  },
-];
+interface TopUserListProps {
+  items: RankingItem[];
+}
 
-export default function TopUserList() {
-  const usersByRanking = new Map(topUsers.map((user) => [user.ranking, user]));
+export default function TopUserList({ items }: TopUserListProps) {
+  const usersByRanking = new Map<number, TopUser>(
+    items.map((item) => [
+      item.rank,
+      {
+        ranking: item.rank as TopUser["ranking"],
+        profile: getProfileSource(item.profileImageUrl),
+        name: item.name,
+        coin: item.gold,
+      },
+    ]),
+  );
 
   return (
     <Wrapper>
