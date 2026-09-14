@@ -4,11 +4,14 @@ import Input from "@/components/auth/LoginInput";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
-import { getChangeNameErrorMessage, useChangeName } from "@/hooks/ChangeName";
+import {
+  getChangeNameErrorMessage,
+  useChangeName,
+} from "@/hooks/change/ChangeName";
 import {
   getChangeProfileErrorMessage,
   useChangeProfile,
-} from "@/hooks/ChangeProfile";
+} from "@/hooks/change/ChangeProfile";
 import {
   getTokenStatusMessage,
   getUserInfoErrorMessage,
