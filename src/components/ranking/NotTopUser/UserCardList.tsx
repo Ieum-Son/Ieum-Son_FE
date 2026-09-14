@@ -17,6 +17,7 @@ export default function UserCardList({ items }: UserCardListProps) {
           profile={getProfileSource(item.profileImageUrl)}
           name={item.name}
           coin={item.gold}
+          isMe={item.isMe}
         />
       ))}
     </Wrapper>

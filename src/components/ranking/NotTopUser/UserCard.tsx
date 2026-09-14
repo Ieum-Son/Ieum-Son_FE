@@ -9,6 +9,7 @@ export interface UserCardProps {
   profile: ImageSourcePropType;
   name: string;
   coin: number;
+  isMe?: boolean;
 }
 
 export default function UserCard({
@@ -16,30 +17,44 @@ export default function UserCard({
   profile,
   name,
   coin,
+  isMe = false,
 }: UserCardProps) {
   return (
-    <Wrapper>
+    <Wrapper $isMe={isMe}>
       <Left>
-        <Rank>{ranking}</Rank>
+        <Rank $isMe={isMe}>{ranking}</Rank>
 
         <Center>
           <Profile profile={profile} />
-          <Name>{name}</Name>
+          <Name $isMe={isMe}>{isMe ? `(나) ${name}` : name}</Name>
         </Center>
       </Left>
       <Right>
-        <CoinImg source={require("@/assets/user/coin.png")}></CoinImg>
-        <Coin>{coin}</Coin>
+        <CoinImg
+          source={
+            isMe
+              ? require("@/assets/user/CoinBlue.png")
+              : require("@/assets/user/coin.png")
+          }
+        ></CoinImg>
+        <Coin $isMe={isMe}>{coin}</Coin>
       </Right>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.View`
+interface HighlightProps {
+  $isMe: boolean;
+}
+
+const Wrapper = styled.View<HighlightProps>`
   height: 66px;
   padding: 12px 24px;
   border-radius: 8px;
-  background-color: ${colors.neutral50};
+  background-color: ${({ $isMe }) =>
+    $isMe ? colors.primary50 : colors.neutral50};
+  border: 1px solid
+    ${({ $isMe }) => ($isMe ? colors.primary200 : "transparent")};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -67,19 +82,21 @@ const Right = styled.View`
   align-items: center;
 `;
 
-const Rank = styled.Text`
+const Rank = styled.Text<HighlightProps>`
   font-size: 16px;
-  color: ${colors.neutral400};
+  color: ${({ $isMe }) => ($isMe ? colors.primary500 : colors.neutral400)};
 `;
 
-const Name = styled.Text`
+const Name = styled.Text<HighlightProps>`
   font-size: 16px;
+  font-weight: ${({ $isMe }) => ($isMe ? 600 : 400)};
+  color: ${({ $isMe }) => ($isMe ? colors.primary500 : colors.neutral1000)};
 `;
 
-const Coin = styled.Text`
+const Coin = styled.Text<HighlightProps>`
   font-size: 14px;
-  color: ${colors.neutral600};
   font-weight: 600;
+  color: ${({ $isMe }) => ($isMe ? colors.primary500 : colors.neutral600)};
 `;
 
 const CoinImg = styled.Image``;

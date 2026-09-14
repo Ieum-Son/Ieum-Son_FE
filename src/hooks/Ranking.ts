@@ -1,5 +1,5 @@
 import { Ranking } from "@/apis/ranking";
-import type { RankingResponse } from "@/apis/ranking/type";
+import type { RankingParams, RankingResponse } from "@/apis/ranking/type";
 import { useQuery } from "@tanstack/react-query";
 import { createErrorMessage } from "./errorResponse";
 
@@ -13,8 +13,8 @@ export const getRankingErrorMessage = createErrorMessage({
   fallback: "랭킹을 불러오는 데 실패했습니다.",
 });
 
-export const useRanking = () =>
+export const useRanking = (params: RankingParams = {}) =>
   useQuery<RankingResponse, Error>({
-    queryKey: RANKING_QUERY_KEY,
-    queryFn: Ranking,
+    queryKey: [...RANKING_QUERY_KEY, params],
+    queryFn: () => Ranking(params),
   });

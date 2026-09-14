@@ -12,3 +12,8 @@ export interface RankingResponse {
   totalMembers: number;
   items: RankingItem[];
 }
+
+export interface RankingParams {
+  page?: number;
+  size?: number;
+}
