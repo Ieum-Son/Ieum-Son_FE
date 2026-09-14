@@ -4,6 +4,7 @@ import Input from "@/components/auth/LoginInput";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import { Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
+import { getChangeNameErrorMessage, useChangeName } from "@/hooks/ChangeName";
 import {
   getChangeProfileErrorMessage,
   useChangeProfile,
@@ -58,7 +59,11 @@ export default function ChangeProfile() {
 
 function ChangeProfileForm({ user }: { user: UserProfile }) {
   const [errorMessage, setErrorMessage] = useState("");
-  const { mutateAsync: changeProfile, isPending } = useChangeProfile();
+  const { mutateAsync: changeProfile, isPending: isChangingProfile } =
+    useChangeProfile();
+  const { mutateAsync: changeName, isPending: isChangingName } =
+    useChangeName();
+  const isPending = isChangingProfile || isChangingName;
   const [initialName] = useState(user.name);
   const [initialProfileImageUrl] = useState(user.profileImageUrl);
   const [name, setName] = useState(initialName);
@@ -80,13 +85,23 @@ function ChangeProfileForm({ user }: { user: UserProfile }) {
     if (!isActive) return;
     setErrorMessage("");
 
+    const isNameOnly = nameChanged && !profileChanged;
+
     try {
-      await changeProfile({
-        ...(nameChanged ? { name } : {}),
-        ...(profileChanged && profile?.uri ? { img: profile } : {}),
-      });
+      if (isNameOnly) {
+        await changeName({ name });
+      } else {
+        await changeProfile({
+          ...(nameChanged ? { name } : {}),
+          ...(profileChanged && profile?.uri ? { img: profile } : {}),
+        });
+      }
     } catch (error) {
-      setErrorMessage(getChangeProfileErrorMessage(error));
+      setErrorMessage(
+        isNameOnly
+          ? getChangeNameErrorMessage(error)
+          : getChangeProfileErrorMessage(error),
+      );
       return;
     }
 

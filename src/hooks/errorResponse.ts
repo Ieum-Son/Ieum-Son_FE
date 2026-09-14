@@ -17,16 +17,9 @@ export const getServerErrorMessage = (error: unknown) =>
     : undefined;
 
 interface ErrorMessageOptions {
-  /** 상태 코드별 기본 문구 */
   status?: Record<number, string>;
-  /** 매칭되는 상태 코드가 없을 때 사용할 문구 */
   fallback: string;
-  /**
-   * 서버가 내려준 message를 우선할지 여부.
-   * true면 모든 상태 코드에서, 배열이면 해당 상태 코드에서만 우선한다.
-   */
   preferServerMessage?: boolean | number[];
-  /** axios 에러가 아닐 때 사용할 문구. 생략하면 에러 자체의 message를 쓴다. */
   unknownMessage?: string;
 }
 
