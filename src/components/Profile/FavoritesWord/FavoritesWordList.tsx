@@ -1,22 +1,58 @@
-import React, { useState } from "react";
-import { Alert } from "react-native";
+import { colors } from "@/constants/colors";
+import {
+  getAddFavoriteErrorMessage,
+  getDeleteFavoriteErrorMessage,
+  getFavoriteErrorMessage,
+  useAddFavorite,
+  useDeleteFavorite,
+  useGetFavorite,
+} from "@/hooks/Favorite";
+import React from "react";
+import { ActivityIndicator, Alert } from "react-native";
 import styled from "styled-components/native";
 import FavoritesWord from "./FavoritesWord";
 
-const INITIAL_FAVORITE_WORDS = [
-  { id: 1, day: "1", text: "학습하다", studyDate: "2026.07.25" },
-  { id: 2, day: "1", text: "학습하다", studyDate: "2026.07.25" },
-  { id: 3, day: "1", text: "학습하다", studyDate: "2026.07.25" },
-  { id: 4, day: "1", text: "학습하다", studyDate: "2026.07.25" },
-  { id: 5, day: "1", text: "학습하다", studyDate: "2026.07.25" },
-  { id: 6, day: "1", text: "학습하다", studyDate: "2026.07.25" },
-];
-
 export default function FavoritesWordList() {
-  const [favoriteWords, setFavoriteWords] = useState(INITIAL_FAVORITE_WORDS);
+  const { data, isLoading, isError, error, refetch, isRefetching } =
+    useGetFavorite();
+  const { mutate: removeFavorite, isPending: isRemoving } = useDeleteFavorite();
+  const { mutate: restoreFavorite } = useAddFavorite();
 
-  const confirmRemoveFavoriteWord = (id: number) => {
-    Alert.alert("즐겨찾기 삭제", "정말 삭제하시겠습니까?", [
+  const favoriteWords = data?.items ?? [];
+
+  const restoreFavoriteWord = (wordId: number) => {
+    restoreFavorite(
+      { wordId },
+      {
+        onError: (restoreError) =>
+          Alert.alert(
+            "실행 취소 실패",
+            getAddFavoriteErrorMessage(restoreError),
+          ),
+      },
+    );
+  };
+
+  const removeFavoriteWord = (wordId: number) => {
+    removeFavorite(
+      { wordId },
+      {
+        onSuccess: () =>
+          Alert.alert("삭제 완료", "즐겨찾기에서 삭제되었습니다.", [
+            { text: "확인" },
+            {
+              text: "실행 취소",
+              onPress: () => restoreFavoriteWord(wordId),
+            },
+          ]),
+        onError: (removeError) =>
+          Alert.alert("삭제 실패", getDeleteFavoriteErrorMessage(removeError)),
+      },
+    );
+  };
+
+  const confirmRemoveFavoriteWord = (wordId: number, word: string) => {
+    Alert.alert("즐겨찾기 삭제", `'${word}'을(를) 즐겨찾기에서 삭제할까요?`, [
       {
         text: "취소",
         style: "cancel",
@@ -24,15 +60,42 @@ export default function FavoritesWordList() {
       {
         text: "삭제",
         style: "destructive",
-        onPress: () => {
-          setFavoriteWords((words) =>
-            words.filter((word) => word.id !== id),
-          );
-          Alert.alert("삭제 완료", "삭제되었습니다.");
-        },
+        onPress: () => removeFavoriteWord(wordId),
       },
     ]);
   };
+
+  if (isLoading) {
+    return (
+      <Placeholder>
+        <ActivityIndicator color={colors.primary400} />
+      </Placeholder>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Placeholder>
+        <Message>{getFavoriteErrorMessage(error)}</Message>
+        <Retry
+          onPress={() => refetch()}
+          disabled={isRefetching}
+          accessibilityRole="button"
+          accessibilityLabel="즐겨찾기 목록 다시 불러오기"
+        >
+          <RetryText>다시 시도</RetryText>
+        </Retry>
+      </Placeholder>
+    );
+  }
+
+  if (favoriteWords.length === 0) {
+    return (
+      <Placeholder>
+        <Message>즐겨찾기한 단어가 없습니다.</Message>
+      </Placeholder>
+    );
+  }
 
   return (
     <Wrapper
@@ -41,13 +104,16 @@ export default function FavoritesWordList() {
       }}
       showsVerticalScrollIndicator={false}
     >
-      {favoriteWords.map((word) => (
+      {favoriteWords.map((favoriteWord) => (
         <FavoritesWord
-          key={word.id}
-          day={word.day}
-          text={word.text}
-          studyDate={word.studyDate}
-          onRemove={() => confirmRemoveFavoriteWord(word.id)}
+          key={favoriteWord.wordId}
+          category={favoriteWord.category}
+          word={favoriteWord.word}
+          recentLearnedDate={favoriteWord.recentLearnedDate}
+          disabled={isRemoving}
+          onRemove={() =>
+            confirmRemoveFavoriteWord(favoriteWord.wordId, favoriteWord.word)
+          }
         />
       ))}
     </Wrapper>
@@ -57,4 +123,28 @@ export default function FavoritesWordList() {
 const Wrapper = styled.ScrollView`
   margin-top: 6px;
   padding: 0px 20px;
+`;
+
+const Placeholder = styled.View`
+  flex: 1;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Message = styled.Text`
+  font-size: 14px;
+  color: ${colors.neutral600};
+`;
+
+const Retry = styled.Pressable`
+  padding: 8px 16px;
+  border-radius: 999px;
+  background-color: ${colors.primary100};
+`;
+
+const RetryText = styled.Text`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${colors.primary400};
 `;
