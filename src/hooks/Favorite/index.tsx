@@ -47,7 +47,7 @@ export const useAddFavorite = () => {
     mutationFn: ({ wordId }: AddFavoriteProps) => addFavorite({ wordId }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: FAVORITE_QUERY_KEY });
+      return queryClient.invalidateQueries({ queryKey: FAVORITE_QUERY_KEY });
     },
 
     onError: (error) => console.error(getAddFavoriteErrorMessage(error)),
@@ -61,7 +61,7 @@ export const useDeleteFavorite = () => {
     mutationFn: ({ wordId }: DeleteFavoriteProps) => deleteFavorite({ wordId }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: FAVORITE_QUERY_KEY });
+      return queryClient.invalidateQueries({ queryKey: FAVORITE_QUERY_KEY });
     },
 
     onError: (error) => console.error(getDeleteFavoriteErrorMessage(error)),
