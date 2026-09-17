@@ -3,36 +3,43 @@ import { MaterialIcons } from "@expo/vector-icons";
 import styled from "styled-components/native";
 
 interface FavoritesWordProps {
-  day: string;
-  text: string;
-  studyDate: string;
+  category: string;
+  word: string;
+  recentLearnedDate: string;
+  disabled?: boolean;
   onRemove: () => void;
 }
 
+const formatLearnedDate = (recentLearnedDate: string) => {
+  if (!recentLearnedDate) return "-";
+
+  return recentLearnedDate.slice(0, 10).replace(/-/g, ".");
+};
+
 export default function FavoritesWord({
-  day,
-  text,
-  studyDate,
+  category,
+  word,
+  recentLearnedDate,
+  disabled,
   onRemove,
 }: FavoritesWordProps) {
   return (
     <Wrapper>
       <Top>
-        <Day>Day {day}</Day>
+        <Category>{category}</Category>
         <Star
           onPress={onRemove}
+          disabled={disabled}
           accessibilityRole="button"
-          accessibilityLabel={`${text} 즐겨찾기 취소`}
+          accessibilityLabel={`${word} 즐겨찾기 취소`}
         >
-          <MaterialIcons
-            name="star"
-            size={24}
-            color={colors.primary300}
-          />
+          <MaterialIcons name="star" size={24} color={colors.primary300} />
         </Star>
       </Top>
-      <Text>{text}</Text>
-      <StudyDate>최근 학습일 : {studyDate}</StudyDate>
+      <Text>{word}</Text>
+      <LearnedDate>
+        최근 학습일 : {formatLearnedDate(recentLearnedDate)}
+      </LearnedDate>
     </Wrapper>
   );
 }
@@ -49,13 +56,12 @@ const Wrapper = styled.View`
   background: ${colors.neutral50};
 `;
 
-const Day = styled.Text`
+const Category = styled.Text`
   font-size: 12px;
   padding: 4px 12px;
   height: 26px;
   justify-content: center;
   align-items: center;
-  width: 54px;
   background-color: ${colors.primary100};
   border-radius: 999px;
   color: ${colors.primary400};
@@ -70,7 +76,7 @@ const Text = styled.Text`
   margin-bottom: 8px;
 `;
 
-const StudyDate = styled.Text`
+const LearnedDate = styled.Text`
   font-size: 14px;
   color: ${colors.neutral600};
 `;
