@@ -63,6 +63,10 @@ export const useDeleteFavorite = () => {
       await queryClient.cancelQueries({ queryKey: FAVORITE_QUERY_KEY });
       const previous =
         queryClient.getQueryData<GetFavoriteResponse>(FAVORITE_QUERY_KEY);
+      const removedIndex =
+        previous?.items.findIndex((item) => item.wordId === wordId) ?? -1;
+      const removed =
+        removedIndex === -1 ? null : previous!.items[removedIndex];
 
       queryClient.setQueryData<GetFavoriteResponse>(
         FAVORITE_QUERY_KEY,
@@ -75,13 +79,35 @@ export const useDeleteFavorite = () => {
             : cached,
       );
 
-      return { previous };
+      return { removed, removedIndex };
     },
 
     onError: (error, _variables, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(FAVORITE_QUERY_KEY, context.previous);
+      const { removed, removedIndex } = context ?? {};
+
+      if (removed) {
+        queryClient.setQueryData<GetFavoriteResponse>(
+          FAVORITE_QUERY_KEY,
+          (cached) => {
+            if (
+              !cached ||
+              cached.items.some((item) => item.wordId === removed.wordId)
+            ) {
+              return cached;
+            }
+
+            const items = [...cached.items];
+            items.splice(
+              Math.min(removedIndex ?? items.length, items.length),
+              0,
+              removed,
+            );
+
+            return { ...cached, items };
+          },
+        );
       }
+
       queryClient.invalidateQueries({ queryKey: FAVORITE_QUERY_KEY });
       console.error(getDeleteFavoriteErrorMessage(error));
     },
