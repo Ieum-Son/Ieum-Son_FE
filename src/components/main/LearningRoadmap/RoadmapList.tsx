@@ -9,10 +9,10 @@ import ChapterTitle from "./ChapterTitle";
 import RoadmapStep, { type RoadmapStepData } from "./RoadmapStep";
 
 const isMastered = (lesson: StudyLesson) =>
-  lesson.wordCount > 0 && lesson.masteredWordCount >= lesson.wordCount;
+  lesson.masteredWordCount >= lesson.wordCount;
 
-const byOrder = <T extends { orderNumber: number }>(items: T[]) =>
-  [...items].sort((a, b) => a.orderNumber - b.orderNumber);
+const byOrder = <T extends { orderNumber: number }>(items?: T[]) =>
+  [...(items ?? [])].sort((a, b) => a.orderNumber - b.orderNumber);
 
 interface ChapterSection {
   chapter: StudyChapter;
