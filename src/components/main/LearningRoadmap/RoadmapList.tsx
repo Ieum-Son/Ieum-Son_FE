@@ -104,11 +104,10 @@ export default function RoadmapList() {
               key={step.id}
               step={step}
               isLast={index === steps.length - 1}
-              // TODO: 학습 API 연동 후 lessonId로 해당 레슨을 열도록 교체
               onPress={() =>
                 router.push({
                   pathname: "/study/Study",
-                  params: { wordIndex: "0" },
+                  params: { wordIndex: "0", lessonId: String(step.id) },
                 })
               }
             />
