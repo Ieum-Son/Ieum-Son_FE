@@ -6,19 +6,31 @@ import { default as styled } from "styled-components/native";
 export interface RoadmapStepData {
   id: number;
   stepNumber: number;
-  day: number;
+  title: string;
   description: string;
+  wordCount: number;
+  masteredWordCount: number;
   locked?: boolean;
 }
 
 interface RoadmapStepProps {
   step: RoadmapStepData;
   isLast: boolean;
+  onPress?: () => void;
 }
 
-export default function RoadmapStep({ step, isLast }: RoadmapStepProps) {
+export default function RoadmapStep({
+  step,
+  isLast,
+  onPress,
+}: RoadmapStepProps) {
   return (
-    <Wrapper>
+    <Wrapper
+      onPress={onPress}
+      disabled={step.locked || !onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${step.title} ${step.locked ? "잠김" : "학습하기"}`}
+    >
       <StageArea>
         <Stage
           $locked={step.locked}
@@ -57,14 +69,21 @@ export default function RoadmapStep({ step, isLast }: RoadmapStepProps) {
       </StageArea>
 
       <TextArea>
-        <Title $locked={step.locked}>DAY {step.day}</Title>
-        <Description $locked={step.locked}>{step.description}</Description>
+        <Title $locked={step.locked} numberOfLines={1}>
+          {step.title}
+        </Title>
+        <Description $locked={step.locked} numberOfLines={1}>
+          {step.description}
+        </Description>
+        <Progress $locked={step.locked}>
+          {step.masteredWordCount} / {step.wordCount} 단어 완료
+        </Progress>
       </TextArea>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.View`
+const Wrapper = styled.Pressable`
   min-height: 88px;
   flex-direction: row;
   align-items: flex-start;
@@ -123,4 +142,10 @@ const Description = styled.Text<{ $locked?: boolean }>`
   font-size: 16px;
   font-weight: 400;
   line-height: 26px;
+`;
+
+const Progress = styled.Text<{ $locked?: boolean }>`
+  color: ${({ $locked }) => ($locked ? colors.neutral300 : colors.primary400)};
+  font-size: 13px;
+  font-weight: 600;
 `;
