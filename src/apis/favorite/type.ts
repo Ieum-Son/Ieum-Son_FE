@@ -14,4 +14,4 @@ export interface AddFavoriteProps {
   wordId: number;
 }
 
-export interface DeleteFavoriteProps extends AddFavoriteProps {}
+export type DeleteFavoriteProps = AddFavoriteProps;
