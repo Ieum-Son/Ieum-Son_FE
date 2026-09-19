@@ -7,18 +7,27 @@ import {
   useDeleteFavorite,
   useGetFavorite,
 } from "@/hooks/Favorite";
-import React from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
 import styled from "styled-components/native";
+import FavoriteVideoModal from "./FavoriteVideoModal";
 import FavoritesWord from "./FavoritesWord";
 
 export default function FavoritesWordList() {
   const { data, isLoading, isError, error, refetch, isRefetching } =
     useGetFavorite();
-  const { mutate: removeFavorite, isPending: isRemoving } = useDeleteFavorite();
+  const {
+    mutate: removeFavorite,
+    isPending: isRemoving,
+    variables: removingWord,
+  } = useDeleteFavorite();
   const { mutate: restoreFavorite } = useAddFavorite();
 
+  const [playingWordId, setPlayingWordId] = useState<number | null>(null);
+
   const favoriteWords = data?.items ?? [];
+  const playingWord =
+    favoriteWords.find((item) => item.wordId === playingWordId) ?? null;
 
   const restoreFavoriteWord = (wordId: number) => {
     restoreFavorite(
@@ -98,25 +107,39 @@ export default function FavoritesWordList() {
   }
 
   return (
-    <Wrapper
-      contentContainerStyle={{
-        gap: 12,
-      }}
-      showsVerticalScrollIndicator={false}
-    >
-      {favoriteWords.map((favoriteWord) => (
-        <FavoritesWord
-          key={favoriteWord.wordId}
-          category={favoriteWord.category}
-          word={favoriteWord.word}
-          recentLearnedDate={favoriteWord.recentLearnedDate}
-          disabled={isRemoving}
-          onRemove={() =>
-            confirmRemoveFavoriteWord(favoriteWord.wordId, favoriteWord.word)
-          }
+    <>
+      <Wrapper
+        contentContainerStyle={{
+          gap: 12,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {favoriteWords.map((favoriteWord) => (
+          <FavoritesWord
+            key={favoriteWord.wordId}
+            category={favoriteWord.category}
+            word={favoriteWord.word}
+            recentLearnedDate={favoriteWord.recentLearnedDate}
+            disabled={
+              isRemoving && removingWord?.wordId === favoriteWord.wordId
+            }
+            onRemove={() =>
+              confirmRemoveFavoriteWord(favoriteWord.wordId, favoriteWord.word)
+            }
+            onPress={() => setPlayingWordId(favoriteWord.wordId)}
+          />
+        ))}
+      </Wrapper>
+
+      {playingWord && (
+        <FavoriteVideoModal
+          key={playingWord.wordId}
+          word={playingWord.word}
+          videoUrl={playingWord.videoUrl}
+          onClose={() => setPlayingWordId(null)}
         />
-      ))}
-    </Wrapper>
+      )}
+    </>
   );
 }
 

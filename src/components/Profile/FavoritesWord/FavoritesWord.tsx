@@ -8,6 +8,7 @@ interface FavoritesWordProps {
   recentLearnedDate: string;
   disabled?: boolean;
   onRemove: () => void;
+  onPress: () => void;
 }
 
 const formatLearnedDate = (recentLearnedDate: string) => {
@@ -22,9 +23,14 @@ export default function FavoritesWord({
   recentLearnedDate,
   disabled,
   onRemove,
+  onPress,
 }: FavoritesWordProps) {
   return (
-    <Wrapper>
+    <Wrapper
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${word} 수어 영상 보기`}
+    >
       <Top>
         <Category>{category}</Category>
         <Star
@@ -44,7 +50,7 @@ export default function FavoritesWord({
   );
 }
 
-const Wrapper = styled.View`
+const Wrapper = styled.Pressable`
   display: flex;
   height: 126px;
   padding: 16px 20px;
