@@ -2,19 +2,44 @@ import ModeHeatImage from "@/assets/main/mode_heat/mode_heat.png";
 import { colors } from "@/constants/colors";
 import { SymbolView } from "expo-symbols";
 import React from "react";
+import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import ThList, { type Weekday } from "./ThList";
 
 interface WeekendStrickProps {
   streakDays: number;
   learnedDays?: readonly Weekday[];
+  isLoading?: boolean;
+  errorMessage?: string | null;
 }
 
 export default function WeekendStrick({
   streakDays,
   learnedDays,
+  isLoading,
+  errorMessage,
 }: WeekendStrickProps) {
   const hasStreak = streakDays > 0;
+
+  if (isLoading) {
+    return (
+      <Wrapper>
+        <Placeholder>
+          <ActivityIndicator color={colors.primary400} />
+        </Placeholder>
+      </Wrapper>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <Wrapper>
+        <Placeholder>
+          <ErrorText>{errorMessage}</ErrorText>
+        </Placeholder>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>
@@ -92,6 +117,19 @@ const StreakCount = styled.Text<{ $hasStreak: boolean }>`
 const DayUnit = styled.Text`
   font-size: 18px;
   font-weight: 600;
+`;
+
+const Placeholder = styled.View`
+  width: 100%;
+  height: 76px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ErrorText = styled.Text`
+  color: ${colors.errorRed};
+  font-size: 14px;
+  text-align: center;
 `;
 
 const ChevronFallback = styled.Text`

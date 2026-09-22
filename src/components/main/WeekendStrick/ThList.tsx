@@ -2,10 +2,12 @@ import React from "react";
 import styled from "styled-components/native";
 import Th from "./Th";
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
-const DAY_BY_INDEX = ["일", "월", "화", "수", "목", "금", "토"] as const;
+import type { Weekday } from "@/utils/streak";
 
-export type Weekday = (typeof WEEKDAYS)[number];
+const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
+const DAY_BY_INDEX = WEEKDAYS;
+
+export type { Weekday };
 
 interface ThListProps {
   learnedDays?: readonly Weekday[];
