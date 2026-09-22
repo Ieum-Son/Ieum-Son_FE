@@ -2,24 +2,18 @@ import { colors } from "@/constants/colors";
 import React from "react";
 import styled from "styled-components/native";
 
+import type { HeatmapCell } from "@/utils/streak";
+
 const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-const DEFAULT_ACTIVITY = [
-  [false, true, true, false, true, true, false],
-  [false, true, true, false, true, true, false],
-  [false, true, true, false, true, true, false],
-  [true, true, true, false, true, true, false],
-  [true, true, true, false, true, true, false],
-  [true, true, false, false, false, true, false],
-  [true, false, true, false, true, true, false],
-];
-
 interface LearningHeatmapProps {
-  activity?: boolean[][];
+  activity: boolean[][];
+  todayCell?: HeatmapCell | null;
 }
 
 export default function LearningHeatmap({
-  activity = DEFAULT_ACTIVITY,
+  activity,
+  todayCell,
 }: LearningHeatmapProps) {
   return (
     <Wrapper>
@@ -34,7 +28,10 @@ export default function LearningHeatmap({
                 <Cell
                   key={`${day}-${columnIndex}`}
                   $active={rowActivity[columnIndex] ?? false}
-                  $outlined={rowIndex === 0 && columnIndex === 6}
+                  $outlined={
+                    todayCell?.row === rowIndex &&
+                    todayCell?.column === columnIndex
+                  }
                 />
               ))}
             </Cells>
