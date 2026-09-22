@@ -1,7 +1,6 @@
 export interface StreakDay {
   date: string;
   learned: boolean;
-  intensity: number;
 }
 
 export interface GetStreakResponse {
@@ -10,4 +9,10 @@ export interface GetStreakResponse {
   recoverable: boolean;
   recoveryCost: number;
   week: StreakDay[];
+}
+
+export interface RecoverStreakResponse {
+  streakCount: number;
+  goldBalance: number;
+  spentGold: number;
 }

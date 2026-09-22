@@ -27,6 +27,9 @@ export default function Main() {
             learnedDays={learnedDays}
             isLoading={isPending}
             errorMessage={isError ? getStreakErrorMessage(error) : null}
+            recoverable={streak?.recoverable}
+            recoveryCost={streak?.recoveryCost}
+            goldBalance={streak?.goldBalance}
           />
           <LearningRoadmap
             onStartLearning={() =>
