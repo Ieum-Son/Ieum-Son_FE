@@ -9,6 +9,7 @@ export interface MyRankingProps {
   profile: ImageSourcePropType;
   name: string;
   coin: number;
+  totalMembers?: number;
 }
 
 export default function MyRanking({
@@ -16,7 +17,9 @@ export default function MyRanking({
   profile,
   name,
   coin,
+  totalMembers,
 }: MyRankingProps) {
+  const showSummary = totalMembers !== undefined && ranking !== "-";
   return (
     <Wrapper style={{ boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)" }}>
       <Left>
@@ -24,7 +27,14 @@ export default function MyRanking({
 
         <Center>
           <Profile profile={profile} />
-          <Name>(나) {name}</Name>
+          <NameArea>
+            <Name numberOfLines={1}>(나) {name}</Name>
+            {showSummary && (
+              <Summary>
+                전체 {totalMembers}명 중 {ranking}위
+              </Summary>
+            )}
+          </NameArea>
         </Center>
       </Left>
       <Right>
@@ -73,10 +83,19 @@ const Rank = styled.Text`
   color: ${colors.primary500};
 `;
 
+const NameArea = styled.View`
+  gap: 2px;
+`;
+
 const Name = styled.Text`
   font-size: 16px;
   font-weight: 600;
   color: ${colors.primary500};
+`;
+
+const Summary = styled.Text`
+  font-size: 12px;
+  color: ${colors.primary400};
 `;
 
 const Coin = styled.Text`

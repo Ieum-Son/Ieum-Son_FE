@@ -75,6 +75,7 @@ export default function Ranking() {
           profile={getProfileSource(user?.profileImageUrl)}
           name={user?.name || "사용자명"}
           coin={data.myGold}
+          totalMembers={data.totalMembers}
         />
       )}
       <Tab activeTab="ranking" />
