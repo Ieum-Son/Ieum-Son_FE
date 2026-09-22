@@ -42,25 +42,32 @@ export const toLearnedWeekdays = (week: StreakDay[] = []): Weekday[] => {
 export const HEATMAP_WEEKS = 7;
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+export interface CalendarPeriod {
+  year: number;
+  month: number;
+}
 
-export const toHeatmapActivity = (days: CalendarDay[] = []): boolean[][] => {
+const heatmapOrigin = ({ year, month }: CalendarPeriod) =>
+  startOfWeek(new Date(year, month - 1, 1));
+
+const weekColumn = (date: Date, origin: Date) =>
+  Math.round((startOfWeek(date).getTime() - origin.getTime()) / MS_PER_WEEK);
+
+export const toHeatmapActivity = (
+  days: CalendarDay[] = [],
+  period: CalendarPeriod,
+): boolean[][] => {
   const grid = Array.from({ length: WEEKDAYS.length }, () =>
     Array<boolean>(HEATMAP_WEEKS).fill(false),
   );
+  const origin = heatmapOrigin(period);
 
-  const parsedDays = days
-    .map((day) => ({ ...day, parsed: parseDate(day.date) }))
-    .filter((day): day is CalendarDay & { parsed: Date } => day.parsed !== null)
-    .sort((a, b) => a.parsed.getTime() - b.parsed.getTime());
+  days.forEach(({ date }) => {
+    const parsed = parseDate(date);
 
-  if (parsedDays.length === 0) return grid;
+    if (!parsed) return;
 
-  const firstWeekStart = startOfWeek(parsedDays[0].parsed);
-
-  parsedDays.forEach(({ parsed }) => {
-    const column = Math.round(
-      (startOfWeek(parsed).getTime() - firstWeekStart.getTime()) / MS_PER_WEEK,
-    );
+    const column = weekColumn(parsed, origin);
 
     if (column < 0 || column >= HEATMAP_WEEKS) return;
 
@@ -75,21 +82,11 @@ export interface HeatmapCell {
   column: number;
 }
 
-export const toTodayCell = (days: CalendarDay[] = []): HeatmapCell | null => {
-  const firstDay = days
-    .map((day) => parseDate(day.date))
-    .filter((parsed): parsed is Date => parsed !== null)
-    .sort((a, b) => a.getTime() - b.getTime())[0];
-
-  if (!firstDay) return null;
-
+export const toTodayCell = (period: CalendarPeriod): HeatmapCell | null => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const column = Math.round(
-    (startOfWeek(today).getTime() - startOfWeek(firstDay).getTime()) /
-      MS_PER_WEEK,
-  );
+  const column = weekColumn(today, heatmapOrigin(period));
 
   if (column < 0 || column >= HEATMAP_WEEKS) return null;
 

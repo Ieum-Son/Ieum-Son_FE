@@ -27,8 +27,8 @@ export default function StreakOverview() {
           </Placeholder>
         ) : (
           <LearningHeatmap
-            activity={toHeatmapActivity(calendar.days)}
-            todayCell={toTodayCell(calendar.days)}
+            activity={toHeatmapActivity(calendar.days, calendar)}
+            todayCell={toTodayCell(calendar)}
           />
         )}
       </HeatmapArea>
