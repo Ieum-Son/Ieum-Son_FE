@@ -5,18 +5,14 @@ import styled from "styled-components/native";
 import LearningHeatmap from "./LearningHeatmap";
 import StreakStatCard from "./StreakStatCard";
 
-interface StreakOverviewProps {
-  activity?: boolean[][];
-}
-
-export default function StreakOverview({ activity }: StreakOverviewProps) {
+export default function StreakOverview() {
   const { data: userInfo } = useUserInfo();
   const longestStreakCount = userInfo?.longestStreakCount ?? 0;
   const monthStudyCount = userInfo?.monthStudyCount ?? 0;
 
   return (
     <Wrapper>
-      <LearningHeatmap activity={activity} />
+      <LearningHeatmap />
       <Stats>
         <StreakStatCard title="최장 연속 기록" value={longestStreakCount} />
         <StreakStatCard title="이번 달 학습일" value={monthStudyCount} />
