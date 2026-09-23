@@ -16,8 +16,16 @@ const formatUsedDate = (createdAt: string) => {
 };
 
 export default function StreakHistoryList() {
-  const { data, isPending, isError, error } = useGoldUseHistory();
+  const { data, isPending, isPaused, isError, error } = useGoldUseHistory();
   const items = data?.items ?? [];
+
+  if (isPaused && isPending) {
+    return (
+      <Placeholder>
+        <Message>네트워크 연결을 확인해주세요.</Message>
+      </Placeholder>
+    );
+  }
 
   if (isPending) {
     return (
