@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/userStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CALENDAR_QUERY_KEY } from "../calendar";
 import { createErrorMessage } from "../errorResponse";
+import { GOLD_USE_HISTORY_QUERY_KEY } from "../goldUseHistory";
 import { USER_INFO_QUERY_KEY } from "../UserInfo";
 
 export const STREAK_QUERY_KEY = ["streak"];
@@ -54,11 +55,10 @@ export const useRecoverStreak = () => {
             : cached,
       );
 
-      return Promise.all([
-        queryClient.invalidateQueries({ queryKey: STREAK_QUERY_KEY }),
-        queryClient.invalidateQueries({ queryKey: CALENDAR_QUERY_KEY }),
-        queryClient.invalidateQueries({ queryKey: USER_INFO_QUERY_KEY }),
-      ]);
+      queryClient.invalidateQueries({ queryKey: STREAK_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: CALENDAR_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: USER_INFO_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: GOLD_USE_HISTORY_QUERY_KEY });
     },
 
     onError: (error) => console.error(getRecoverStreakErrorMessage(error)),

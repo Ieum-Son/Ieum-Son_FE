@@ -5,23 +5,34 @@ interface StreakBlockProps {
   text: string;
   date: string;
   useCoin: number;
+  isEarned?: boolean;
 }
 
-export default function StreakBlock({ text, date, useCoin }: StreakBlockProps) {
+export default function StreakBlock({
+  text,
+  date,
+  useCoin,
+  isEarned = false,
+}: StreakBlockProps) {
   return (
     <Wrapper>
       <Top>
-        <Text>{text}</Text>
-        <Coin>-{useCoin}</Coin>
+        <Text numberOfLines={1}>{text}</Text>
+        <Coin $isEarned={isEarned}>
+          {isEarned ? "+" : "-"}
+          {useCoin}
+        </Coin>
       </Top>
       <Day>{date}</Day>
     </Wrapper>
   );
 }
 
-const Coin = styled.Text`
-  color: ${colors.primary400};
+const Coin = styled.Text<{ $isEarned: boolean }>`
+  color: ${({ $isEarned }) =>
+    $isEarned ? colors.primary400 : colors.neutral700};
   font-size: 18px;
+  font-weight: 600;
 `;
 
 const Wrapper = styled.View`
@@ -40,6 +51,8 @@ const Day = styled.Text`
 `;
 
 const Text = styled.Text`
+  flex: 1;
+  margin-right: 12px;
   font-size: 18px;
   font-weight: 600;
 `;
