@@ -1,11 +1,14 @@
 import { api } from "@/apis";
 import type { GetCalendarProps, GetCalendarResponse } from "./type";
 
-export const getCalendar = async ({ year, month }: GetCalendarProps = {}) => {
-  const hasPeriod = year !== undefined && month !== undefined;
+export const getCalendar = async (period: GetCalendarProps = {}) => {
+  const params =
+    period.year === undefined || period.month === undefined
+      ? undefined
+      : { year: period.year, month: period.month };
 
   const response = await api.get<GetCalendarResponse>("/api/streak/calendar", {
-    params: hasPeriod ? { year, month } : undefined,
+    params,
   });
 
   return response.data;

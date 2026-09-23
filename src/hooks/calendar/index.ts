@@ -17,8 +17,12 @@ export const getCalendarErrorMessage = createErrorMessage({
   fallback: "학습 기록을 불러오는 데 실패했습니다.",
 });
 
-export const useCalendar = ({ year, month }: GetCalendarProps = {}) =>
+export const useCalendar = (period: GetCalendarProps = {}) =>
   useQuery<GetCalendarResponse, Error>({
-    queryKey: [...CALENDAR_QUERY_KEY, year ?? null, month ?? null],
-    queryFn: () => getCalendar({ year, month }),
+    queryKey: [
+      ...CALENDAR_QUERY_KEY,
+      period.year ?? null,
+      period.month ?? null,
+    ],
+    queryFn: () => getCalendar(period),
   });

@@ -1,4 +1,4 @@
-import type { CalendarDay } from "@/apis/calendar/type";
+import type { CalendarDay, CalendarPeriod } from "@/apis/calendar/type";
 import type { StreakDay } from "@/apis/streak/type";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
@@ -42,11 +42,6 @@ export const toLearnedWeekdays = (week: StreakDay[] = []): Weekday[] => {
 export const HEATMAP_WEEKS = 7;
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
-export interface CalendarPeriod {
-  year: number;
-  month: number;
-}
-
 const heatmapOrigin = ({ year, month }: CalendarPeriod) =>
   startOfWeek(new Date(year, month - 1, 1));
 

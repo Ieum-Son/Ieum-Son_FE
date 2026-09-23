@@ -8,7 +8,9 @@ export interface GetCalendarResponse {
   days: CalendarDay[];
 }
 
-export interface GetCalendarProps {
-  year?: number;
-  month?: number;
+export interface CalendarPeriod {
+  year: number;
+  month: number;
 }
+
+export type GetCalendarProps = CalendarPeriod | { year?: never; month?: never };
