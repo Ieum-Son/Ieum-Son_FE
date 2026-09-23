@@ -1,22 +1,38 @@
 import { colors } from "@/constants/colors";
+import { getCalendarErrorMessage, useCalendar } from "@/hooks/calendar";
 import { useUserInfo } from "@/hooks/UserInfo";
+import { toHeatmapActivity, toTodayCell } from "@/utils/streak";
 import React from "react";
+import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import LearningHeatmap from "./LearningHeatmap";
 import StreakStatCard from "./StreakStatCard";
 
-interface StreakOverviewProps {
-  activity?: boolean[][];
-}
-
-export default function StreakOverview({ activity }: StreakOverviewProps) {
+export default function StreakOverview() {
   const { data: userInfo } = useUserInfo();
+  const { data: calendar, isPending, isError, error } = useCalendar();
   const longestStreakCount = userInfo?.longestStreakCount ?? 0;
   const monthStudyCount = userInfo?.monthStudyCount ?? 0;
 
   return (
     <Wrapper>
-      <LearningHeatmap activity={activity} />
+      <HeatmapArea>
+        {isPending ? (
+          <Placeholder>
+            <ActivityIndicator color={colors.primary400} />
+          </Placeholder>
+        ) : isError ? (
+          <Placeholder>
+            <ErrorText>{getCalendarErrorMessage(error)}</ErrorText>
+          </Placeholder>
+        ) : (
+          <LearningHeatmap
+            activity={toHeatmapActivity(calendar.days, calendar)}
+            todayCell={toTodayCell(calendar)}
+          />
+        )}
+      </HeatmapArea>
+
       <Stats>
         <StreakStatCard title="최장 연속 기록" value={longestStreakCount} />
         <StreakStatCard title="이번 달 학습일" value={monthStudyCount} />
@@ -36,6 +52,23 @@ const Wrapper = styled.View`
   border-radius: 12px;
 `;
 
+const HeatmapArea = styled.View`
+  flex: 1;
+`;
+
 const Stats = styled.View`
   gap: 12px;
+`;
+
+const Placeholder = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ErrorText = styled.Text`
+  color: ${colors.errorRed};
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
 `;

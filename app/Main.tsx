@@ -2,15 +2,17 @@ import Header from "@/components/header/Header";
 import LearningRoadmap from "@/components/main/LearningRoadmap/LearningRoadmap";
 import WeekendStrick from "@/components/main/WeekendStrick/WeekendStrick";
 import Tab from "@/components/tab/Tab";
-import { useUserInfo } from "@/hooks/UserInfo";
+import { getStreakErrorMessage, useStreak } from "@/hooks/streak";
+import { toLearnedWeekdays } from "@/utils/streak";
 import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Main() {
-  const { data: userInfo } = useUserInfo();
-  const streakCount = userInfo?.streakCount ?? 0;
+  const { data: streak, isPending, isError, error } = useStreak();
+  const streakCount = streak?.currentStreak ?? 0;
+  const learnedDays = toLearnedWeekdays(streak?.week);
 
   return (
     <>
@@ -20,7 +22,15 @@ export default function Main() {
             <Header />
           </View>
 
-          <WeekendStrick streakDays={streakCount} />
+          <WeekendStrick
+            streakDays={streakCount}
+            learnedDays={learnedDays}
+            isLoading={isPending}
+            errorMessage={isError ? getStreakErrorMessage(error) : null}
+            recoverable={streak?.recoverable}
+            recoveryCost={streak?.recoveryCost}
+            goldBalance={streak?.goldBalance}
+          />
           <LearningRoadmap
             onStartLearning={() =>
               router.push({
