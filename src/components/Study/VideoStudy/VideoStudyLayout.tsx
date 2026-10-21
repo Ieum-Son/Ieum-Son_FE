@@ -15,6 +15,7 @@ interface VideoStudyLayoutProps {
   word: string;
   guide: string;
   description: string;
+  videoUrl?: string;
   onNext?: () => void;
 }
 
@@ -25,6 +26,7 @@ export default function VideoStudyLayout({
   word,
   guide,
   description,
+  videoUrl,
   onNext,
 }: VideoStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
@@ -48,7 +50,7 @@ export default function VideoStudyLayout({
           <LessonContent>
             <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
-            <VideoSelectionBox />
+            <VideoSelectionBox videoUrl={videoUrl} />
             <DescriptionBox description={description} />
           </LessonContent>
 
