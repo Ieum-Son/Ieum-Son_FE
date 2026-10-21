@@ -1,6 +1,6 @@
 import { colors } from "@/constants/colors";
 import { router } from "expo-router";
-import { type ImageSourcePropType, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import DayHeader from "../DayHeader";
@@ -14,7 +14,7 @@ interface ReviewStudyLayoutProps {
   totalSteps: number;
   title: string;
   guide: string;
-  mediaSource: ImageSourcePropType;
+  videoUrl?: string;
   answers: string[];
   selectedIndex: number | null;
   onSelect: (index: number) => void;
@@ -27,7 +27,7 @@ export default function ReviewStudyLayout({
   totalSteps,
   title,
   guide,
-  mediaSource,
+  videoUrl,
   answers,
   selectedIndex,
   onSelect,
@@ -57,7 +57,7 @@ export default function ReviewStudyLayout({
           <Guide selectable>{guide}</Guide>
         </Question>
 
-        <ReviewVideo source={mediaSource} word={answers[0]} />
+        <ReviewVideo videoUrl={videoUrl} />
 
         <AnswerArea>
           <ReviewAnswerList
