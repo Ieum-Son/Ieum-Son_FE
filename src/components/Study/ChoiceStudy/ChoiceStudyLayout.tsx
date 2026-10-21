@@ -6,22 +6,44 @@ import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import HintBox from "./HintBox";
-import VideoChoiceList from "./VideoChoiceList";
+import VideoChoiceList, { type VideoChoiceItem } from "./VideoChoiceList";
 
 interface ChoiceStudyLayoutProps {
   day: number;
   step: number;
   totalSteps: number;
-  options: string[];
+  sentence: string;
+  highlightWord?: string;
+  hint?: string;
+  options: VideoChoiceItem[];
   selectedIndex: number | null;
   onSelect: (index: number) => void;
   onNext: () => void;
 }
 
+const renderSentence = (sentence: string, highlightWord?: string) => {
+  if (!highlightWord) return sentence;
+
+  const startIndex = sentence.indexOf(highlightWord);
+
+  if (startIndex === -1) return sentence;
+
+  return (
+    <>
+      {sentence.slice(0, startIndex)}
+      <Highlight>{highlightWord}</Highlight>
+      {sentence.slice(startIndex + highlightWord.length)}
+    </>
+  );
+};
+
 export default function ChoiceStudyLayout({
   day,
   step,
   totalSteps,
+  sentence,
+  highlightWord,
+  hint,
   options,
   selectedIndex,
   onSelect,
@@ -41,9 +63,7 @@ export default function ChoiceStudyLayout({
         />
 
         <Question>
-          <Title selectable>
-            오늘 친구를 <Highlight>즐겁게</Highlight> 만나요
-          </Title>
+          <Title selectable>{renderSentence(sentence, highlightWord)}</Title>
           <Guide selectable>
             위 문장 중 파란 단어를 표현하는 영상을 골라주세요.
           </Guide>
@@ -64,13 +84,11 @@ export default function ChoiceStudyLayout({
           onSelect={onSelect}
         />
 
-        <HintArea>
-          <HintBox>
-            {
-              "힌트가 되는 것이 있다면 적으면 될 것 같아요.\n없다면 생략해도 되는 부분입니다."
-            }
-          </HintBox>
-        </HintArea>
+        {hint ? (
+          <HintArea>
+            <HintBox>{hint}</HintBox>
+          </HintArea>
+        ) : null}
       </ScrollView>
 
       <ButtonArea>
