@@ -46,6 +46,18 @@ interface ChoiceStudyLayoutProps {
   onNext: () => void;
 }
 
+const getButtonText = (hasResult: boolean, isSubmitting?: boolean) => {
+  if (hasResult) {
+    return { label: "다음", accessibilityLabel: "다음 학습으로 이동" };
+  }
+
+  if (isSubmitting) {
+    return { label: "제출 중", accessibilityLabel: "답안 제출 중" };
+  }
+
+  return { label: "확인", accessibilityLabel: "답안 제출" };
+};
+
 const renderSentence = (sentence: string, highlightWord?: string) => {
   if (!highlightWord) return sentence;
 
@@ -80,6 +92,7 @@ export default function ChoiceStudyLayout({
 }: ChoiceStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
   const initialProgress = totalSteps > 0 ? (step - 1) / totalSteps : 0;
+  const buttonText = getButtonText(Boolean(result), isSubmitting);
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -136,8 +149,8 @@ export default function ChoiceStudyLayout({
 
       <ButtonArea>
         <NextButton
-          label={result ? "다음" : "확인"}
-          accessibilityLabel={result ? "다음 학습으로 이동" : "답안 제출"}
+          label={buttonText.label}
+          accessibilityLabel={buttonText.accessibilityLabel}
           showArrow={Boolean(result)}
           onPress={result ? onNext : onSubmit}
           disabled={selectedIndex === null || isSubmitting}
