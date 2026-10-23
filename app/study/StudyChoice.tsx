@@ -75,7 +75,7 @@ export default function StudyChoice() {
       : null;
 
   const handleSelect = (index: number) => {
-    if (answer) return;
+    if (answer || isSubmitting) return;
 
     setSelectedIndex(index);
     setNotice("");

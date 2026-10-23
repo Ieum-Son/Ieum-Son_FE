@@ -111,7 +111,7 @@ export default function ChoiceStudyLayout({
           options={options}
           selectedIndex={selectedIndex}
           answerIndex={result ? result.answerIndex : null}
-          locked={Boolean(result)}
+          locked={Boolean(result) || isSubmitting}
           onSelect={onSelect}
         />
 
