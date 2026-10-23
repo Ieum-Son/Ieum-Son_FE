@@ -10,6 +10,8 @@ import CompletionStats from "./CompletionStats";
 interface CompleteStudyLayoutProps {
   learnedWords: number;
   earnedGold: number;
+  goldFromWords: number;
+  streakBonus: number;
   streakDays: number;
   userName: string;
   onComplete: () => void;
@@ -18,6 +20,8 @@ interface CompleteStudyLayoutProps {
 export default function CompleteStudyLayout({
   learnedWords,
   earnedGold,
+  goldFromWords,
+  streakBonus,
   streakDays,
   userName,
   onComplete,
@@ -30,10 +34,20 @@ export default function CompleteStudyLayout({
         <CompletionStats learnedWords={learnedWords} earnedGold={earnedGold} />
 
         <CopyGroup>
-          <Title selectable>Day1 완료{"\n"}내일도 학습하러 와 주실 거죠?</Title>
+          <Title selectable>
+            {`Day ${streakDays} 완료`}
+            {"\n"}내일도 학습하러 와 주실 거죠?
+          </Title>
           <Subtitle selectable>
             {`${userName}님은 ${streakDays}일 연속으로 학습 중이에요!`}
           </Subtitle>
+          {earnedGold > 0 ? (
+            <Bonus selectable>
+              {streakBonus > 0
+                ? `단어 보상 ${goldFromWords}개 + 연속 학습 보너스 ${streakBonus}개`
+                : `단어 보상 ${goldFromWords}개`}
+            </Bonus>
+          ) : null}
         </CopyGroup>
 
         <Mascot
@@ -85,6 +99,15 @@ const Subtitle = styled.Text`
   font-size: 18px;
   font-weight: 600;
   line-height: 26px;
+  text-align: center;
+`;
+
+const Bonus = styled.Text`
+  margin-top: 6px;
+  color: ${colors.primary500};
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
   text-align: center;
 `;
 
