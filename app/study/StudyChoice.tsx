@@ -1,8 +1,11 @@
+import type { SubmitSentenceAnswerResponse } from "@/apis/progress/type";
 import ChoiceStudyLayout from "@/components/Study/ChoiceStudy/ChoiceStudyLayout";
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
 import {
   getDailyProgressErrorMessage,
+  getSubmitSentenceAnswerErrorMessage,
   useDailyProgress,
+  useSubmitSentenceAnswer,
 } from "@/hooks/progress";
 import {
   getSentenceStep,
@@ -12,12 +15,24 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
+const MAX_ATTEMPTS = 2;
+
+interface SubmittedAnswer {
+  response: SubmitSentenceAnswerResponse;
+  alreadyCompleted: boolean;
+}
+
 export default function StudyChoice() {
   const { sentenceIndex: sentenceIndexParam } = useLocalSearchParams<{
     sentenceIndex?: string;
   }>();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [answer, setAnswer] = useState<SubmittedAnswer | null>(null);
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [notice, setNotice] = useState("");
   const { data: daily, isPending, isError, error } = useDailyProgress();
+  const { mutateAsync: submitAnswer, isPending: isSubmitting } =
+    useSubmitSentenceAnswer();
 
   if (isPending) return <StudyStateScreen />;
 
@@ -46,6 +61,60 @@ export default function StudyChoice() {
     videoUrl: option.videoUrl,
   }));
 
+  const answerIndex = answer
+    ? sentence.options.findIndex(
+        (option) => option.wordId === answer.response.answerWordId,
+      )
+    : -1;
+
+  const result =
+    answer && answerIndex !== -1
+      ? {
+          correct: answer.response.correct,
+          alreadyCompleted: answer.alreadyCompleted,
+          answerIndex,
+          answerLabel: options[answerIndex].label,
+        }
+      : null;
+
+  const handleSelect = (index: number) => {
+    if (answer || isSubmitting) return;
+
+    setSelectedIndex(index);
+    setNotice("");
+  };
+
+  const handleSubmit = async () => {
+    if (selectedIndex === null || isSubmitting) return;
+
+    setNotice("");
+
+    const alreadyCompleted = sentence.isCompleted;
+
+    try {
+      const submitted = await submitAnswer({
+        sentenceId: sentence.sentenceId,
+        selectedWordId: sentence.options[selectedIndex].wordId,
+      });
+      const nextAttemptCount = attemptCount + 1;
+
+      setAttemptCount(nextAttemptCount);
+
+      if (
+        submitted.correct ||
+        alreadyCompleted ||
+        nextAttemptCount >= MAX_ATTEMPTS
+      ) {
+        setAnswer({ response: submitted, alreadyCompleted });
+        return;
+      }
+
+      setNotice("아쉬워요. 한 번 더 선택해보세요.");
+    } catch (submitError) {
+      setNotice(getSubmitSentenceAnswerErrorMessage(submitError));
+    }
+  };
+
   const handleNext = () => {
     if (sentenceIndex < daily.sentences.length - 1) {
       router.push({
@@ -72,7 +141,11 @@ export default function StudyChoice() {
       highlightWord={highlightWord}
       options={options}
       selectedIndex={selectedIndex}
-      onSelect={setSelectedIndex}
+      result={result}
+      notice={notice}
+      isSubmitting={isSubmitting}
+      onSelect={handleSelect}
+      onSubmit={handleSubmit}
       onNext={handleNext}
     />
   );

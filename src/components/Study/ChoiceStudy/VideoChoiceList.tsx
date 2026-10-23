@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import VideoChoiceOption from "./VideoChoiceOption";
+import VideoChoiceOption, { type ChoiceOptionState } from "./VideoChoiceOption";
 import VideoPreview from "./VideoPreview";
 
 export interface VideoChoiceItem {
@@ -10,12 +10,29 @@ export interface VideoChoiceItem {
 interface VideoChoiceListProps {
   options: VideoChoiceItem[];
   selectedIndex: number | null;
+  answerIndex?: number | null;
+  locked?: boolean;
   onSelect: (index: number) => void;
 }
+
+const getOptionState = (
+  index: number,
+  selectedIndex: number | null,
+  answerIndex?: number | null,
+): ChoiceOptionState => {
+  if (answerIndex === index) return "correct";
+  if (selectedIndex !== index) return "default";
+
+  return answerIndex === null || answerIndex === undefined
+    ? "selected"
+    : "wrong";
+};
 
 export default function VideoChoiceList({
   options,
   selectedIndex,
+  answerIndex,
+  locked,
   onSelect,
 }: VideoChoiceListProps) {
   return (
@@ -24,7 +41,8 @@ export default function VideoChoiceList({
         <ChoiceItem key={option.label}>
           <VideoChoiceOption
             label={option.label}
-            selected={selectedIndex === index}
+            state={getOptionState(index, selectedIndex, answerIndex)}
+            disabled={locked}
             onPress={() => onSelect(index)}
           />
           {selectedIndex === index && (

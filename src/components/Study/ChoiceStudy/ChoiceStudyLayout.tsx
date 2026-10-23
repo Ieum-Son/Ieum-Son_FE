@@ -8,6 +8,27 @@ import styled from "styled-components/native";
 import HintBox from "./HintBox";
 import VideoChoiceList, { type VideoChoiceItem } from "./VideoChoiceList";
 
+export interface ChoiceAnswerResult {
+  correct: boolean;
+  alreadyCompleted: boolean;
+  answerIndex: number;
+  answerLabel: string;
+}
+
+const getResultMessage = ({
+  correct,
+  alreadyCompleted,
+  answerLabel,
+}: ChoiceAnswerResult) => {
+  if (correct) return "정답이에요!";
+
+  if (alreadyCompleted) {
+    return `이미 완료한 문장이에요. 정답은 ${answerLabel}이에요.`;
+  }
+
+  return `아쉬워요. 정답은 ${answerLabel}이에요.`;
+};
+
 interface ChoiceStudyLayoutProps {
   day: number;
   step: number;
@@ -17,9 +38,25 @@ interface ChoiceStudyLayoutProps {
   hint?: string;
   options: VideoChoiceItem[];
   selectedIndex: number | null;
+  result: ChoiceAnswerResult | null;
+  notice?: string;
+  isSubmitting?: boolean;
   onSelect: (index: number) => void;
+  onSubmit: () => void;
   onNext: () => void;
 }
+
+const getButtonText = (hasResult: boolean, isSubmitting?: boolean) => {
+  if (hasResult) {
+    return { label: "다음", accessibilityLabel: "다음 학습으로 이동" };
+  }
+
+  if (isSubmitting) {
+    return { label: "제출 중", accessibilityLabel: "답안 제출 중" };
+  }
+
+  return { label: "확인", accessibilityLabel: "답안 제출" };
+};
 
 const renderSentence = (sentence: string, highlightWord?: string) => {
   if (!highlightWord) return sentence;
@@ -46,11 +83,16 @@ export default function ChoiceStudyLayout({
   hint,
   options,
   selectedIndex,
+  result,
+  notice,
+  isSubmitting,
   onSelect,
+  onSubmit,
   onNext,
 }: ChoiceStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
   const initialProgress = totalSteps > 0 ? (step - 1) / totalSteps : 0;
+  const buttonText = getButtonText(Boolean(result), isSubmitting);
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -81,8 +123,22 @@ export default function ChoiceStudyLayout({
         <VideoChoiceList
           options={options}
           selectedIndex={selectedIndex}
+          answerIndex={result ? result.answerIndex : null}
+          locked={Boolean(result) || isSubmitting}
           onSelect={onSelect}
         />
+
+        {result ? (
+          <Feedback $positive={result.correct} accessibilityLiveRegion="polite">
+            {getResultMessage(result)}
+          </Feedback>
+        ) : null}
+
+        {!result && notice ? (
+          <Feedback $positive={false} accessibilityLiveRegion="polite">
+            {notice}
+          </Feedback>
+        ) : null}
 
         {hint ? (
           <HintArea>
@@ -92,7 +148,13 @@ export default function ChoiceStudyLayout({
       </ScrollView>
 
       <ButtonArea>
-        <NextButton onPress={onNext} disabled={selectedIndex === null} />
+        <NextButton
+          label={buttonText.label}
+          accessibilityLabel={buttonText.accessibilityLabel}
+          showArrow={Boolean(result)}
+          onPress={result ? onNext : onSubmit}
+          disabled={selectedIndex === null || isSubmitting}
+        />
       </ButtonArea>
     </Screen>
   );
@@ -131,6 +193,16 @@ const Guide = styled.Text`
   color: ${colors.neutral700};
   font-size: 14px;
   font-weight: 400;
+  line-height: 22px;
+  text-align: center;
+`;
+
+const Feedback = styled.Text<{ $positive: boolean }>`
+  margin-top: 16px;
+  color: ${({ $positive }) =>
+    $positive ? colors.successGreen : colors.errorRed};
+  font-size: 14px;
+  font-weight: 600;
   line-height: 22px;
   text-align: center;
 `;

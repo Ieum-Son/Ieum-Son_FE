@@ -5,6 +5,7 @@ interface NextButtonProps {
   onPress?: () => void;
   disabled?: boolean;
   label?: string;
+  accessibilityLabel?: string;
   showArrow?: boolean;
 }
 
@@ -12,12 +13,13 @@ export default function NextButton({
   onPress,
   disabled = false,
   label = "다음",
+  accessibilityLabel = "다음 학습으로 이동",
   showArrow = true,
 }: NextButtonProps) {
   return (
     <Button
       accessibilityRole="button"
-      accessibilityLabel="다음 학습으로 이동"
+      accessibilityLabel={accessibilityLabel}
       disabled={disabled}
       $disabled={disabled}
       onPress={onPress}

@@ -59,3 +59,15 @@ export interface DailyProgressResponse {
   reviews: DailyReview[];
   progress: DailyProgressSummary;
 }
+
+export interface SubmitSentenceAnswerProps {
+  sentenceId: number;
+  selectedWordId: number;
+}
+
+export interface SubmitSentenceAnswerResponse {
+  sentenceId: number;
+  correct: boolean;
+  answerWordId: number;
+  isCompleted: boolean;
+}
