@@ -10,19 +10,19 @@ import VideoChoiceList, { type VideoChoiceItem } from "./VideoChoiceList";
 
 export interface ChoiceAnswerResult {
   correct: boolean;
-  completed: boolean;
+  alreadyCompleted: boolean;
   answerIndex: number;
   answerLabel: string;
 }
 
 const getResultMessage = ({
   correct,
-  completed,
+  alreadyCompleted,
   answerLabel,
 }: ChoiceAnswerResult) => {
   if (correct) return "정답이에요!";
 
-  if (completed) {
+  if (alreadyCompleted) {
     return `이미 완료한 문장이에요. 정답은 ${answerLabel}이에요.`;
   }
 
@@ -116,10 +116,7 @@ export default function ChoiceStudyLayout({
         />
 
         {result ? (
-          <Feedback
-            $positive={result.correct || result.completed}
-            accessibilityLiveRegion="polite"
-          >
+          <Feedback $positive={result.correct} accessibilityLiveRegion="polite">
             {getResultMessage(result)}
           </Feedback>
         ) : null}

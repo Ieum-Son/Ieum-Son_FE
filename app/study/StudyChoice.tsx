@@ -17,14 +17,17 @@ import { useState } from "react";
 
 const MAX_ATTEMPTS = 2;
 
+interface SubmittedAnswer {
+  response: SubmitSentenceAnswerResponse;
+  alreadyCompleted: boolean;
+}
+
 export default function StudyChoice() {
   const { sentenceIndex: sentenceIndexParam } = useLocalSearchParams<{
     sentenceIndex?: string;
   }>();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [answer, setAnswer] = useState<SubmitSentenceAnswerResponse | null>(
-    null,
-  );
+  const [answer, setAnswer] = useState<SubmittedAnswer | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   const [notice, setNotice] = useState("");
   const { data: daily, isPending, isError, error } = useDailyProgress();
@@ -60,15 +63,15 @@ export default function StudyChoice() {
 
   const answerIndex = answer
     ? sentence.options.findIndex(
-        (option) => option.wordId === answer.answerWordId,
+        (option) => option.wordId === answer.response.answerWordId,
       )
     : -1;
 
   const result =
     answer && answerIndex !== -1
       ? {
-          correct: answer.correct,
-          completed: answer.isCompleted,
+          correct: answer.response.correct,
+          alreadyCompleted: answer.alreadyCompleted,
           answerIndex,
           answerLabel: options[answerIndex].label,
         }
@@ -86,6 +89,8 @@ export default function StudyChoice() {
 
     setNotice("");
 
+    const alreadyCompleted = sentence.isCompleted;
+
     try {
       const submitted = await submitAnswer({
         sentenceId: sentence.sentenceId,
@@ -97,10 +102,10 @@ export default function StudyChoice() {
 
       if (
         submitted.correct ||
-        submitted.isCompleted ||
+        alreadyCompleted ||
         nextAttemptCount >= MAX_ATTEMPTS
       ) {
-        setAnswer(submitted);
+        setAnswer({ response: submitted, alreadyCompleted });
         return;
       }
 
