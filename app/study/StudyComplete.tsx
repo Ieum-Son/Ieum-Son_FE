@@ -1,35 +1,55 @@
 import CompleteStudyLayout from "@/components/Study/CompleteStudy/CompleteStudyLayout";
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
 import {
-  getDailyProgressErrorMessage,
-  useDailyProgress,
+  getCompleteDailyProgressErrorMessage,
+  useCompleteDailyProgress,
 } from "@/hooks/progress";
 import { useUserInfo } from "@/hooks/UserInfo";
 import { useUserStore } from "@/stores/userStore";
 import { router } from "expo-router";
-
-const STUDY_COMPLETION_REWARD = 12;
+import { useEffect, useRef } from "react";
 
 export default function StudyComplete() {
   useUserInfo();
   const name = useUserStore((state) => state.user?.name);
-  const { data: daily, isPending, isError, error } = useDailyProgress();
+  const hasRequested = useRef(false);
+  const {
+    mutate: completeStudy,
+    data,
+    isPending,
+    isError,
+    error,
+  } = useCompleteDailyProgress();
 
-  if (isPending) return <StudyStateScreen />;
+  useEffect(() => {
+    if (hasRequested.current) return;
 
-  if (isError) {
+    hasRequested.current = true;
+    completeStudy();
+  }, [completeStudy]);
+
+  if (!data) {
     return (
-      <StudyStateScreen message={getDailyProgressErrorMessage(error)} isError />
+      <StudyStateScreen
+        message={
+          isError ? getCompleteDailyProgressErrorMessage(error) : undefined
+        }
+        isError={isError}
+        isRetrying={isPending}
+        onRetry={() => completeStudy()}
+      />
     );
   }
 
   return (
     <CompleteStudyLayout
-      learnedWords={daily.progress.wordsTotal}
-      earnedGold={STUDY_COMPLETION_REWARD}
-      streakDays={daily.streakCount}
+      learnedWords={data.wordsCompleted}
+      earnedGold={data.goldEarned}
+      goldFromWords={data.goldFromWords}
+      streakBonus={data.streakBonus}
+      streakDays={data.streakCount}
       userName={name || "---"}
-      onComplete={() => router.replace("/Main")}
+      onComplete={() => router.dismissTo("/Main")}
     />
   );
 }
