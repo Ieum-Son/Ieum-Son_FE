@@ -38,6 +38,7 @@ export default function ReviewAnswerList({
           key={answer}
           label={answer}
           state={getAnswerState(index, selectedIndex, answerIndex)}
+          selected={selectedIndex === index}
           disabled={locked}
           onPress={() => onSelect(index)}
         />

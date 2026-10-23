@@ -7,6 +7,7 @@ export type ReviewAnswerState = "default" | "selected" | "correct" | "wrong";
 interface ReviewAnswerOptionProps {
   label: string;
   state: ReviewAnswerState;
+  selected: boolean;
   disabled?: boolean;
   onPress: () => void;
 }
@@ -42,6 +43,7 @@ const stateLabels: Record<ReviewAnswerState, string> = {
 export default function ReviewAnswerOption({
   label,
   state,
+  selected,
   disabled,
   onPress,
 }: ReviewAnswerOptionProps) {
@@ -51,7 +53,7 @@ export default function ReviewAnswerOption({
       disabled={disabled}
       accessibilityRole="radio"
       accessibilityState={{
-        checked: state === "selected" || state === "wrong",
+        checked: selected,
         disabled,
       }}
       accessibilityLabel={`${label} 선택${stateLabels[state]}`}
