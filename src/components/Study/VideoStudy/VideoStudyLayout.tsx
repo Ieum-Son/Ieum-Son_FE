@@ -6,6 +6,7 @@ import styled from "styled-components/native";
 import DayHeader from "../DayHeader";
 import DescriptionBox from "../DescriptionBox";
 import NextButton from "../NextButton";
+import WordCategory from "../WordCategory";
 import VideoSelectionBox from "./VideoSelectionBox";
 
 interface VideoStudyLayoutProps {
@@ -13,6 +14,7 @@ interface VideoStudyLayoutProps {
   step: number;
   totalSteps: number;
   word: string;
+  category?: string;
   guide: string;
   description: string;
   videoUrl?: string;
@@ -24,6 +26,7 @@ export default function VideoStudyLayout({
   step,
   totalSteps,
   word,
+  category,
   guide,
   description,
   videoUrl,
@@ -48,6 +51,7 @@ export default function VideoStudyLayout({
           />
 
           <LessonContent>
+            <WordCategory category={category} />
             <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
             <VideoSelectionBox videoUrl={videoUrl} />

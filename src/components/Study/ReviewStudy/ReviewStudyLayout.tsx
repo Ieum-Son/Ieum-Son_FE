@@ -16,10 +16,27 @@ interface ReviewStudyLayoutProps {
   guide: string;
   videoUrl?: string;
   answers: string[];
+  answerDefinition?: string;
   selectedIndex: number | null;
+  answerIndex: number | null;
+  errorMessage?: string;
+  isSubmitting?: boolean;
   onSelect: (index: number) => void;
+  onSubmit: () => void;
   onNext: () => void;
 }
+
+const getButtonText = (hasResult: boolean, isSubmitting?: boolean) => {
+  if (hasResult) {
+    return { label: "다음", accessibilityLabel: "다음 학습으로 이동" };
+  }
+
+  if (isSubmitting) {
+    return { label: "제출 중", accessibilityLabel: "답안 제출 중" };
+  }
+
+  return { label: "확인", accessibilityLabel: "답안 제출" };
+};
 
 export default function ReviewStudyLayout({
   day,
@@ -29,12 +46,19 @@ export default function ReviewStudyLayout({
   guide,
   videoUrl,
   answers,
+  answerDefinition,
   selectedIndex,
+  answerIndex,
+  errorMessage,
+  isSubmitting,
   onSelect,
+  onSubmit,
   onNext,
 }: ReviewStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
   const initialProgress = totalSteps > 0 ? (step - 1) / totalSteps : 0;
+  const hasResult = answerIndex !== null;
+  const buttonText = getButtonText(hasResult, isSubmitting);
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -63,13 +87,42 @@ export default function ReviewStudyLayout({
           <ReviewAnswerList
             answers={answers}
             selectedIndex={selectedIndex}
+            answerIndex={answerIndex}
+            locked={hasResult || isSubmitting}
             onSelect={onSelect}
           />
         </AnswerArea>
+
+        {hasResult ? (
+          <Feedback
+            $positive={selectedIndex === answerIndex}
+            accessibilityLiveRegion="polite"
+          >
+            {selectedIndex === answerIndex
+              ? "정답이에요!"
+              : `아쉬워요. 정답은 ${answers[answerIndex]}이에요.`}
+          </Feedback>
+        ) : null}
+
+        {hasResult && answerDefinition ? (
+          <Definition selectable>{answerDefinition}</Definition>
+        ) : null}
+
+        {!hasResult && errorMessage ? (
+          <Feedback $positive={false} accessibilityLiveRegion="polite">
+            {errorMessage}
+          </Feedback>
+        ) : null}
       </ScrollView>
 
       <ButtonArea>
-        <NextButton onPress={onNext} disabled={selectedIndex === null} />
+        <NextButton
+          label={buttonText.label}
+          accessibilityLabel={buttonText.accessibilityLabel}
+          showArrow={hasResult}
+          onPress={hasResult ? onNext : onSubmit}
+          disabled={selectedIndex === null || isSubmitting}
+        />
       </ButtonArea>
     </Screen>
   );
@@ -103,6 +156,25 @@ const Guide = styled.Text`
   color: ${colors.neutral700};
   font-size: 14px;
   font-weight: 400;
+  line-height: 22px;
+  text-align: center;
+`;
+
+const Definition = styled.Text`
+  margin-top: 6px;
+  color: ${colors.neutral600};
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: center;
+`;
+
+const Feedback = styled.Text<{ $positive: boolean }>`
+  margin-top: 16px;
+  color: ${({ $positive }) =>
+    $positive ? colors.successGreen : colors.errorRed};
+  font-size: 14px;
+  font-weight: 600;
   line-height: 22px;
   text-align: center;
 `;

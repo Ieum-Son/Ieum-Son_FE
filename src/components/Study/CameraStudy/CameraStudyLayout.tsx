@@ -7,6 +7,7 @@ import styled from "styled-components/native";
 import DayHeader from "../DayHeader";
 import DescriptionBox from "../DescriptionBox";
 import NextButton from "../NextButton";
+import WordCategory from "../WordCategory";
 import CameraSelectionBox from "./CameraSelectionBox";
 
 interface CameraStudyLayoutProps {
@@ -14,10 +15,14 @@ interface CameraStudyLayoutProps {
   step: number;
   totalSteps: number;
   word: string;
+  category?: string;
   guide: string;
   description: string;
   imageSource: ImageSource;
   recognitionRate?: number;
+  attemptCount?: number;
+  errorMessage?: string;
+  isSubmitting?: boolean;
   onNext?: () => void;
 }
 
@@ -26,10 +31,14 @@ export default function CameraStudyLayout({
   step,
   totalSteps,
   word,
+  category,
   guide,
   description,
   imageSource,
   recognitionRate,
+  attemptCount,
+  errorMessage,
+  isSubmitting,
   onNext,
 }: CameraStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
@@ -52,6 +61,7 @@ export default function CameraStudyLayout({
           />
 
           <LessonContent>
+            <WordCategory category={category} />
             <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
             <CameraSelectionBox
@@ -59,15 +69,30 @@ export default function CameraStudyLayout({
               recognitionRate={recognitionRate}
             />
             <DescriptionBox description={description} />
+
+            {attemptCount ? (
+              <AttemptCount
+                selectable
+              >{`지금까지 ${attemptCount}번 시도했어요.`}</AttemptCount>
+            ) : null}
+
+            {errorMessage ? (
+              <ErrorText accessibilityLiveRegion="polite">
+                {errorMessage}
+              </ErrorText>
+            ) : null}
           </LessonContent>
         </Content>
       </ScrollView>
 
       <ButtonArea>
         <NextButton
-          label="다음 학습으로 넘어가기"
+          label={isSubmitting ? "저장 중" : "다음 학습으로 넘어가기"}
+          accessibilityLabel={
+            isSubmitting ? "학습 기록 저장 중" : "다음 학습으로 이동"
+          }
           onPress={onNext}
-          disabled={false}
+          disabled={isSubmitting}
         />
       </ButtonArea>
     </Screen>
@@ -77,6 +102,23 @@ export default function CameraStudyLayout({
 const Screen = styled(SafeAreaView)`
   flex: 1;
   background-color: ${colors.neutral0};
+`;
+
+const AttemptCount = styled.Text`
+  margin-top: 12px;
+  color: ${colors.neutral600};
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  text-align: center;
+`;
+
+const ErrorText = styled.Text`
+  color: ${colors.errorRed};
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  text-align: center;
 `;
 
 const Content = styled.View`

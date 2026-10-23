@@ -32,12 +32,7 @@ export default function Main() {
             goldBalance={streak?.goldBalance}
           />
           <LearningRoadmap
-            onStartLearning={() =>
-              router.push({
-                pathname: "/study/Study",
-                params: { wordIndex: "0" },
-              })
-            }
+            onStartLearning={() => router.push("/study/Study")}
           />
         </View>
 
