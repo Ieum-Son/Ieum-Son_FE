@@ -7,12 +7,13 @@ import {
   useDailyProgress,
   useSubmitSentenceAnswer,
 } from "@/hooks/progress";
+import { goToNextStage } from "@/utils/studyNavigation";
 import {
   getSentenceStep,
   getStudyIndex,
   getTotalSteps,
 } from "@/utils/studyProgress";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
 const MAX_ATTEMPTS = 2;
@@ -30,7 +31,14 @@ export default function StudyChoice() {
   const [answer, setAnswer] = useState<SubmittedAnswer | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   const [notice, setNotice] = useState("");
-  const { data: daily, isPending, isError, error } = useDailyProgress();
+  const {
+    data: daily,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+  } = useDailyProgress();
   const { mutateAsync: submitAnswer, isPending: isSubmitting } =
     useSubmitSentenceAnswer();
 
@@ -38,7 +46,12 @@ export default function StudyChoice() {
 
   if (isError) {
     return (
-      <StudyStateScreen message={getDailyProgressErrorMessage(error)} isError />
+      <StudyStateScreen
+        message={getDailyProgressErrorMessage(error)}
+        isError
+        isRetrying={isRefetching}
+        onRetry={() => refetch()}
+      />
     );
   }
 
@@ -115,22 +128,8 @@ export default function StudyChoice() {
     }
   };
 
-  const handleNext = () => {
-    if (sentenceIndex < daily.sentences.length - 1) {
-      router.push({
-        pathname: "/study/StudyChoice",
-        params: { sentenceIndex: String(sentenceIndex + 1) },
-      });
-      return;
-    }
-
-    if (daily.reviews.length > 0) {
-      router.push("/study/StudyReviewIntro");
-      return;
-    }
-
-    router.replace("/study/StudyComplete");
-  };
+  const handleNext = () =>
+    goToNextStage(daily, { name: "sentence", index: sentenceIndex });
 
   return (
     <ChoiceStudyLayout
