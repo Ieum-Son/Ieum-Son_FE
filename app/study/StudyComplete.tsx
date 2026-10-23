@@ -16,7 +16,6 @@ export default function StudyComplete() {
   const {
     mutate: completeStudy,
     data,
-    isPending,
     isError,
     error,
   } = useCompleteDailyProgress();
@@ -35,8 +34,6 @@ export default function StudyComplete() {
           isError ? getCompleteDailyProgressErrorMessage(error) : undefined
         }
         isError={isError}
-        isRetrying={isPending}
-        onRetry={() => completeStudy()}
       />
     );
   }
