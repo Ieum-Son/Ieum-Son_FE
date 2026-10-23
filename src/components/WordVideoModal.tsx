@@ -4,17 +4,17 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { Modal, Pressable } from "react-native";
 import styled from "styled-components/native";
 
-interface FavoriteVideoModalProps {
+interface WordVideoModalProps {
   word: string;
   videoUrl: string;
   onClose: () => void;
 }
 
-export default function FavoriteVideoModal({
+export default function WordVideoModal({
   word,
   videoUrl,
   onClose,
-}: FavoriteVideoModalProps) {
+}: WordVideoModalProps) {
   const player = useVideoPlayer(videoUrl, (loadedPlayer) => {
     loadedPlayer.loop = true;
     loadedPlayer.play();
