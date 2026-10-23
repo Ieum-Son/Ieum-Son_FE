@@ -24,15 +24,16 @@ export default function Study() {
     isError,
     error,
     refetch,
+    isFetching,
     isRefetching,
   } = useDailyProgress();
   const isEntry = wordIndexParam === undefined;
 
   useEffect(() => {
-    if (!daily || !isEntry) return;
+    if (!daily || isFetching || !isEntry) return;
 
     goToStage(findNextStage(daily), "replace");
-  }, [daily, isEntry]);
+  }, [daily, isFetching, isEntry]);
 
   if (isPending) return <StudyStateScreen />;
 
