@@ -1,8 +1,11 @@
+import type { SubmitSentenceAnswerResponse } from "@/apis/progress/type";
 import ChoiceStudyLayout from "@/components/Study/ChoiceStudy/ChoiceStudyLayout";
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
 import {
   getDailyProgressErrorMessage,
+  getSubmitSentenceAnswerErrorMessage,
   useDailyProgress,
+  useSubmitSentenceAnswer,
 } from "@/hooks/progress";
 import {
   getSentenceStep,
@@ -12,12 +15,21 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
+const MAX_ATTEMPTS = 2;
+
 export default function StudyChoice() {
   const { sentenceIndex: sentenceIndexParam } = useLocalSearchParams<{
     sentenceIndex?: string;
   }>();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [answer, setAnswer] = useState<SubmitSentenceAnswerResponse | null>(
+    null,
+  );
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [notice, setNotice] = useState("");
   const { data: daily, isPending, isError, error } = useDailyProgress();
+  const { mutateAsync: submitAnswer, isPending: isSubmitting } =
+    useSubmitSentenceAnswer();
 
   if (isPending) return <StudyStateScreen />;
 
@@ -46,6 +58,58 @@ export default function StudyChoice() {
     videoUrl: option.videoUrl,
   }));
 
+  const answerIndex = answer
+    ? sentence.options.findIndex(
+        (option) => option.wordId === answer.answerWordId,
+      )
+    : -1;
+
+  const result =
+    answer && answerIndex !== -1
+      ? {
+          correct: answer.correct,
+          completed: answer.isCompleted,
+          answerIndex,
+          answerLabel: options[answerIndex].label,
+        }
+      : null;
+
+  const handleSelect = (index: number) => {
+    if (answer) return;
+
+    setSelectedIndex(index);
+    setNotice("");
+  };
+
+  const handleSubmit = async () => {
+    if (selectedIndex === null || isSubmitting) return;
+
+    setNotice("");
+
+    try {
+      const submitted = await submitAnswer({
+        sentenceId: sentence.sentenceId,
+        selectedWordId: sentence.options[selectedIndex].wordId,
+      });
+      const nextAttemptCount = attemptCount + 1;
+
+      setAttemptCount(nextAttemptCount);
+
+      if (
+        submitted.correct ||
+        submitted.isCompleted ||
+        nextAttemptCount >= MAX_ATTEMPTS
+      ) {
+        setAnswer(submitted);
+        return;
+      }
+
+      setNotice("아쉬워요. 한 번 더 선택해보세요.");
+    } catch (submitError) {
+      setNotice(getSubmitSentenceAnswerErrorMessage(submitError));
+    }
+  };
+
   const handleNext = () => {
     if (sentenceIndex < daily.sentences.length - 1) {
       router.push({
@@ -72,7 +136,11 @@ export default function StudyChoice() {
       highlightWord={highlightWord}
       options={options}
       selectedIndex={selectedIndex}
-      onSelect={setSelectedIndex}
+      result={result}
+      notice={notice}
+      isSubmitting={isSubmitting}
+      onSelect={handleSelect}
+      onSubmit={handleSubmit}
       onNext={handleNext}
     />
   );

@@ -8,6 +8,27 @@ import styled from "styled-components/native";
 import HintBox from "./HintBox";
 import VideoChoiceList, { type VideoChoiceItem } from "./VideoChoiceList";
 
+export interface ChoiceAnswerResult {
+  correct: boolean;
+  completed: boolean;
+  answerIndex: number;
+  answerLabel: string;
+}
+
+const getResultMessage = ({
+  correct,
+  completed,
+  answerLabel,
+}: ChoiceAnswerResult) => {
+  if (correct) return "정답이에요!";
+
+  if (completed) {
+    return `이미 완료한 문장이에요. 정답은 ${answerLabel}이에요.`;
+  }
+
+  return `아쉬워요. 정답은 ${answerLabel}이에요.`;
+};
+
 interface ChoiceStudyLayoutProps {
   day: number;
   step: number;
@@ -17,7 +38,11 @@ interface ChoiceStudyLayoutProps {
   hint?: string;
   options: VideoChoiceItem[];
   selectedIndex: number | null;
+  result: ChoiceAnswerResult | null;
+  notice?: string;
+  isSubmitting?: boolean;
   onSelect: (index: number) => void;
+  onSubmit: () => void;
   onNext: () => void;
 }
 
@@ -46,7 +71,11 @@ export default function ChoiceStudyLayout({
   hint,
   options,
   selectedIndex,
+  result,
+  notice,
+  isSubmitting,
   onSelect,
+  onSubmit,
   onNext,
 }: ChoiceStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
@@ -81,8 +110,25 @@ export default function ChoiceStudyLayout({
         <VideoChoiceList
           options={options}
           selectedIndex={selectedIndex}
+          answerIndex={result ? result.answerIndex : null}
+          locked={Boolean(result)}
           onSelect={onSelect}
         />
+
+        {result ? (
+          <Feedback
+            $positive={result.correct || result.completed}
+            accessibilityLiveRegion="polite"
+          >
+            {getResultMessage(result)}
+          </Feedback>
+        ) : null}
+
+        {!result && notice ? (
+          <Feedback $positive={false} accessibilityLiveRegion="polite">
+            {notice}
+          </Feedback>
+        ) : null}
 
         {hint ? (
           <HintArea>
@@ -92,7 +138,13 @@ export default function ChoiceStudyLayout({
       </ScrollView>
 
       <ButtonArea>
-        <NextButton onPress={onNext} disabled={selectedIndex === null} />
+        <NextButton
+          label={result ? "다음" : "확인"}
+          accessibilityLabel={result ? "다음 학습으로 이동" : "답안 제출"}
+          showArrow={Boolean(result)}
+          onPress={result ? onNext : onSubmit}
+          disabled={selectedIndex === null || isSubmitting}
+        />
       </ButtonArea>
     </Screen>
   );
@@ -131,6 +183,16 @@ const Guide = styled.Text`
   color: ${colors.neutral700};
   font-size: 14px;
   font-weight: 400;
+  line-height: 22px;
+  text-align: center;
+`;
+
+const Feedback = styled.Text<{ $positive: boolean }>`
+  margin-top: 16px;
+  color: ${({ $positive }) =>
+    $positive ? colors.successGreen : colors.errorRed};
+  font-size: 14px;
+  font-weight: 600;
   line-height: 22px;
   text-align: center;
 `;
