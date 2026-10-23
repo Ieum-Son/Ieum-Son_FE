@@ -42,6 +42,7 @@ export default function VideoChoiceList({
           <VideoChoiceOption
             label={option.label}
             state={getOptionState(index, selectedIndex, answerIndex)}
+            selected={selectedIndex === index}
             disabled={locked}
             onPress={() => onSelect(index)}
           />

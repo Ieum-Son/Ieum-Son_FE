@@ -7,6 +7,7 @@ export type ChoiceOptionState = "default" | "selected" | "correct" | "wrong";
 interface VideoChoiceOptionProps {
   label: string;
   state: ChoiceOptionState;
+  selected: boolean;
   disabled?: boolean;
   onPress: () => void;
 }
@@ -56,6 +57,7 @@ const stateLabels: Record<ChoiceOptionState, string> = {
 export default function VideoChoiceOption({
   label,
   state,
+  selected,
   disabled,
   onPress,
 }: VideoChoiceOptionProps) {
@@ -66,7 +68,7 @@ export default function VideoChoiceOption({
       onPress={onPress}
       accessibilityRole="radio"
       accessibilityState={{
-        checked: state === "selected" || state === "wrong",
+        checked: selected,
         disabled,
       }}
       accessibilityLabel={`${label} 선택${stateLabels[state]}`}
