@@ -3,14 +3,17 @@ import ReviewStudyLayout from "@/components/Study/ReviewStudy/ReviewStudyLayout"
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
 import {
   getDailyProgressErrorMessage,
+  getSubmitWordAttemptErrorMessage,
   useDailyProgress,
+  useSubmitWordAttempt,
 } from "@/hooks/progress";
+import { goToNextStage } from "@/utils/studyNavigation";
 import {
   getReviewStep,
   getStudyIndex,
   getTotalSteps,
 } from "@/utils/studyProgress";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
 const ANSWER_COUNT = 3;
@@ -43,13 +46,29 @@ export default function StudyReview() {
     reviewIndex?: string;
   }>();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const { data: daily, isPending, isError, error } = useDailyProgress();
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const {
+    data: daily,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+  } = useDailyProgress();
+  const { mutateAsync: submitAttempt, isPending: isSubmitting } =
+    useSubmitWordAttempt();
 
   if (isPending) return <StudyStateScreen />;
 
   if (isError) {
     return (
-      <StudyStateScreen message={getDailyProgressErrorMessage(error)} isError />
+      <StudyStateScreen
+        message={getDailyProgressErrorMessage(error)}
+        isError
+        isRetrying={isRefetching}
+        onRetry={() => refetch()}
+      />
     );
   }
 
@@ -60,17 +79,35 @@ export default function StudyReview() {
     return <StudyStateScreen message="오늘 복습할 단어가 없어요." />;
   }
 
-  const handleNext = () => {
-    if (reviewIndex < daily.reviews.length - 1) {
-      router.push({
-        pathname: "/study/StudyReview",
-        params: { reviewIndex: String(reviewIndex + 1) },
-      });
-      return;
-    }
+  const answers = buildAnswers(daily, review);
+  const correctIndex = answers.indexOf(review.word);
 
-    router.replace("/study/StudyComplete");
+  const handleSelect = (index: number) => {
+    if (isAnswered || isSubmitting) return;
+
+    setSelectedIndex(index);
+    setErrorMessage("");
   };
+
+  const handleSubmit = async () => {
+    if (selectedIndex === null || isSubmitting) return;
+
+    setErrorMessage("");
+
+    try {
+      await submitAttempt({
+        wordId: review.wordId,
+        passed: selectedIndex === correctIndex,
+      });
+
+      setIsAnswered(true);
+    } catch (submitError) {
+      setErrorMessage(getSubmitWordAttemptErrorMessage(submitError));
+    }
+  };
+
+  const handleNext = () =>
+    goToNextStage(daily, { name: "review", index: reviewIndex });
 
   return (
     <ReviewStudyLayout
@@ -80,9 +117,14 @@ export default function StudyReview() {
       title={getElapsedLabel(review.elapsedHours)}
       guide="아래 영상과 일치하는 뜻의 단어를 선택해주세요"
       videoUrl={review.videoUrl}
-      answers={buildAnswers(daily, review)}
+      answers={answers}
+      answerDefinition={review.definition}
       selectedIndex={selectedIndex}
-      onSelect={setSelectedIndex}
+      answerIndex={isAnswered ? correctIndex : null}
+      errorMessage={errorMessage}
+      isSubmitting={isSubmitting}
+      onSelect={handleSelect}
+      onSubmit={handleSubmit}
       onNext={handleNext}
     />
   );

@@ -2,47 +2,80 @@ import { colors } from "@/constants/colors";
 import { Pressable } from "react-native";
 import styled from "styled-components/native";
 
+export type ReviewAnswerState = "default" | "selected" | "correct" | "wrong";
+
 interface ReviewAnswerOptionProps {
   label: string;
-  selected: boolean;
+  state: ReviewAnswerState;
+  disabled?: boolean;
   onPress: () => void;
 }
 
+const borderColors: Record<ReviewAnswerState, string> = {
+  default: colors.neutral400,
+  selected: colors.primary400,
+  correct: colors.successGreen,
+  wrong: colors.errorRed,
+};
+
+const backgroundColors: Record<ReviewAnswerState, string> = {
+  default: colors.neutral0,
+  selected: colors.primary100,
+  correct: colors.neutral0,
+  wrong: colors.neutral0,
+};
+
+const labelColors: Record<ReviewAnswerState, string> = {
+  default: colors.neutral1000,
+  selected: colors.primary600,
+  correct: colors.successGreen,
+  wrong: colors.errorRed,
+};
+
+const stateLabels: Record<ReviewAnswerState, string> = {
+  default: "",
+  selected: ", 선택됨",
+  correct: ", 정답",
+  wrong: ", 오답",
+};
+
 export default function ReviewAnswerOption({
   label,
-  selected,
+  state,
+  disabled,
   onPress,
 }: ReviewAnswerOptionProps) {
   return (
     <Option
-      $selected={selected}
+      $state={state}
+      disabled={disabled}
       accessibilityRole="radio"
-      accessibilityState={{ checked: selected }}
-      accessibilityLabel={`${label} 선택`}
+      accessibilityState={{
+        checked: state === "selected" || state === "wrong",
+        disabled,
+      }}
+      accessibilityLabel={`${label} 선택${stateLabels[state]}`}
       onPress={onPress}
     >
-      <Label $selected={selected}>{label}</Label>
+      <Label $state={state}>{label}</Label>
     </Option>
   );
 }
 
-const Option = styled(Pressable)<{ $selected: boolean }>`
+const Option = styled(Pressable)<{ $state: ReviewAnswerState }>`
   width: 100%;
   height: 48px;
   align-items: center;
   padding: 12px 20px;
   justify-content: center;
   gap: 8px;
-  border: 1px solid
-    ${({ $selected }) => ($selected ? colors.primary400 : colors.neutral400)};
+  border: 1px solid ${({ $state }) => borderColors[$state]};
   border-radius: 12px;
-  background-color: ${({ $selected }) =>
-    $selected ? colors.primary100 : colors.neutral0};
+  background-color: ${({ $state }) => backgroundColors[$state]};
 `;
 
-const Label = styled.Text<{ $selected: boolean }>`
-  color: ${({ $selected }) =>
-    $selected ? colors.primary600 : colors.neutral1000};
+const Label = styled.Text<{ $state: ReviewAnswerState }>`
+  color: ${({ $state }) => labelColors[$state]};
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;

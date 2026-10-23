@@ -4,26 +4,50 @@ import {
   getDailyProgressErrorMessage,
   useDailyProgress,
 } from "@/hooks/progress";
+import { goToStage } from "@/utils/studyNavigation";
 import {
+  findNextStage,
   getStudyIndex,
   getTotalSteps,
   getWordStep,
 } from "@/utils/studyProgress";
 import { router, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 
 export default function Study() {
   const { wordIndex: wordIndexParam } = useLocalSearchParams<{
     wordIndex?: string;
   }>();
-  const { data: daily, isPending, isError, error } = useDailyProgress();
+  const {
+    data: daily,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+  } = useDailyProgress();
+  const isEntry = wordIndexParam === undefined;
+
+  useEffect(() => {
+    if (!daily || !isEntry) return;
+
+    goToStage(findNextStage(daily), "replace");
+  }, [daily, isEntry]);
 
   if (isPending) return <StudyStateScreen />;
 
   if (isError) {
     return (
-      <StudyStateScreen message={getDailyProgressErrorMessage(error)} isError />
+      <StudyStateScreen
+        message={getDailyProgressErrorMessage(error)}
+        isError
+        isRetrying={isRefetching}
+        onRetry={() => refetch()}
+      />
     );
   }
+
+  if (isEntry) return <StudyStateScreen />;
 
   const wordIndex = getStudyIndex(wordIndexParam, daily.words.length);
   const word = daily.words[wordIndex];
@@ -36,12 +60,13 @@ export default function Study() {
       step={getWordStep(wordIndex, 1)}
       totalSteps={getTotalSteps(daily)}
       word={word.word}
+      category={word.category}
       guide="아래 영상을 보고 따라하며 수어를 학습해보세요."
       description={word.definition}
       videoUrl={word.videoUrl}
       onNext={() =>
         router.push({
-          pathname: "/study/StudyImage",
+          pathname: "/study/StudyCamera",
           params: { wordIndex: String(wordIndex) },
         })
       }
