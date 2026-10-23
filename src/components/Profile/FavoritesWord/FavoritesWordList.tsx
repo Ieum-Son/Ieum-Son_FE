@@ -10,7 +10,7 @@ import {
 import React, { useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
 import styled from "styled-components/native";
-import FavoriteVideoModal from "./FavoriteVideoModal";
+import WordVideoModal from "@/components/WordVideoModal";
 import FavoritesWord from "./FavoritesWord";
 
 export default function FavoritesWordList() {
@@ -132,7 +132,7 @@ export default function FavoritesWordList() {
       </Wrapper>
 
       {playingWord && (
-        <FavoriteVideoModal
+        <WordVideoModal
           key={playingWord.wordId}
           word={playingWord.word}
           videoUrl={playingWord.videoUrl}
