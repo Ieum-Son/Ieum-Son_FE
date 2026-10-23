@@ -1,8 +1,11 @@
 import { api } from "@/apis";
 import type {
+  CompleteDailyProgressResponse,
   DailyProgressResponse,
   SubmitSentenceAnswerProps,
   SubmitSentenceAnswerResponse,
+  SubmitWordAttemptProps,
+  SubmitWordAttemptResponse,
 } from "./type";
 
 export const getDailyProgress = async () => {
@@ -18,6 +21,26 @@ export const submitSentenceAnswer = async ({
   const response = await api.post<SubmitSentenceAnswerResponse>(
     `/api/progress/sentences/${sentenceId}/answers`,
     { selectedWordId },
+  );
+
+  return response.data;
+};
+
+export const completeDailyProgress = async () => {
+  const response = await api.post<CompleteDailyProgressResponse>(
+    "/api/progress/complete",
+  );
+
+  return response.data;
+};
+
+export const submitWordAttempt = async ({
+  wordId,
+  passed,
+}: SubmitWordAttemptProps) => {
+  const response = await api.post<SubmitWordAttemptResponse>(
+    `/internal/words/${wordId}/attempts`,
+    { passed },
   );
 
   return response.data;

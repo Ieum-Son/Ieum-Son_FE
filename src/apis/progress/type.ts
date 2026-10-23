@@ -71,3 +71,23 @@ export interface SubmitSentenceAnswerResponse {
   answerWordId: number;
   isCompleted: boolean;
 }
+
+export interface CompleteDailyProgressResponse {
+  streakCount: number;
+  goldEarned: number;
+  goldFromWords: number;
+  streakBonus: number;
+  goldBalance: number;
+  wordsCompleted: number;
+  sentencesCompleted: number;
+}
+
+export interface SubmitWordAttemptProps {
+  wordId: number;
+  passed: boolean;
+}
+
+export interface SubmitWordAttemptResponse {
+  wordId: number;
+  passed: boolean;
+}
