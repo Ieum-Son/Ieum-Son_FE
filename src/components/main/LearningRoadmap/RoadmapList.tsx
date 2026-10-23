@@ -104,7 +104,12 @@ export default function RoadmapList() {
               key={step.id}
               step={step}
               isLast={index === steps.length - 1}
-              onPress={() => router.push("/study/Study")}
+              onPress={() =>
+                router.push({
+                  pathname: "/study/Lesson",
+                  params: { lessonId: String(step.id) },
+                })
+              }
             />
           ))}
         </Section>
