@@ -55,7 +55,6 @@ export default function Profile({ value, onChange }: ProfileProps) {
   const profile = value === undefined ? signupProfile : value;
 
   const uploadImage = async () => {
-    //권한 확인
     if (!status?.granted) {
       const permission = await requestPermission();
 
@@ -65,7 +64,6 @@ export default function Profile({ value, onChange }: ProfileProps) {
       }
     }
 
-    //이미지 업로드
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: false,
@@ -76,7 +74,6 @@ export default function Profile({ value, onChange }: ProfileProps) {
       return;
     }
 
-    //이미지 업로드 한 거 표시
     const image = result.assets[0];
     const mimeType = getImageMimeType(
       image.mimeType,
@@ -92,7 +89,8 @@ export default function Profile({ value, onChange }: ProfileProps) {
       return;
     }
 
-    const extension = mimeType === "image/jpeg" ? "jpg" : mimeType.split("/")[1];
+    const extension =
+      mimeType === "image/jpeg" ? "jpg" : mimeType.split("/")[1];
 
     const nextProfile = {
       uri: image.uri,

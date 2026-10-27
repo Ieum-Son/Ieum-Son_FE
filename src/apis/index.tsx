@@ -52,7 +52,6 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-// TODO(임시): API 테스트용 액세스 토큰 출력. 확인 끝나면 제거할 것.
 api.interceptors.request.use(async (config) => {
   if (isSkipUrl(config.url)) return config;
 
