@@ -193,13 +193,15 @@ const EmailArea = styled.View`
 `;
 
 const CodeArea = styled.View`
-  width: 93%;
+  width: 353px;
+  max-width: 100%;
   gap: 6px;
 `;
 
 const CodeRow = styled.View`
   flex-direction: row;
   align-items: center;
+  gap: 8px;
 `;
 
 const CodeInputWrapper = styled.View`
