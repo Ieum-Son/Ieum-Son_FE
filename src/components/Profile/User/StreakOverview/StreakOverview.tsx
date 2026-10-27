@@ -1,30 +1,39 @@
+import QueryState from "@/components/common/QueryState";
 import { colors } from "@/constants/colors";
 import { getCalendarErrorMessage, useCalendar } from "@/hooks/calendar";
 import { useUserInfo } from "@/hooks/UserInfo";
 import { toHeatmapActivity, toTodayCell } from "@/utils/streak";
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import LearningHeatmap from "./LearningHeatmap";
 import StreakStatCard from "./StreakStatCard";
 
 export default function StreakOverview() {
   const { data: userInfo } = useUserInfo();
-  const { data: calendar, isPending, isError, error } = useCalendar();
+  const {
+    data: calendar,
+    isPending,
+    isPaused,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+  } = useCalendar();
   const longestStreakCount = userInfo?.longestStreakCount ?? 0;
   const monthStudyCount = userInfo?.monthStudyCount ?? 0;
 
   return (
     <Wrapper>
       <HeatmapArea>
-        {isPending ? (
-          <Placeholder>
-            <ActivityIndicator color={colors.primary400} />
-          </Placeholder>
-        ) : isError ? (
-          <Placeholder>
-            <ErrorText>{getCalendarErrorMessage(error)}</ErrorText>
-          </Placeholder>
+        {isPending || isError ? (
+          <QueryState
+            isPending={isPending}
+            isPaused={isPaused}
+            isError={isError}
+            message={isError ? getCalendarErrorMessage(error) : undefined}
+            isRetrying={isRefetching}
+            onRetry={() => refetch()}
+          />
         ) : (
           <LearningHeatmap
             activity={toHeatmapActivity(calendar.days, calendar)}
@@ -58,17 +67,4 @@ const HeatmapArea = styled.View`
 
 const Stats = styled.View`
   gap: 12px;
-`;
-
-const Placeholder = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ErrorText = styled.Text`
-  color: ${colors.errorRed};
-  font-size: 13px;
-  line-height: 18px;
-  text-align: center;
 `;

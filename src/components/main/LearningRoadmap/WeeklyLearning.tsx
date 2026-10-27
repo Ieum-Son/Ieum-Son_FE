@@ -1,8 +1,8 @@
+import QueryState from "@/components/common/QueryState";
 import { colors } from "@/constants/colors";
 import { getStreakErrorMessage, useStreak } from "@/hooks/streak";
 import { toWeeklyLearning } from "@/utils/streak";
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import { default as styled } from "styled-components/native";
 
 const Y_AXIS_STEPS = 7;
@@ -14,29 +14,26 @@ const Y_AXIS_BOTTOM_PADDING =
   Y_AXIS_STEPS;
 
 export default function WeeklyLearning() {
-  const { data: streak, isPending, isPaused, isError, error } = useStreak();
+  const {
+    data: streak,
+    isPending,
+    isPaused,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+  } = useStreak();
 
-  if (isPaused && isPending) {
+  if (isPending || isError) {
     return (
-      <Placeholder>
-        <Message>네트워크 연결을 확인해주세요.</Message>
-      </Placeholder>
-    );
-  }
-
-  if (isPending) {
-    return (
-      <Placeholder>
-        <ActivityIndicator color={colors.primary400} />
-      </Placeholder>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Placeholder>
-        <Message $isError>{getStreakErrorMessage(error)}</Message>
-      </Placeholder>
+      <QueryState
+        isPending={isPending}
+        isPaused={isPaused}
+        isError={isError}
+        message={isError ? getStreakErrorMessage(error) : undefined}
+        isRetrying={isRefetching}
+        onRetry={() => refetch()}
+      />
     );
   }
 
@@ -97,19 +94,6 @@ export default function WeeklyLearning() {
 const Wrapper = styled.View`
   flex: 1;
   width: 100%;
-`;
-
-const Placeholder = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-`;
-
-const Message = styled.Text<{ $isError?: boolean }>`
-  color: ${({ $isError }) => ($isError ? colors.errorRed : colors.neutral600)};
-  font-size: 14px;
-  text-align: center;
 `;
 
 const Title = styled.Text`

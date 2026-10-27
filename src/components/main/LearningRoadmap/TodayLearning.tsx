@@ -1,10 +1,10 @@
+import QueryState from "@/components/common/QueryState";
 import { colors } from "@/constants/colors";
 import {
   getDailyProgressErrorMessage,
   useDailyProgress,
 } from "@/hooks/progress";
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import { default as styled } from "styled-components/native";
 
 export default function TodayLearning() {
@@ -14,29 +14,20 @@ export default function TodayLearning() {
     isPaused,
     isError,
     error,
+    refetch,
+    isRefetching,
   } = useDailyProgress();
 
-  if (isPaused && isPending) {
+  if (isPending || isError) {
     return (
-      <Placeholder>
-        <Message>네트워크 연결을 확인해주세요.</Message>
-      </Placeholder>
-    );
-  }
-
-  if (isPending) {
-    return (
-      <Placeholder>
-        <ActivityIndicator color={colors.primary400} />
-      </Placeholder>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Placeholder>
-        <Message $isError>{getDailyProgressErrorMessage(error)}</Message>
-      </Placeholder>
+      <QueryState
+        isPending={isPending}
+        isPaused={isPaused}
+        isError={isError}
+        message={isError ? getDailyProgressErrorMessage(error) : undefined}
+        isRetrying={isRefetching}
+        onRetry={() => refetch()}
+      />
     );
   }
 
@@ -98,17 +89,4 @@ const Word = styled.Text<{ $isMastered?: boolean }>`
     $isMastered ? colors.primary400 : colors.neutral1000};
   font-size: 16px;
   font-weight: 600;
-`;
-
-const Placeholder = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-`;
-
-const Message = styled.Text<{ $isError?: boolean }>`
-  color: ${({ $isError }) => ($isError ? colors.errorRed : colors.neutral600)};
-  font-size: 14px;
-  text-align: center;
 `;

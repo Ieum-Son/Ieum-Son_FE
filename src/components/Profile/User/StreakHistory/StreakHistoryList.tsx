@@ -1,3 +1,4 @@
+import QueryState from "@/components/common/QueryState";
 import { colors } from "@/constants/colors";
 import {
   getGoldUseHistoryErrorMessage,
@@ -5,7 +6,6 @@ import {
   useGoldUseHistory,
 } from "@/hooks/goldUseHistory";
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import StreakBlock from "./StreakBlock";
 
@@ -16,30 +16,20 @@ const formatUsedDate = (createdAt: string) => {
 };
 
 export default function StreakHistoryList() {
-  const { data, isPending, isPaused, isError, error } = useGoldUseHistory();
+  const { data, isPending, isPaused, isError, error, refetch, isRefetching } =
+    useGoldUseHistory();
   const items = data?.items ?? [];
 
-  if (isPaused && isPending) {
+  if (isPending || isError) {
     return (
-      <Placeholder>
-        <Message>네트워크 연결을 확인해주세요.</Message>
-      </Placeholder>
-    );
-  }
-
-  if (isPending) {
-    return (
-      <Placeholder>
-        <ActivityIndicator color={colors.primary400} />
-      </Placeholder>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Placeholder>
-        <Message $isError>{getGoldUseHistoryErrorMessage(error)}</Message>
-      </Placeholder>
+      <QueryState
+        isPending={isPending}
+        isPaused={isPaused}
+        isError={isError}
+        message={isError ? getGoldUseHistoryErrorMessage(error) : undefined}
+        isRetrying={isRefetching}
+        onRetry={() => refetch()}
+      />
     );
   }
 
