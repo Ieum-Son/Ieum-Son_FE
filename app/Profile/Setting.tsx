@@ -9,13 +9,16 @@ import {
   useSetting,
   useUpdateSetting,
 } from "@/hooks/Setting";
-import React, { useState } from "react";
+import { useSoundStore } from "@/stores/soundStore";
+import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export default function Setting() {
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [volume, setVolume] = useState(0.68);
+  const soundEnabled = useSoundStore((state) => state.soundEnabled);
+  const volume = useSoundStore((state) => state.volume);
+  const setSoundEnabled = useSoundStore((state) => state.setSoundEnabled);
+  const setVolume = useSoundStore((state) => state.setVolume);
 
   const { data: setting, isPending, isError, error } = useSetting();
   const {
@@ -41,16 +44,7 @@ export default function Setting() {
           contentContainerStyle={{ paddingBottom: 28 }}
           showsVerticalScrollIndicator={false}
         >
-          <SettingSection title="지원" topSpacing={26}>
-            <SettingBlock
-              icon="coffee-outline"
-              text="개발자에게 커피 사주기"
-              option="next"
-            />
-            <SettingBlock icon="headphones" text="고객지원" option="next" />
-          </SettingSection>
-
-          <SettingSection title="환경설정" topSpacing={15}>
+          <SettingSection title="환경설정" topSpacing={26}>
             <SoundSettingControl
               value={soundEnabled}
               onValueChange={setSoundEnabled}
@@ -60,7 +54,6 @@ export default function Setting() {
             <SettingBlock
               icon="bell-outline"
               text="알림"
-              option="toggle"
               value={notificationEnabled}
               onValueChange={
                 canChangeNotification

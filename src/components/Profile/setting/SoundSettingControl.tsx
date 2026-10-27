@@ -21,7 +21,6 @@ export default function SoundSettingControl({
       <SettingBlock
         icon="volume-high"
         text="음성 및 효과"
-        option="toggle"
         value={value}
         onValueChange={onValueChange}
       />
