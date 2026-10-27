@@ -3,7 +3,7 @@ export interface FavoriteWord {
   word: string;
   videoUrl: string;
   category: string;
-  recentLearnedDate: string;
+  recentLearnedDate: string | null;
 }
 
 export interface GetFavoriteResponse {

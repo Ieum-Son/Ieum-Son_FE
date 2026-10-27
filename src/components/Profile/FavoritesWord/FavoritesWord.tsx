@@ -5,13 +5,13 @@ import styled from "styled-components/native";
 interface FavoritesWordProps {
   category: string;
   word: string;
-  recentLearnedDate: string;
+  recentLearnedDate: string | null;
   disabled?: boolean;
   onRemove: () => void;
   onPress: () => void;
 }
 
-const formatLearnedDate = (recentLearnedDate: string) => {
+const formatLearnedDate = (recentLearnedDate: string | null) => {
   if (!recentLearnedDate) return "-";
 
   return recentLearnedDate.slice(0, 10).replace(/-/g, ".");
@@ -52,7 +52,7 @@ export default function FavoritesWord({
 
 const Wrapper = styled.Pressable`
   display: flex;
-  height: 126px;
+  min-height: 126px;
   padding: 16px 20px;
   flex-direction: column;
   justify-content: space-between;
@@ -71,7 +71,7 @@ const Category = styled.Text`
   background-color: ${colors.primary100};
   border-radius: 999px;
   color: ${colors.primary400};
-  margin-bottom: 4px;
+  margin-bottom: -10px;
 `;
 
 const Star = styled.Pressable``;
