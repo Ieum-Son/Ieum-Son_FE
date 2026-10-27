@@ -137,6 +137,7 @@ export default function EmailInput() {
                     isActive={isModifyActive}
                     disabled={isCodeSent && !isExpired}
                     onPress={modify}
+                    isLoading={verifyEmailMutation.isPending}
                   />
                 </InputWrapper>
 
@@ -170,6 +171,8 @@ export default function EmailInput() {
                 text="다음"
                 isActive={isNextActive}
                 onPress={handleNext}
+                isLoading={verifyCodeMutation.isPending}
+                loadingText="확인 중..."
               />
 
               <Question

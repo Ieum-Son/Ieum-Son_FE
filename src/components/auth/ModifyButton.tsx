@@ -1,10 +1,12 @@
 import { colors } from "@/constants/colors";
+import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 
 interface ModifyButtonProps {
   isActive: boolean;
   disabled: boolean;
   onPress: () => void;
+  isLoading?: boolean;
 }
 
 interface ModifyWrapperProps {
@@ -15,14 +17,23 @@ export default function ModifyButton({
   isActive,
   disabled,
   onPress,
+  isLoading = false,
 }: ModifyButtonProps) {
+  const canPress = isActive && !disabled && !isLoading;
+
   return (
     <ModifyWrapper
-      isActive={isActive}
-      disabled={disabled || !isActive}
+      isActive={isActive && !isLoading}
+      disabled={!canPress}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !canPress, busy: isLoading }}
     >
-      <Modify>{disabled ? "전송완료" : "인증"}</Modify>
+      {isLoading ? (
+        <ActivityIndicator color={colors.neutral0} size="small" />
+      ) : (
+        <Modify>{disabled ? "전송완료" : "인증"}</Modify>
+      )}
     </ModifyWrapper>
   );
 }

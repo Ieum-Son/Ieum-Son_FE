@@ -100,6 +100,8 @@ export default function ProfileInput() {
                 text="회원가입"
                 isActive={isActive}
                 onPress={handleSignup}
+                isLoading={isPending}
+                loadingText="가입 중..."
               />
               <Question
                 question="계정이 있으신가요?"
