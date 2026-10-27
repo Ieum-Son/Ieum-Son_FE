@@ -49,9 +49,7 @@ export const useVerifyEmail = () => {
   return useMutation({
     mutationFn: verifyEmail,
 
-    onSuccess: () => {
-      console.log("이메일 발송 성공!");
-    },
+    onSuccess: () => {},
 
     onError: (error: unknown) =>
       console.error(getVerifyEmailErrorMessage(error)),
@@ -62,9 +60,7 @@ export const useVerifyCode = () => {
   return useMutation({
     mutationFn: verifyCode,
 
-    onSuccess: () => {
-      console.log("인증 성공");
-    },
+    onSuccess: () => {},
 
     onError: (error: unknown) =>
       console.error(getVerifyCodeErrorMessage(error)),
@@ -77,7 +73,6 @@ export const useSignup = () => {
 
     onSuccess: () => {
       useSignupStore.getState().reset();
-      console.log("회원가입 성공!");
       router.push("/Login");
     },
 

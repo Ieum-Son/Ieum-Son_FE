@@ -52,11 +52,17 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+// TODO(임시): API 테스트용 액세스 토큰 출력. 확인 끝나면 제거할 것.
 api.interceptors.request.use(async (config) => {
   if (isSkipUrl(config.url)) return config;
 
   const accessToken = await getAccessTokens();
-  if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+
+  if (!accessToken) {
+    throw new axios.CanceledError(`${config.url} 요청 취소: 로그인 상태 아님`);
+  }
+
+  config.headers.Authorization = `Bearer ${accessToken}`;
   return config;
 });
 
@@ -64,6 +70,10 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const config = error.config as RetryableRequestConfig | undefined;
+
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
 
     if (!config) {
       return Promise.reject(error);
