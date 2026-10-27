@@ -18,7 +18,6 @@ export const getGoldUseHistoryErrorMessage = createErrorMessage({
   fallback: "금조각 사용 내역을 불러오는 데 실패했습니다.",
 });
 
-/** EARN_로 시작하면 획득, 그 외(SPEND_, BUY_)는 사용이다. */
 export const isEarnedGold = (type: GoldUseHistoryType) =>
   type.startsWith("EARN_");
 

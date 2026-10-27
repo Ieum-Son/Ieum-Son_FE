@@ -39,6 +39,35 @@ export const toLearnedWeekdays = (week: StreakDay[] = []): Weekday[] => {
   }, []);
 };
 
+export interface WeeklyLearningPoint {
+  day: Weekday;
+  value: number;
+  isToday: boolean;
+}
+
+export const toWeeklyLearning = (
+  week: StreakDay[] = [],
+): WeeklyLearningPoint[] => {
+  const thisWeekStart = startOfWeek(new Date());
+  const todayIndex = new Date().getDay();
+  const valueByWeekday = new Map<number, number>();
+
+  week.forEach((day) => {
+    const parsed = parseDate(day.date);
+
+    if (!parsed) return;
+    if (startOfWeek(parsed).getTime() !== thisWeekStart.getTime()) return;
+
+    valueByWeekday.set(parsed.getDay(), day.wordsCompleted);
+  });
+
+  return WEEKDAYS.map((day, index) => ({
+    day,
+    value: valueByWeekday.get(index) ?? 0,
+    isToday: index === todayIndex,
+  }));
+};
+
 export const HEATMAP_WEEKS = 7;
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;

@@ -1,37 +1,65 @@
 import { colors } from "@/constants/colors";
+import { getStreakErrorMessage, useStreak } from "@/hooks/streak";
+import { toWeeklyLearning } from "@/utils/streak";
 import React from "react";
+import { ActivityIndicator } from "react-native";
 import { default as styled } from "styled-components/native";
 
-const WEEKLY_DATA = [
-  { day: "일", value: 4 },
-  { day: "월", value: 1 },
-  { day: "화", value: 1 },
-  { day: "수", value: 2 },
-  { day: "목", value: 1 },
-  { day: "금", value: 7 },
-  { day: "토", value: 0 },
-];
-
-const Y_AXIS_VALUES = [7, 6, 5, 4, 3, 2, 1];
-const MAX_VALUE = 7;
+const Y_AXIS_STEPS = 7;
+const MIN_AXIS_MAX = 7;
 const MAX_BAR_HEIGHT = 227;
 const Y_AXIS_MARK_HEIGHT = 18;
 const Y_AXIS_BOTTOM_PADDING =
-  (MAX_BAR_HEIGHT -
-    (Y_AXIS_MARK_HEIGHT * (Y_AXIS_VALUES.length + 1)) / 2) /
-  Y_AXIS_VALUES.length;
+  (MAX_BAR_HEIGHT - (Y_AXIS_MARK_HEIGHT * (Y_AXIS_STEPS + 1)) / 2) /
+  Y_AXIS_STEPS;
 
 export default function WeeklyLearning() {
+  const { data: streak, isPending, isPaused, isError, error } = useStreak();
+
+  if (isPaused && isPending) {
+    return (
+      <Placeholder>
+        <Message>네트워크 연결을 확인해주세요.</Message>
+      </Placeholder>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <Placeholder>
+        <ActivityIndicator color={colors.primary400} />
+      </Placeholder>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Placeholder>
+        <Message $isError>{getStreakErrorMessage(error)}</Message>
+      </Placeholder>
+    );
+  }
+
+  const weekly = toWeeklyLearning(streak.week);
+  const axisMax = Math.max(MIN_AXIS_MAX, ...weekly.map((point) => point.value));
+  const yAxisValues = Array.from({ length: Y_AXIS_STEPS }, (_, index) =>
+    Math.round((axisMax * (Y_AXIS_STEPS - index)) / Y_AXIS_STEPS),
+  );
+
   return (
     <Wrapper>
-      <Title>이번 주, 6일 연속 학습중이에요!</Title>
+      <Title>
+        {streak.currentStreak > 0
+          ? `이번 주, ${streak.currentStreak}일 연속 학습중이에요!`
+          : "이번 주 학습을 시작해 볼까요?"}
+      </Title>
       <Description>이번 주에 얼마나 학습했는지 살펴볼까요?</Description>
 
       <Chart>
         <Graph>
           <YAxis>
-            {Y_AXIS_VALUES.map((value) => (
-              <YAxisMark key={value}>
+            {yAxisValues.map((value, index) => (
+              <YAxisMark key={`${value}-${index}`}>
                 <YAxisLabel>{value}</YAxisLabel>
                 <YAxisTick />
               </YAxisMark>
@@ -40,12 +68,12 @@ export default function WeeklyLearning() {
 
           <ChartBody>
             <Plot>
-              {WEEKLY_DATA.map(({ day, value }) => (
+              {weekly.map(({ day, value, isToday }) => (
                 <BarColumn key={day}>
                   {value > 0 && (
                     <Bar
-                      $height={(value / MAX_VALUE) * MAX_BAR_HEIGHT}
-                      $highlighted={day === "금"}
+                      $height={(value / axisMax) * MAX_BAR_HEIGHT}
+                      $highlighted={isToday}
                     />
                   )}
                 </BarColumn>
@@ -53,8 +81,8 @@ export default function WeeklyLearning() {
             </Plot>
 
             <DayLabels>
-              {WEEKLY_DATA.map(({ day }) => (
-                <DayLabel key={day} $highlighted={day === "금"}>
+              {weekly.map(({ day, isToday }) => (
+                <DayLabel key={day} $highlighted={isToday}>
                   {day}
                 </DayLabel>
               ))}
@@ -69,6 +97,19 @@ export default function WeeklyLearning() {
 const Wrapper = styled.View`
   flex: 1;
   width: 100%;
+`;
+
+const Placeholder = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+`;
+
+const Message = styled.Text<{ $isError?: boolean }>`
+  color: ${({ $isError }) => ($isError ? colors.errorRed : colors.neutral600)};
+  font-size: 14px;
+  text-align: center;
 `;
 
 const Title = styled.Text`

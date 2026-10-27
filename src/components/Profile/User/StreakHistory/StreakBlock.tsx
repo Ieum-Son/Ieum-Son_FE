@@ -19,7 +19,7 @@ export default function StreakBlock({
       <Top>
         <Text numberOfLines={1}>{text}</Text>
         <Coin $isEarned={isEarned}>
-          {isEarned ? "+" : "-"}
+          {isEarned ? "+" : ""}
           {useCoin}
         </Coin>
       </Top>

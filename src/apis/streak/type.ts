@@ -1,6 +1,7 @@
 export interface StreakDay {
   date: string;
   learned: boolean;
+  wordsCompleted: number;
 }
 
 export interface GetStreakResponse {
