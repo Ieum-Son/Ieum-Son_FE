@@ -27,7 +27,7 @@ const tabItems = [
     text: "홈",
     activeImg: WhiteHome,
     inactiveImg: WhiteHome,
-    href: "/" as Href,
+    href: "/Main" as Href,
   },
   {
     name: "ranking",
@@ -106,9 +106,7 @@ export default function Tab({ activeTab }: TabProps) {
         {tabItems.map((tab) => (
           <TabEach
             key={tab.name}
-            img={
-              selectedTab === tab.name ? tab.activeImg : tab.inactiveImg
-            }
+            img={selectedTab === tab.name ? tab.activeImg : tab.inactiveImg}
             text={tab.text}
             isActive={selectedTab === tab.name}
             onPress={() => handleTabPress(tab)}

@@ -24,10 +24,10 @@ export const useDeleteUser = () => {
       } catch (error) {
         console.error("회원탈퇴 후 토큰 삭제 실패:", error);
       } finally {
+        router.replace("/Splash");
         useUserStore.getState().clearUser();
         useSignupStore.getState().reset();
         queryClient.clear();
-        router.replace("/Splash");
       }
     },
     onError: (error: unknown) => {

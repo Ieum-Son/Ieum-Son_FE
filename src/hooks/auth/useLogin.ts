@@ -4,6 +4,7 @@ import { queryClient } from "@/libs/queryClient";
 import { useUserStore } from "@/stores/userStore";
 import { saveTokens } from "@/utils/tokenStorage";
 import { useMutation } from "@tanstack/react-query";
+import { router } from "expo-router";
 import {
   createErrorMessage,
   TOO_MANY_REQUESTS_MESSAGE,
@@ -33,8 +34,7 @@ export const useLogin = () => {
       useUserStore.getState().clearUser();
       queryClient.removeQueries({ queryKey: USER_INFO_QUERY_KEY });
 
-      console.log("로그인 성공!");
-      //메인 페이지로 이동 router.push
+      router.replace("/Main");
     },
 
     onError: (error: unknown) => console.error(getLoginErrorMessage(error)),

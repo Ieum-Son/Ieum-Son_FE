@@ -26,7 +26,7 @@ export default function Login() {
   };
 
   const InputPassword = (text: string) => {
-    setPassword(text.replace(/\s/g, ""));
+    setPassword(text);
     setErrorMessage("");
   };
 
@@ -34,7 +34,6 @@ export default function Login() {
     try {
       await loginMutation.mutateAsync({ loginId, password });
       setErrorMessage("");
-      // main으로 이동 router
     } catch (error) {
       setErrorMessage(getLoginErrorMessage(error));
     }
@@ -83,6 +82,8 @@ export default function Login() {
                 text="로그인"
                 isActive={isActive}
                 onPress={handleLogin}
+                isLoading={loginMutation.isPending}
+                loadingText="로그인 중..."
               />
               <Question
                 question="계정이 없으신가요?"

@@ -4,7 +4,6 @@ import { useUserStore } from "@/stores/userStore";
 import { getAccessTokens, removeTokens } from "@/utils/tokenStorage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { Alert } from "react-native";
 import { createErrorMessage } from "../errorResponse";
 
 export const getLogoutErrorMessage = createErrorMessage({
@@ -31,25 +30,22 @@ export const useLogout = () => {
   };
 
   return useMutation({
-    mutationFn: logoutUser,
+    mutationFn: async () => {
+      const accessToken = await getAccessTokens();
 
-    onSuccess: async () => {
-      try {
-        await removeTokensSafely();
-      } finally {
-        useUserStore.getState().clearUser();
-        useSignupStore.getState().reset();
-        queryClient.clear();
-        router.replace("/Splash");
-      }
+      if (!accessToken) return;
+
+      await logoutUser();
     },
 
-    onError: async (error: unknown) => {
-      if (!(await getAccessTokens())) return;
+    onSettled: async (_data, error) => {
+      if (error) console.error(getLogoutErrorMessage(error));
 
-      Alert.alert("로그아웃 실패", getLogoutErrorMessage(error), [
-        { text: "확인" },
-      ]);
+      await removeTokensSafely();
+      useUserStore.getState().clearUser();
+      useSignupStore.getState().reset();
+      queryClient.clear();
+      router.replace("/Splash");
     },
   });
 };
