@@ -30,7 +30,14 @@ export default function ModifyButton({
       accessibilityState={{ disabled: !canPress, busy: isLoading }}
     >
       {isLoading ? (
-        <ActivityIndicator color={colors.neutral0} size="small" />
+        <Loading>
+          <ActivityIndicator
+            color={colors.neutral0}
+            size="small"
+            accessibilityElementsHidden
+          />
+          <LoadingText>전송중</LoadingText>
+        </Loading>
       ) : (
         <Modify>{disabled ? "전송완료" : "인증"}</Modify>
       )}
@@ -47,6 +54,18 @@ const ModifyWrapper = styled.TouchableOpacity<ModifyWrapperProps>`
   border-radius: 12px;
   background-color: ${({ isActive }) =>
     isActive ? colors.primary300 : colors.neutral400};
+`;
+
+const Loading = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+`;
+
+const LoadingText = styled.Text`
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
 `;
 
 const Modify = styled.Text`
