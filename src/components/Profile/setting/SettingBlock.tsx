@@ -10,27 +10,19 @@ type SettingIconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 interface SettingBlockProps {
   icon: SettingIconName;
   text: string;
-  option: "next" | "toggle";
   value?: boolean;
-  onPress?: () => void;
   onValueChange?: (value: boolean) => void;
 }
 
 export default function SettingBlock({
   icon,
   text,
-  option,
   value = false,
-  onPress,
   onValueChange,
 }: SettingBlockProps) {
   return (
     <Wrapper>
-      <Row
-        accessibilityRole={option === "next" ? "button" : undefined}
-        disabled={option !== "next" || !onPress}
-        onPress={onPress}
-      >
+      <Row>
         <IconBox>
           <MaterialCommunityIcons
             name={icon}
@@ -41,18 +33,7 @@ export default function SettingBlock({
 
         <Label>{text}</Label>
 
-        {option === "next" ? (
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={30}
-            color={colors.neutral1000}
-          />
-        ) : (
-          <SettingToggle
-            value={value}
-            onValueChange={onValueChange}
-          />
-        )}
+        <SettingToggle value={value} onValueChange={onValueChange} />
       </Row>
     </Wrapper>
   );
@@ -64,7 +45,7 @@ const Wrapper = styled.View`
   padding: 0px 12px;
 `;
 
-const Row = styled.Pressable`
+const Row = styled.View`
   height: 100%;
   flex-direction: row;
   align-items: center;
