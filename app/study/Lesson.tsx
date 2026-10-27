@@ -1,8 +1,10 @@
 import type { LessonWord } from "@/apis/study/type";
 import ProfileHeader from "@/components/header/ProfileHeader";
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
+import WordFavoriteButton from "@/components/Study/WordFavoriteButton";
 import WordVideoModal from "@/components/WordVideoModal";
 import { colors } from "@/constants/colors";
+import { useGetFavorite } from "@/hooks/Favorite";
 import { getStudyLessonErrorMessage, useStudyLesson } from "@/hooks/Study";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
@@ -26,6 +28,11 @@ export default function Lesson() {
     refetch,
     isRefetching,
   } = useStudyLesson(lessonId);
+  const { data: favorite } = useGetFavorite();
+
+  const favoriteWordIds = new Set(
+    favorite?.items.map((item) => item.wordId) ?? [],
+  );
 
   if (!Number.isInteger(lessonId) || lessonId <= 0) {
     return (
@@ -87,6 +94,12 @@ export default function Lesson() {
                 <Word>{word.word}</Word>
                 <Definition numberOfLines={2}>{word.definition}</Definition>
               </WordInfo>
+              <WordFavoriteButton
+                wordId={word.wordId}
+                word={word.word}
+                isMastered={word.isMastered}
+                isFavorite={favoriteWordIds.has(word.wordId)}
+              />
               <MaterialIcons
                 name="play-circle-outline"
                 size={28}
