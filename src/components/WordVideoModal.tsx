@@ -1,6 +1,8 @@
 import { colors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useEffectiveVolume } from "@/stores/soundStore";
 import { useVideoPlayer, VideoView } from "expo-video";
+import { useEffect } from "react";
 import { Modal, Pressable } from "react-native";
 import styled from "styled-components/native";
 
@@ -15,10 +17,16 @@ export default function WordVideoModal({
   videoUrl,
   onClose,
 }: WordVideoModalProps) {
+  const volume = useEffectiveVolume();
   const player = useVideoPlayer(videoUrl, (loadedPlayer) => {
     loadedPlayer.loop = true;
+    loadedPlayer.volume = volume;
     loadedPlayer.play();
   });
+
+  useEffect(() => {
+    player.volume = volume;
+  }, [player, volume]);
 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>

@@ -1,5 +1,7 @@
 import { colors } from "@/constants/colors";
+import { useEffectiveVolume } from "@/stores/soundStore";
 import { useVideoPlayer, VideoView } from "expo-video";
+import { useEffect } from "react";
 import styled from "styled-components/native";
 
 interface StudyVideoProps {
@@ -13,9 +15,15 @@ export default function StudyVideo({
   accessibilityLabel,
   emptyMessage = "학습 영상 준비 중",
 }: StudyVideoProps) {
+  const volume = useEffectiveVolume();
   const player = useVideoPlayer(videoUrl ?? null, (loadedPlayer) => {
     loadedPlayer.loop = true;
+    loadedPlayer.volume = volume;
   });
+
+  useEffect(() => {
+    player.volume = volume;
+  }, [player, volume]);
 
   if (!videoUrl) {
     return (
