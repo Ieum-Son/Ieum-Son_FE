@@ -1,10 +1,12 @@
 import { colors } from "@/constants/colors";
+import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 
 interface ModifyButtonProps {
   isActive: boolean;
   disabled: boolean;
   onPress: () => void;
+  isLoading?: boolean;
 }
 
 interface ModifyWrapperProps {
@@ -15,14 +17,30 @@ export default function ModifyButton({
   isActive,
   disabled,
   onPress,
+  isLoading = false,
 }: ModifyButtonProps) {
+  const canPress = isActive && !disabled && !isLoading;
+
   return (
     <ModifyWrapper
-      isActive={isActive}
-      disabled={disabled || !isActive}
+      isActive={isActive && !isLoading}
+      disabled={!canPress}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !canPress, busy: isLoading }}
     >
-      <Modify>{disabled ? "전송완료" : "인증"}</Modify>
+      {isLoading ? (
+        <Loading>
+          <ActivityIndicator
+            color={colors.neutral0}
+            size="small"
+            accessibilityElementsHidden
+          />
+          <LoadingText>전송중</LoadingText>
+        </Loading>
+      ) : (
+        <Modify>{disabled ? "전송완료" : "인증"}</Modify>
+      )}
     </ModifyWrapper>
   );
 }
@@ -36,6 +54,18 @@ const ModifyWrapper = styled.TouchableOpacity<ModifyWrapperProps>`
   border-radius: 12px;
   background-color: ${({ isActive }) =>
     isActive ? colors.primary300 : colors.neutral400};
+`;
+
+const Loading = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+`;
+
+const LoadingText = styled.Text`
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
 `;
 
 const Modify = styled.Text`

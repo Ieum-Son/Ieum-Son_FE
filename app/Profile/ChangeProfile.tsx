@@ -177,6 +177,8 @@ function ChangeProfileForm({ user }: { user: UserProfile }) {
               text="확인"
               isActive={isActive}
               onPress={handleChangeProfile}
+              isLoading={isPending}
+              loadingText="저장 중..."
             />
           </Wrapper>
         </Container>
