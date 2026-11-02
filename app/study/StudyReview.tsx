@@ -7,6 +7,7 @@ import {
   useDailyProgress,
   useSubmitWordAttempt,
 } from "@/hooks/progress";
+import { useTimer } from "@/hooks/useTimer";
 import { goToNextStage } from "@/utils/studyNavigation";
 import {
   getReviewStep,
@@ -14,7 +15,7 @@ import {
   getTotalSteps,
 } from "@/utils/studyProgress";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const ANSWER_COUNT = 3;
 
@@ -45,9 +46,6 @@ export default function StudyReview() {
   const { reviewIndex: reviewIndexParam } = useLocalSearchParams<{
     reviewIndex?: string;
   }>();
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const {
     data: daily,
     isPending,
@@ -56,8 +54,6 @@ export default function StudyReview() {
     refetch,
     isRefetching,
   } = useDailyProgress();
-  const { mutateAsync: submitAttempt, isPending: isSubmitting } =
-    useSubmitWordAttempt();
 
   if (isPending) return <StudyStateScreen />;
 
@@ -79,19 +75,64 @@ export default function StudyReview() {
     return <StudyStateScreen message="오늘 복습할 단어가 없어요." />;
   }
 
+  return (
+    <ReviewQuestion
+      key={review.wordId}
+      daily={daily}
+      review={review}
+      reviewIndex={reviewIndex}
+    />
+  );
+}
+
+interface ReviewQuestionProps {
+  daily: DailyProgressResponse;
+  review: DailyReview;
+  reviewIndex: number;
+}
+
+function ReviewQuestion({ daily, review, reviewIndex }: ReviewQuestionProps) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const hasSubmittedRef = useRef(false);
+  const { mutateAsync: submitAttempt, isPending: isSubmitting } =
+    useSubmitWordAttempt();
+  const { formattedTime, isExpired, startTimer, stopTimer } = useTimer();
+
   const answers = buildAnswers(daily, review);
   const correctIndex = answers.indexOf(review.word);
 
+  useEffect(() => {
+    if (review.timeLimitSeconds > 0) startTimer(review.timeLimitSeconds);
+  }, [review.timeLimitSeconds, startTimer]);
+
+  useEffect(() => {
+    if (!isExpired || hasSubmittedRef.current) return;
+
+    hasSubmittedRef.current = true;
+
+    submitAttempt({ wordId: review.wordId, passed: false })
+      .catch((submitError) =>
+        setErrorMessage(getSubmitWordAttemptErrorMessage(submitError)),
+      )
+      .finally(() => setIsAnswered(true));
+  }, [isExpired, review.wordId, submitAttempt]);
+
   const handleSelect = (index: number) => {
-    if (isAnswered || isSubmitting) return;
+    if (isAnswered || isSubmitting || isExpired) return;
 
     setSelectedIndex(index);
     setErrorMessage("");
   };
 
   const handleSubmit = async () => {
-    if (selectedIndex === null || isSubmitting) return;
+    if (selectedIndex === null || isSubmitting || hasSubmittedRef.current) {
+      return;
+    }
 
+    hasSubmittedRef.current = true;
+    stopTimer();
     setErrorMessage("");
 
     try {
@@ -102,6 +143,7 @@ export default function StudyReview() {
 
       setIsAnswered(true);
     } catch (submitError) {
+      hasSubmittedRef.current = false;
       setErrorMessage(getSubmitWordAttemptErrorMessage(submitError));
     }
   };
@@ -119,6 +161,8 @@ export default function StudyReview() {
       videoUrl={review.videoUrl}
       answers={answers}
       answerDefinition={review.definition}
+      remainingTime={review.timeLimitSeconds > 0 ? formattedTime : undefined}
+      isTimedOut={isExpired}
       selectedIndex={selectedIndex}
       answerIndex={isAnswered ? correctIndex : null}
       errorMessage={errorMessage}
