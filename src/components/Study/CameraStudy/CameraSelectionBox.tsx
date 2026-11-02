@@ -1,9 +1,7 @@
 import { colors } from "@/constants/colors";
-import { Image, type ImageSource } from "expo-image";
 import styled from "styled-components/native";
 
 interface CameraSelectionBoxProps {
-  source: ImageSource;
   recognitionRate?: number;
 }
 
@@ -20,7 +18,6 @@ export const getCameraPositionError = (recognitionRate?: number) => {
 };
 
 export default function CameraSelectionBox({
-  source,
   recognitionRate = 0,
 }: CameraSelectionBoxProps) {
   const normalizedRate = Math.min(Math.max(recognitionRate, 0), 100);
@@ -33,7 +30,6 @@ export default function CameraSelectionBox({
         accessible
         accessibilityLabel={`수어 동작 카메라 화면, 인식률 ${displayedRate}%${errorMessage ? `, ${errorMessage}` : ""}`}
       >
-        <CameraImage source={source} contentFit="cover" />
         <RecognitionRate selectable>인식률 {displayedRate}%</RecognitionRate>
       </Wrapper>
 
@@ -56,12 +52,7 @@ const Wrapper = styled.View`
   height: 254px;
   overflow: hidden;
   border-radius: 12px;
-  background-color: ${colors.neutral100};
-`;
-
-const CameraImage = styled(Image)`
-  width: 100%;
-  height: 100%;
+  background-color: ${colors.neutral800};
 `;
 
 const RecognitionRate = styled.Text`

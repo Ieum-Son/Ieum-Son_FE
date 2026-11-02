@@ -1,5 +1,4 @@
 import { colors } from "@/constants/colors";
-import type { ImageSource } from "expo-image";
 import { router } from "expo-router";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,7 +17,6 @@ interface CameraStudyLayoutProps {
   category?: string;
   guide: string;
   description: string;
-  imageSource: ImageSource;
   recognitionRate?: number;
   attemptCount?: number;
   errorMessage?: string;
@@ -34,7 +32,6 @@ export default function CameraStudyLayout({
   category,
   guide,
   description,
-  imageSource,
   recognitionRate,
   attemptCount,
   errorMessage,
@@ -64,10 +61,7 @@ export default function CameraStudyLayout({
             <WordCategory category={category} />
             <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
-            <CameraSelectionBox
-              source={imageSource}
-              recognitionRate={recognitionRate}
-            />
+            <CameraSelectionBox recognitionRate={recognitionRate} />
             <DescriptionBox description={description} />
 
             {attemptCount ? (
@@ -87,12 +81,12 @@ export default function CameraStudyLayout({
 
       <ButtonArea>
         <NextButton
-          label={isSubmitting ? "저장 중" : "다음 학습으로 넘어가기"}
+          label={isSubmitting ? "인식 중" : "다음 학습으로 넘어가기"}
           accessibilityLabel={
-            isSubmitting ? "학습 기록 저장 중" : "다음 학습으로 이동"
+            isSubmitting ? "수어 동작 인식 중" : "다음 학습으로 이동"
           }
           onPress={onNext}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !onNext}
         />
       </ButtonArea>
     </Screen>

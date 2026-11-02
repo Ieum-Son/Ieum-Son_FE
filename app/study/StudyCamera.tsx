@@ -1,12 +1,10 @@
-import CameraImageSource from "@/assets/study_temp/camera.png";
 import CameraStudyLayout from "@/components/Study/CameraStudy/CameraStudyLayout";
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
 import {
   getDailyProgressErrorMessage,
-  getSubmitWordAttemptErrorMessage,
   useDailyProgress,
-  useSubmitWordAttempt,
 } from "@/hooks/progress";
+import { useStudySocket } from "@/hooks/studySocket";
 import { goToNextStage } from "@/utils/studyNavigation";
 import {
   getStudyIndex,
@@ -14,16 +12,11 @@ import {
   getWordStep,
 } from "@/utils/studyProgress";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-
-const MOCK_RECOGNITION_RATE = 92;
-const MOCK_RECOGNITION_PASSED = true;
 
 export default function StudyCamera() {
   const { wordIndex: wordIndexParam } = useLocalSearchParams<{
     wordIndex?: string;
   }>();
-  const [errorMessage, setErrorMessage] = useState("");
   const {
     data: daily,
     isPending,
@@ -32,8 +25,10 @@ export default function StudyCamera() {
     refetch,
     isRefetching,
   } = useDailyProgress();
-  const { mutateAsync: submitAttempt, isPending: isSubmitting } =
-    useSubmitWordAttempt();
+  const { status, result, errorMessage } = useStudySocket({
+    ticket: daily?.sessionTicket,
+    onTicketExpired: () => refetch(),
+  });
 
   if (isPending) return <StudyStateScreen />;
 
@@ -53,22 +48,22 @@ export default function StudyCamera() {
 
   if (!word) return <StudyStateScreen message="오늘 학습할 단어가 없어요." />;
 
-  const handleNext = async () => {
-    if (isSubmitting) return;
+  const isMatched = result?.wordId === word.wordId;
+  const isRecognized = Boolean(isMatched && result?.recorded);
+  const recognitionRate = result ? Math.round(result.confidence * 100) : 0;
 
-    setErrorMessage("");
+  const getGuideMessage = () => {
+    if (errorMessage) return errorMessage;
+    if (status === "connecting") return "수어 인식 서버에 연결하는 중이에요.";
+    if (status === "closed") return "연결이 끊겼어요. 화면을 다시 열어주세요.";
+    if (status === "scoring") return "동작을 확인하는 중이에요.";
+    if (isRecognized) return "잘했어요! 다음으로 넘어가세요.";
 
-    try {
-      await submitAttempt({
-        wordId: word.wordId,
-        passed: MOCK_RECOGNITION_PASSED,
-      });
-    } catch (submitError) {
-      setErrorMessage(getSubmitWordAttemptErrorMessage(submitError));
-      return;
+    if (result && !isMatched) {
+      return `'${result.predicted}'(으)로 인식했어요. 다시 해볼까요?`;
     }
 
-    goToNextStage(daily, { name: "word", index: wordIndex });
+    return "화면 가운데에 얼굴을 맞추고, 학습한 수어를 따라해 보세요.\n동작이 완료되면 자동으로 인식됩니다.";
   };
 
   return (
@@ -78,16 +73,17 @@ export default function StudyCamera() {
       totalSteps={getTotalSteps(daily)}
       word={word.word}
       category={word.category}
-      guide={
-        "화면 가운데에 얼굴을 맞추고, 학습한 수어를 따라해 보세요.\n동작이 완료되면 자동으로 인식됩니다."
-      }
+      guide={getGuideMessage()}
       description={word.definition}
-      imageSource={CameraImageSource}
-      recognitionRate={MOCK_RECOGNITION_RATE}
+      recognitionRate={recognitionRate}
       attemptCount={word.attemptCount}
       errorMessage={errorMessage}
-      isSubmitting={isSubmitting}
-      onNext={handleNext}
+      isSubmitting={status === "scoring"}
+      onNext={
+        isRecognized
+          ? () => goToNextStage(daily, { name: "word", index: wordIndex })
+          : undefined
+      }
     />
   );
 }
