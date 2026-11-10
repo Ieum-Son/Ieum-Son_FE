@@ -1,25 +1,19 @@
 import BgImage from "@/assets/background/bg.png";
 import Bluee from "@/assets/Logo/Blue";
 import { LoginButton, SignupButton } from "@/components/splash";
-import { useSignupStore } from "@/stores/signupStore";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { Image, StyleSheet } from "react-native";
 import styled from "styled-components/native";
 
 export default function Splash() {
-  const resetSignup = useSignupStore((state) => state.reset);
-
-  const handleSignup = () => {
-    resetSignup();
-    router.push("/Signup/EmailInput");
-  };
+  const handleSignup = () => router.push("/Signup/EmailInput");
 
   return (
-    <Wrapper style={StyleSheet.absoluteFillObject}>
+    <Wrapper style={StyleSheet.absoluteFill}>
       <Image
         source={BgImage}
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
         resizeMode="cover"
       />
 

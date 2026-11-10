@@ -1,5 +1,6 @@
 import { colors } from "@/constants/colors";
 import { router } from "expo-router";
+import type { ReadonlyFrameProcessor } from "react-native-vision-camera";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -18,9 +19,13 @@ interface CameraStudyLayoutProps {
   guide: string;
   description: string;
   recognitionRate?: number;
+  frameProcessor?: ReadonlyFrameProcessor;
+  isCameraActive?: boolean;
   attemptCount?: number;
   errorMessage?: string;
   isSubmitting?: boolean;
+  isRecording?: boolean;
+  onToggleRecording?: () => void;
   onNext?: () => void;
 }
 
@@ -33,9 +38,13 @@ export default function CameraStudyLayout({
   guide,
   description,
   recognitionRate,
+  frameProcessor,
+  isCameraActive,
   attemptCount,
   errorMessage,
   isSubmitting,
+  isRecording,
+  onToggleRecording,
   onNext,
 }: CameraStudyLayoutProps) {
   const progress = totalSteps > 0 ? step / totalSteps : 0;
@@ -61,7 +70,11 @@ export default function CameraStudyLayout({
             <WordCategory category={category} />
             <Heading selectable>{word}</Heading>
             <Guide selectable>{guide}</Guide>
-            <CameraSelectionBox recognitionRate={recognitionRate} />
+            <CameraSelectionBox
+              recognitionRate={recognitionRate}
+              frameProcessor={frameProcessor}
+              isCameraActive={isCameraActive}
+            />
             <DescriptionBox description={description} />
 
             {attemptCount ? (
@@ -80,6 +93,23 @@ export default function CameraStudyLayout({
       </ScrollView>
 
       <ButtonArea>
+        {onToggleRecording ? (
+          <RecordButton
+            onPress={onToggleRecording}
+            disabled={isSubmitting}
+            $isRecording={Boolean(isRecording)}
+            accessibilityRole="button"
+            accessibilityState={{ busy: isSubmitting }}
+            accessibilityLabel={
+              isRecording ? "동작 녹화 끝내고 확인" : "동작 녹화 시작"
+            }
+          >
+            <RecordText>
+              {isRecording ? "동작 끝내기" : "동작 시작하기"}
+            </RecordText>
+          </RecordButton>
+        ) : null}
+
         <NextButton
           label={isSubmitting ? "인식 중" : "다음 학습으로 넘어가기"}
           accessibilityLabel={
@@ -143,6 +173,22 @@ const Guide = styled.Text`
   line-height: 22px;
   text-align: center;
   margin-top: -5px;
+`;
+
+const RecordButton = styled.Pressable<{ $isRecording: boolean }>`
+  height: 48px;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: ${({ $isRecording }) =>
+    $isRecording ? colors.errorRed : colors.primary300};
+`;
+
+const RecordText = styled.Text`
+  color: ${colors.neutral0};
+  font-size: 16px;
+  font-weight: 600;
 `;
 
 const ButtonArea = styled.View`

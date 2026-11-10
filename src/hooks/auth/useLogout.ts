@@ -1,5 +1,4 @@
 import { logoutUser } from "@/apis/auth/logout";
-import { useSignupStore } from "@/stores/signupStore";
 import { useUserStore } from "@/stores/userStore";
 import { getAccessTokens, removeTokens } from "@/utils/tokenStorage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -43,7 +42,6 @@ export const useLogout = () => {
 
       await removeTokensSafely();
       useUserStore.getState().clearUser();
-      useSignupStore.getState().reset();
       queryClient.clear();
       router.replace("/Splash");
     },

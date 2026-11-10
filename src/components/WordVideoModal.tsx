@@ -52,7 +52,6 @@ export default function WordVideoModal({
               borderRadius: 12,
               backgroundColor: colors.neutral1000,
             }}
-            allowsFullscreen
             nativeControls
             contentFit="contain"
           />

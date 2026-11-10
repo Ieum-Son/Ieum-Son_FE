@@ -1,5 +1,5 @@
 import { signup, verifyCode, verifyEmail } from "@/apis/auth/signup";
-import { useSignupStore } from "@/stores/signupStore";
+import { useSignupForm } from "@/contexts/SignupContext";
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import {
@@ -68,11 +68,13 @@ export const useVerifyCode = () => {
 };
 
 export const useSignup = () => {
+  const { reset, setLoginIdError } = useSignupForm();
+
   return useMutation({
     mutationFn: signup,
 
     onSuccess: () => {
-      useSignupStore.getState().reset();
+      reset();
       router.push("/Login");
     },
 
@@ -83,7 +85,7 @@ export const useSignup = () => {
         getErrorStatus(error) === 409 &&
         serverMessage?.includes("로그인 ID")
       ) {
-        useSignupStore.getState().setLoginIdError(serverMessage);
+        setLoginIdError(serverMessage);
         router.dismissTo("/Signup/IdSetting");
       }
 

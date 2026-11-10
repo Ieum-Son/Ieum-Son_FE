@@ -1,5 +1,4 @@
 import { deleteUser } from "@/apis/auth/deleteUser";
-import { useSignupStore } from "@/stores/signupStore";
 import { useUserStore } from "@/stores/userStore";
 import { removeTokens } from "@/utils/tokenStorage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,7 +25,6 @@ export const useDeleteUser = () => {
       } finally {
         router.replace("/Splash");
         useUserStore.getState().clearUser();
-        useSignupStore.getState().reset();
         queryClient.clear();
       }
     },

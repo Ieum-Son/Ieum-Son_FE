@@ -3,7 +3,7 @@ import LearningRoadmap from "@/components/main/LearningRoadmap/LearningRoadmap";
 import WeekendStrick from "@/components/main/WeekendStrick/WeekendStrick";
 import Tab from "@/components/tab/Tab";
 import { getStreakErrorMessage, useStreak } from "@/hooks/streak";
-import { toLearnedWeekdays } from "@/utils/streak";
+import { isWithinRecoveryPeriod, toLearnedWeekdays } from "@/utils/streak";
 import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
@@ -27,7 +27,9 @@ export default function Main() {
             learnedDays={learnedDays}
             isLoading={isPending}
             errorMessage={isError ? getStreakErrorMessage(error) : null}
-            recoverable={streak?.recoverable}
+            recoverable={
+              streak?.recoverable && isWithinRecoveryPeriod(streak.week)
+            }
             recoveryCost={streak?.recoveryCost}
             goldBalance={streak?.goldBalance}
           />

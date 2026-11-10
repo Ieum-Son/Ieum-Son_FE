@@ -4,7 +4,7 @@ import Question from "@/components/auth/Question";
 import { BackIcon, Profile } from "@/components/Signup";
 import { colors } from "@/constants/colors";
 import { getSignupErrorMessage, useSignup } from "@/hooks/auth/useSignup";
-import { useSignupStore } from "@/stores/signupStore";
+import { useSignupForm } from "@/contexts/SignupContext";
 import { router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -21,7 +21,8 @@ const MAX_PROFILE_IMAGE_SIZE = 50 * 1024 * 1024;
 
 export default function ProfileInput() {
   const { mutate: submitSignup, isPending } = useSignup();
-  const { name, profile, setName, getSignupPayload } = useSignupStore();
+  const { name, profile, setName, setProfile, getSignupPayload } =
+    useSignupForm();
   const [errorMessage, setErrorMessage] = useState("");
   const isActive = name.length > 0 && profile !== null && !isPending;
 
@@ -79,7 +80,7 @@ export default function ProfileInput() {
 
           <Wrapper>
             <Center>
-              <Profile />
+              <Profile value={profile} onChange={setProfile} />
 
               <InputWrapper>
                 <Input

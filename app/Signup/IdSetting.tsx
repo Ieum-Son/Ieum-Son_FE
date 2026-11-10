@@ -1,7 +1,7 @@
 import { AuthButton, Question } from "@/components/auth/index";
 import { BackIcon, Input } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import { useSignupStore } from "@/stores/signupStore";
+import { useSignupForm } from "@/contexts/SignupContext";
 import { router } from "expo-router";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,7 +12,7 @@ interface InputWrapperProps {
 }
 
 export default function IdSetting() {
-  const { loginId, loginIdError, setLoginId } = useSignupStore();
+  const { loginId, loginIdError, setLoginId } = useSignupForm();
   const isDuplication = Boolean(loginIdError);
   const isActive = loginId.length > 0 && !isDuplication;
 
