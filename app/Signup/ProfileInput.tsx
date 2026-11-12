@@ -1,23 +1,20 @@
-import AuthButton from "@/components/auth/AuthButton";
 import Input from "@/components/auth/LoginInput";
-import Question from "@/components/auth/Question";
-import { BackIcon, Profile } from "@/components/Signup";
+import {
+  ErrorText,
+  LineText,
+  Profile,
+  SignupFooter,
+  SignupScreen,
+  TitleWrapper,
+  Wrapper,
+} from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import { getSignupErrorMessage, useSignup } from "@/hooks/auth/useSignup";
 import { useSignupForm } from "@/contexts/SignupContext";
-import { router } from "expo-router";
+import { getSignupErrorMessage, useSignup } from "@/hooks/auth/useSignup";
+import { removeSpaces } from "@/utils/removeSpaces";
+import { validateProfileImage } from "@/utils/validateProfileImage";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-
-const ALLOWED_PROFILE_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-];
-const MAX_PROFILE_IMAGE_SIZE = 50 * 1024 * 1024;
 
 export default function ProfileInput() {
   const { mutate: submitSignup, isPending } = useSignup();
@@ -39,16 +36,10 @@ export default function ProfileInput() {
       return;
     }
 
-    if (!ALLOWED_PROFILE_IMAGE_TYPES.includes(signupPayload.image.type)) {
-      setErrorMessage("지원하지 않는 이미지 형식입니다.");
-      return;
-    }
+    const imageError = validateProfileImage(signupPayload.image);
 
-    if (
-      signupPayload.image.size !== undefined &&
-      signupPayload.image.size > MAX_PROFILE_IMAGE_SIZE
-    ) {
-      setErrorMessage("파일 크기는 50MB 이하이어야 합니다.");
+    if (imageError) {
+      setErrorMessage(imageError);
       return;
     }
 
@@ -58,62 +49,46 @@ export default function ProfileInput() {
   };
 
   const InputId = (text: string) => {
-    setName(text.replace(/\s/g, ""));
+    setName(removeSpaces(text));
     setErrorMessage("");
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flexGrow: 1 }}
-      >
-        <Container>
-          <BackIcon />
+    <SignupScreen keyboardAvoidingStyle={{ flexGrow: 1 }}>
+      <TitleWrapper>
+        <LineText>
+          이제 마지막 단계에요 {"\n"}
+          나만의 <Name>프로필</Name>을 만들어보세요
+        </LineText>
+      </TitleWrapper>
 
-          <TitleWrapper>
-            <LineText>
-              이제 마지막 단계에요 {"\n"}
-              나만의 <Name>프로필</Name>을 만들어보세요
-            </LineText>
-          </TitleWrapper>
+      <Wrapper>
+        <Center>
+          <Profile value={profile} onChange={setProfile} />
 
-          <Wrapper>
-            <Center>
-              <Profile value={profile} onChange={setProfile} />
+          <InputWrapper>
+            <Input
+              placeholder="이름을 입력해주세요"
+              type="text"
+              onChangeText={InputId}
+              value={name}
+            />
+            <SubText>
+              설정한 이름은 추후에도 자유롭게 변경할 수 있습니다.
+            </SubText>
+            {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+          </InputWrapper>
+        </Center>
 
-              <InputWrapper>
-                <Input
-                  placeholder="이름을 입력해주세요"
-                  type="text"
-                  onChangeText={InputId}
-                  value={name}
-                />
-                <SubText>
-                  설정한 이름은 추후에도 자유롭게 변경할 수 있습니다.
-                </SubText>
-                {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
-              </InputWrapper>
-            </Center>
-
-            <View>
-              <AuthButton
-                text="회원가입"
-                isActive={isActive}
-                onPress={handleSignup}
-                isLoading={isPending}
-                loadingText="가입 중..."
-              />
-              <Question
-                question="계정이 있으신가요?"
-                button="로그인"
-                onPress={() => router.push("/Login")}
-              />
-            </View>
-          </Wrapper>
-        </Container>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        <SignupFooter
+          text="회원가입"
+          isActive={isActive}
+          onPress={handleSignup}
+          isLoading={isPending}
+          loadingText="가입 중..."
+        />
+      </Wrapper>
+    </SignupScreen>
   );
 }
 
@@ -132,39 +107,10 @@ const SubText = styled.Text`
   letter-spacing: 0.2px;
 `;
 
-const ErrorText = styled.Text`
-  color: ${colors.errorRed};
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-`;
-
-const Container = styled.View`
-  flex: 1;
-  padding: 10px;
-`;
-
-const Wrapper = styled.View`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex: 1;
-`;
-
 const InputWrapper = styled.View``;
-
-const TitleWrapper = styled.Text`
-  margin: 30px 0px 30px 15px;
-`;
 
 const Name = styled.Text`
   color: ${colors.primary400};
-  font-size: 28px;
-  font-weight: 700;
-`;
-
-const LineText = styled.Text`
-  color: ${colors.neutral800};
   font-size: 28px;
   font-weight: 700;
 `;

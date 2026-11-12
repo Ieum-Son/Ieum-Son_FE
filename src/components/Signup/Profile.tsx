@@ -1,19 +1,12 @@
 import type { ProfileImage } from "@/apis/auth/signup/type";
+import {
+  MIME_TYPE_BY_EXTENSION,
+  SUPPORTED_IMAGE_MIME_TYPES,
+} from "@/constants/profileImage";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
 import styled from "styled-components/native";
-
-const MIME_TYPE_BY_EXTENSION: Record<string, string> = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  webp: "image/webp",
-  gif: "image/gif",
-};
-const SUPPORTED_IMAGE_MIME_TYPES = new Set(
-  Object.values(MIME_TYPE_BY_EXTENSION),
-);
 
 const getImageMimeType = (
   mimeType: string | null | undefined,

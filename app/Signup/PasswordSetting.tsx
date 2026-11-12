@@ -1,11 +1,17 @@
-import { AuthButton, Question } from "@/components/auth/index";
-import { BackIcon, CodeInput } from "@/components/Signup/index";
+import {
+  CodeInput,
+  ErrorText,
+  LineText,
+  SignupFooter,
+  SignupScreen,
+  TitleWrapper,
+  Wrapper,
+} from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
 import { useSignupForm } from "@/contexts/SignupContext";
+import { removeSpaces } from "@/utils/removeSpaces";
 import { router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 interface InputWrapperProps {
@@ -33,96 +39,58 @@ export default function PasswordSetting() {
   };
 
   const InputPassword = (text: string) => {
-    setPassword(text.replace(/\s/g, ""));
+    setPassword(removeSpaces(text));
     setIsLengthFull(true);
     setIsDuplication(false);
   };
 
   const InputRePassword = (text: string) => {
-    setRePassword(text.replace(/\s/g, ""));
+    setRePassword(removeSpaces(text));
     setIsLengthFull(true);
     setIsDuplication(false);
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flexGrow: 1 }}
-      >
-        <Container>
-          <BackIcon />
+    <SignupScreen keyboardAvoidingStyle={{ flexGrow: 1 }}>
+      <TitleWrapper>
+        <LineText>비밀번호를 설정해 주세요</LineText>
+      </TitleWrapper>
 
-          <TitleWrapper>
-            <LineText>비밀번호를 설정해 주세요</LineText>
-          </TitleWrapper>
+      <Wrapper>
+        <InputWrapperWrapper>
+          <InputWrapper>
+            <CodeInput
+              placeholder="비밀번호를 입력해주세요."
+              type="password"
+              onChangeText={InputPassword}
+              value={password}
+            />
+          </InputWrapper>
 
-          <Wrapper>
-            <InputWrapperWrapper>
-              <InputWrapper>
-                <CodeInput
-                  placeholder="비밀번호를 입력해주세요."
-                  type="password"
-                  onChangeText={InputPassword}
-                  value={password}
-                />
-              </InputWrapper>
+          <InputWrapper isDuplication={isDuplication}>
+            <CodeInput
+              placeholder="비밀번호를 다시 입력해주세요."
+              type="password"
+              onChangeText={InputRePassword}
+              value={rePassword}
+            />
+          </InputWrapper>
+          {!isLengthFull ? (
+            <ErrorText spaced>8자 이상 입력해주세요.</ErrorText>
+          ) : isDuplication ? (
+            <ErrorText spaced>비밀번호가 일치하지 않습니다.</ErrorText>
+          ) : null}
+        </InputWrapperWrapper>
 
-              <InputWrapper isDuplication={isDuplication}>
-                <CodeInput
-                  placeholder="비밀번호를 다시 입력해주세요."
-                  type="password"
-                  onChangeText={InputRePassword}
-                  value={rePassword}
-                />
-              </InputWrapper>
-              {!isLengthFull ? (
-                <ErrorText>8자 이상 입력해주세요.</ErrorText>
-              ) : isDuplication ? (
-                <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
-              ) : null}
-            </InputWrapperWrapper>
-
-            <View>
-              <AuthButton text="다음" isActive={isActive} onPress={onPress} />
-              <Question
-                question="계정이 있으신가요?"
-                button="로그인"
-                onPress={() => router.push("/Login")}
-              />
-            </View>
-          </Wrapper>
-        </Container>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        <SignupFooter text="다음" isActive={isActive} onPress={onPress} />
+      </Wrapper>
+    </SignupScreen>
   );
 }
 
-const ErrorText = styled.Text`
-  color: ${colors.errorRed};
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  letter-spacing: 0.2px;
-`;
-
 const InputWrapperWrapper = styled.View`
   display: flex;
-  gap: 16px;
-  display: flex;
   gap: 4px;
-`;
-
-const Container = styled.View`
-  flex: 1;
-  padding: 10px;
-`;
-
-const Wrapper = styled.View`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex: 1;
 `;
 
 const InputWrapper = styled.View<InputWrapperProps>`
@@ -134,14 +102,4 @@ const InputWrapper = styled.View<InputWrapperProps>`
   border-color: ${({ isDuplication }) =>
     isDuplication ? colors.errorRed : "white"};
   border-radius: 12px;
-`;
-
-const TitleWrapper = styled.Text`
-  margin: 30px 0px 30px 15px;
-`;
-
-const LineText = styled.Text`
-  color: ${colors.neutral800};
-  font-size: 28px;
-  font-weight: 700;
 `;
