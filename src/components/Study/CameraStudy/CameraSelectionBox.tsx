@@ -1,40 +1,53 @@
 import { colors } from "@/constants/colors";
-import { Image, type ImageSource } from "expo-image";
+import type { ReadonlyFrameProcessor } from "react-native-vision-camera";
 import styled from "styled-components/native";
+import CameraPreview from "./CameraPreview";
 
 interface CameraSelectionBoxProps {
-  source: ImageSource;
   recognitionRate?: number;
+  frameProcessor?: ReadonlyFrameProcessor;
+  isCameraActive?: boolean;
 }
 
-export const getCameraPositionError = (recognitionRate?: number) => {
-  if (recognitionRate === 0) {
-    return "너무 가깝거나 멉니다. 카메라와의 위치를 조정해주세요.";
-  }
+/** 이 아래면 자세를 다시 잡도록 안내한다. */
+const LOW_RECOGNITION_RATE = 40;
 
-  if (recognitionRate === 1) {
-    return "얼굴이 인식되지 않았습니다.";
+export const getCameraPositionError = (recognitionRate?: number) => {
+  // 아직 인식 결과가 없으면 안내할 것이 없다.
+  if (recognitionRate === undefined) return null;
+
+  if (recognitionRate < LOW_RECOGNITION_RATE) {
+    return "인식률이 낮아요. 카메라와의 거리를 조정하고 손이 화면 안에 들어오게 해주세요.";
   }
 
   return null;
 };
 
 export default function CameraSelectionBox({
-  source,
-  recognitionRate = 0,
+  recognitionRate,
+  frameProcessor,
+  isCameraActive = false,
 }: CameraSelectionBoxProps) {
-  const normalizedRate = Math.min(Math.max(recognitionRate, 0), 100);
+  const hasResult = recognitionRate !== undefined;
+  const displayedRate = hasResult
+    ? Math.min(Math.max(recognitionRate, 0), 100)
+    : null;
   const errorMessage = getCameraPositionError(recognitionRate);
-  const displayedRate = errorMessage ? 0 : normalizedRate;
 
   return (
     <Container>
       <Wrapper
         accessible
-        accessibilityLabel={`수어 동작 카메라 화면, 인식률 ${displayedRate}%${errorMessage ? `, ${errorMessage}` : ""}`}
+        accessibilityLabel={`수어 동작 카메라 화면${displayedRate === null ? "" : `, 인식률 ${displayedRate}%`}${errorMessage ? `, ${errorMessage}` : ""}`}
       >
-        <CameraImage source={source} contentFit="cover" />
-        <RecognitionRate selectable>인식률 {displayedRate}%</RecognitionRate>
+        <CameraPreview
+          frameProcessor={frameProcessor}
+          isActive={isCameraActive}
+        />
+
+        {displayedRate === null ? null : (
+          <RecognitionRate selectable>인식률 {displayedRate}%</RecognitionRate>
+        )}
       </Wrapper>
 
       {errorMessage ? (
@@ -56,12 +69,7 @@ const Wrapper = styled.View`
   height: 254px;
   overflow: hidden;
   border-radius: 12px;
-  background-color: ${colors.neutral100};
-`;
-
-const CameraImage = styled(Image)`
-  width: 100%;
-  height: 100%;
+  background-color: ${colors.neutral800};
 `;
 
 const RecognitionRate = styled.Text`

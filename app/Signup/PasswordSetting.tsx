@@ -1,7 +1,7 @@
 import { AuthButton, Question } from "@/components/auth/index";
 import { BackIcon, CodeInput } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
-import { useSignupStore } from "@/stores/signupStore";
+import { useSignupForm } from "@/contexts/SignupContext";
 import { router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -15,7 +15,7 @@ interface InputWrapperProps {
 export default function PasswordSetting() {
   const [isDuplication, setIsDuplication] = useState(false);
   const [isLengthFull, setIsLengthFull] = useState(true);
-  const { password, setPassword } = useSignupStore();
+  const { password, setPassword } = useSignupForm();
   const [rePassword, setRePassword] = useState("");
   const isActive = password.length > 0 && rePassword.length > 0;
 

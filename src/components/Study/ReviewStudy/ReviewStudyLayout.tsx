@@ -17,6 +17,8 @@ interface ReviewStudyLayoutProps {
   videoUrl?: string;
   answers: string[];
   answerDefinition?: string;
+  remainingTime?: string;
+  isTimedOut?: boolean;
   selectedIndex: number | null;
   answerIndex: number | null;
   errorMessage?: string;
@@ -47,6 +49,8 @@ export default function ReviewStudyLayout({
   videoUrl,
   answers,
   answerDefinition,
+  remainingTime,
+  isTimedOut,
   selectedIndex,
   answerIndex,
   errorMessage,
@@ -79,6 +83,15 @@ export default function ReviewStudyLayout({
         <Question>
           <Title selectable>{title}</Title>
           <Guide selectable>{guide}</Guide>
+
+          {remainingTime ? (
+            <Remaining
+              $isTimedOut={isTimedOut}
+              accessibilityLiveRegion="polite"
+            >
+              {isTimedOut ? "시간이 끝났어요" : `남은 시간 ${remainingTime}`}
+            </Remaining>
+          ) : null}
         </Question>
 
         <ReviewVideo videoUrl={videoUrl} />
@@ -158,6 +171,17 @@ const Guide = styled.Text`
   font-weight: 400;
   line-height: 22px;
   text-align: center;
+`;
+
+const Remaining = styled.Text<{ $isTimedOut?: boolean }>`
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  text-align: center;
+  font-variant: tabular-nums;
+  color: ${({ $isTimedOut }) =>
+    $isTimedOut ? colors.errorRed : colors.primary400};
 `;
 
 const Definition = styled.Text`

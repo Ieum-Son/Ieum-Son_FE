@@ -38,7 +38,7 @@ export default function Ranking() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={refetch}
+            onRefresh={() => void refetch()}
             tintColor={colors.primary400}
           />
         }

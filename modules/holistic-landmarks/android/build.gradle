@@ -1,0 +1,23 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.holisticlandmarks'
+version = '1.0.0'
+
+android {
+  namespace 'expo.modules.holisticlandmarks'
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation project(':react-native-vision-camera')
+  // iOS podspec, WebView의 @mediapipe/tasks-vision과 같은 버전으로 맞춘다.
+  // 세 경로가 같은 모델을 같은 버전으로 돌려야 좌표가 어긋나지 않는다.
+  implementation 'com.google.mediapipe:tasks-vision:0.10.35'
+}

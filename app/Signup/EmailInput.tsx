@@ -5,7 +5,7 @@ import { colors } from "@/constants/colors";
 import { useVerifyCode, useVerifyEmail } from "@/hooks/auth/useSignup";
 import { getServerErrorMessage } from "@/hooks/errorResponse";
 import { useTimer } from "@/hooks/useTimer";
-import { useSignupStore } from "@/stores/signupStore";
+import { useSignupForm } from "@/contexts/SignupContext";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -16,7 +16,7 @@ import styled from "styled-components/native";
 export default function EmailInput() {
   const verifyEmailMutation = useVerifyEmail();
   const verifyCodeMutation = useVerifyCode();
-  const { email, setEmail } = useSignupStore();
+  const { email, setEmail, getValues } = useSignupForm();
 
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -59,7 +59,7 @@ export default function EmailInput() {
     try {
       await verifyEmailMutation.mutateAsync({ email: requestedEmail });
 
-      if (useSignupStore.getState().email !== requestedEmail) {
+      if (getValues().email !== requestedEmail) {
         return;
       }
 
@@ -70,7 +70,7 @@ export default function EmailInput() {
       setVerifiedEmail(requestedEmail);
       startTimer();
     } catch (error) {
-      if (useSignupStore.getState().email !== requestedEmail) {
+      if (getValues().email !== requestedEmail) {
         return;
       }
       setIsError(true);
@@ -95,7 +95,7 @@ export default function EmailInput() {
       const requestedEmail = verifiedEmail;
       await verifyCodeMutation.mutateAsync({ email: requestedEmail, code });
 
-      if (useSignupStore.getState().email !== requestedEmail) {
+      if (getValues().email !== requestedEmail) {
         return;
       }
       setErrorMessage("");

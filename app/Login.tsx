@@ -4,7 +4,6 @@ import Question from "@/components/auth/Question";
 import { BackIcon } from "@/components/Signup/index";
 import { colors } from "@/constants/colors";
 import { getLoginErrorMessage, useLogin } from "@/hooks/auth/useLogin";
-import { useSignupStore } from "@/stores/signupStore";
 import { router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -13,7 +12,6 @@ import styled from "styled-components/native";
 
 export default function Login() {
   const loginMutation = useLogin();
-  const resetSignup = useSignupStore((state) => state.reset);
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -39,10 +37,7 @@ export default function Login() {
     }
   };
 
-  const handleSignup = () => {
-    resetSignup();
-    router.push("/Signup/EmailInput");
-  };
+  const handleSignup = () => router.push("/Signup/EmailInput");
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>

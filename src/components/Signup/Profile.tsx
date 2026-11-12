@@ -1,4 +1,3 @@
-import { useSignupStore } from "@/stores/signupStore";
 import type { ProfileImage } from "@/apis/auth/signup/type";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -44,15 +43,13 @@ const getImageMimeType = (
 };
 
 interface ProfileProps {
-  value?: ProfileImage | null;
-  onChange?: (profile: ProfileImage) => void;
+  value: ProfileImage | null;
+  onChange: (profile: ProfileImage) => void;
 }
 
 export default function Profile({ value, onChange }: ProfileProps) {
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const signupProfile = useSignupStore((state) => state.profile);
-  const setSignupProfile = useSignupStore((state) => state.setProfile);
-  const profile = value === undefined ? signupProfile : value;
+  const profile = value ?? null;
 
   const uploadImage = async () => {
     if (!status?.granted) {
@@ -99,12 +96,7 @@ export default function Profile({ value, onChange }: ProfileProps) {
       size: image.fileSize,
     };
 
-    if (onChange) {
-      onChange(nextProfile);
-      return;
-    }
-
-    setSignupProfile(nextProfile);
+    onChange(nextProfile);
   };
 
   return (

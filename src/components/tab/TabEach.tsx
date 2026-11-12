@@ -1,11 +1,12 @@
 import { colors } from "@/constants/colors";
 import { Image } from "expo-image";
 import React from "react";
-import type { ImageSourcePropType } from "react-native";
 import styled from "styled-components/native";
 
+type ImageSource = React.ComponentProps<typeof Image>["source"];
+
 interface TabEachProps {
-  img: ImageSourcePropType;
+  img: ImageSource;
   text: string;
   isActive: boolean;
   onPress?: () => void;

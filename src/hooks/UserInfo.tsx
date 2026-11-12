@@ -4,7 +4,7 @@ import { useUserStore } from "@/stores/userStore";
 import { getAccessTokens } from "@/utils/tokenStorage";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { createErrorMessage } from "./errorResponse";
+import { createErrorMessage, isCanceledRequest } from "./errorResponse";
 
 export const USER_INFO_QUERY_KEY = ["user"];
 
@@ -80,7 +80,8 @@ export const useUserInfo = () => {
   }, [tokenStatus, user.data, setUser]);
 
   useEffect(() => {
-    if (!user.error) return;
+    // 로그인 전에는 인터셉터가 요청을 끊는다. 실패가 아니므로 알리지 않는다.
+    if (!user.error || isCanceledRequest(user.error)) return;
 
     console.error(getUserInfoErrorMessage(user.error));
   }, [user.error]);
