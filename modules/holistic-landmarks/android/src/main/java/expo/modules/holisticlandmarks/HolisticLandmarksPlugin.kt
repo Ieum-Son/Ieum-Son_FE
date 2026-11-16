@@ -7,6 +7,7 @@ import android.util.Log
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
+import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
@@ -229,27 +230,42 @@ class HolisticLandmarksPlugin(context: Context) : FrameProcessorPlugin() {
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
   }
 
-  private fun createPoseLandmarker(context: Context): PoseLandmarker? = runCatching {
-    val options = PoseLandmarker.PoseLandmarkerOptions.builder()
-      .setBaseOptions(BaseOptions.builder().setModelAssetPath(POSE_MODEL).build())
-      // 이어지는 영상임을 알려주면 앞 장의 결과로 추적해서 흔들림이 줄어든다.
-      .setRunningMode(RunningMode.VIDEO)
-      .setNumPoses(1)
-      .build()
+  private fun baseOptions(model: String, delegate: Delegate) =
+    BaseOptions.builder().setModelAssetPath(model).setDelegate(delegate).build()
 
-    PoseLandmarker.createFromOptions(context, options)
-  }.onFailure { Log.e(TAG, "pose landmarker를 만들지 못했다", it) }.getOrNull()
+  /** GPU를 못 쓰는 기기도 있어서 CPU로 한 번 더 시도한다. */
+  private fun <T> createWithFallback(name: String, build: (Delegate) -> T): T? =
+    runCatching { build(Delegate.GPU) }
+      .onSuccess { Log.i(TAG, "$name: GPU") }
+      .recoverCatching { build(Delegate.CPU).also { Log.i(TAG, "$name: CPU") } }
+      .onFailure { Log.e(TAG, "$name 를 만들지 못했다", it) }
+      .getOrNull()
 
-  private fun createHandLandmarker(context: Context): HandLandmarker? = runCatching {
-    val options = HandLandmarker.HandLandmarkerOptions.builder()
-      .setBaseOptions(BaseOptions.builder().setModelAssetPath(HAND_MODEL).build())
-      // 손도 VIDEO 모드가 앞 장의 손 위치를 재사용해 더 빠르고 덜 튄다.
-      .setRunningMode(RunningMode.VIDEO)
-      .setNumHands(2)
-      .build()
+  private fun createPoseLandmarker(context: Context): PoseLandmarker? =
+    createWithFallback("pose") { delegate ->
+      PoseLandmarker.createFromOptions(
+        context,
+        PoseLandmarker.PoseLandmarkerOptions.builder()
+          .setBaseOptions(baseOptions(POSE_MODEL, delegate))
+          // 이어지는 영상임을 알려주면 앞 장의 결과로 추적해서 흔들림이 줄어든다.
+          .setRunningMode(RunningMode.VIDEO)
+          .setNumPoses(1)
+          .build(),
+      )
+    }
 
-    HandLandmarker.createFromOptions(context, options)
-  }.onFailure { Log.e(TAG, "hand landmarker를 만들지 못했다", it) }.getOrNull()
+  private fun createHandLandmarker(context: Context): HandLandmarker? =
+    createWithFallback("hand") { delegate ->
+      HandLandmarker.createFromOptions(
+        context,
+        HandLandmarker.HandLandmarkerOptions.builder()
+          .setBaseOptions(baseOptions(HAND_MODEL, delegate))
+          // 손도 VIDEO 모드가 앞 장의 손 위치를 재사용해 더 빠르고 덜 튄다.
+          .setRunningMode(RunningMode.VIDEO)
+          .setNumHands(2)
+          .build(),
+      )
+    }
 
   private companion object {
     const val TAG = "HolisticLandmarks"

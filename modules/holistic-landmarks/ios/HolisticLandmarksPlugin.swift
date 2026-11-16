@@ -33,22 +33,37 @@ public class HolisticLandmarksPlugin: FrameProcessorPlugin {
 
   private func setUpLandmarkers() {
     if let posePath = Self.modelPath(named: "pose_landmarker_lite") {
-      let poseOptions = PoseLandmarkerOptions()
-      poseOptions.baseOptions.modelAssetPath = posePath
-      // 이어지는 영상임을 알려주면 앞 장의 결과로 추적해서 흔들림이 줄어든다.
-      poseOptions.runningMode = .video
-      poseOptions.numPoses = 1
-      poseLandmarker = try? PoseLandmarker(options: poseOptions)
+      // GPU를 못 쓰는 기기도 있어서 CPU로 한 번 더 시도한다.
+      poseLandmarker = Self.makePoseLandmarker(path: posePath, useGpu: true)
+        ?? Self.makePoseLandmarker(path: posePath, useGpu: false)
     }
 
     if let handPath = Self.modelPath(named: "hand_landmarker") {
-      let handOptions = HandLandmarkerOptions()
-      handOptions.baseOptions.modelAssetPath = handPath
-      // 손도 VIDEO 모드가 앞 장의 손 위치를 재사용해 더 빠르고 덜 튄다.
-      handOptions.runningMode = .video
-      handOptions.numHands = 2
-      handLandmarker = try? HandLandmarker(options: handOptions)
+      handLandmarker = Self.makeHandLandmarker(path: handPath, useGpu: true)
+        ?? Self.makeHandLandmarker(path: handPath, useGpu: false)
     }
+  }
+
+  private static func makePoseLandmarker(path: String, useGpu: Bool) -> PoseLandmarker? {
+    let options = PoseLandmarkerOptions()
+    options.baseOptions.modelAssetPath = path
+    options.baseOptions.delegate = useGpu ? .GPU : .CPU
+    // 이어지는 영상임을 알려주면 앞 장의 결과로 추적해서 흔들림이 줄어든다.
+    options.runningMode = .video
+    options.numPoses = 1
+
+    return try? PoseLandmarker(options: options)
+  }
+
+  private static func makeHandLandmarker(path: String, useGpu: Bool) -> HandLandmarker? {
+    let options = HandLandmarkerOptions()
+    options.baseOptions.modelAssetPath = path
+    options.baseOptions.delegate = useGpu ? .GPU : .CPU
+    // 손도 VIDEO 모드가 앞 장의 손 위치를 재사용해 더 빠르고 덜 튄다.
+    options.runningMode = .video
+    options.numHands = 2
+
+    return try? HandLandmarker(options: options)
   }
 
   private static func modelPath(named name: String) -> String? {
