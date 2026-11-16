@@ -39,16 +39,24 @@ export const goToStage = (
 export const goToNextStage = (
   daily: DailyProgressResponse,
   from: StudyStage,
+  mode: "push" | "replace" = "push",
 ) => {
   const next = findNextStage(daily, from);
 
   if (next.name === "review" && from.name !== "review") {
-    router.push({
-      pathname: "/study/StudyReviewIntro",
+    const href = {
+      pathname: "/study/StudyReviewIntro" as const,
       params: { reviewIndex: String(next.index) },
-    });
+    };
+
+    if (mode === "replace") {
+      router.replace(href);
+      return;
+    }
+
+    router.push(href);
     return;
   }
 
-  goToStage(next);
+  goToStage(next, mode);
 };

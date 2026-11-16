@@ -1,5 +1,6 @@
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
 import VideoStudyLayout from "@/components/Study/VideoStudy/VideoStudyLayout";
+import { useStudySocketContext } from "@/contexts/StudySocketContext";
 import {
   getDailyProgressErrorMessage,
   useDailyProgress,
@@ -27,7 +28,13 @@ export default function Study() {
     isFetching,
     isRefetching,
   } = useDailyProgress();
+  const { activate } = useStudySocketContext();
   const isEntry = wordIndexParam === undefined;
+
+  // 영상 화면에서 미리 연결해 두면 카메라 화면이 열리자마자 ready가 된다.
+  useEffect(() => {
+    activate();
+  }, [activate]);
 
   useEffect(() => {
     if (!daily || isFetching || !isEntry) return;
