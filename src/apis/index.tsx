@@ -51,22 +51,10 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-// TODO(임시): API 테스트용 액세스 토큰 출력. 확인이 끝나면 제거할 것.
-let loggedAccessToken: string | null = null;
-
 api.interceptors.request.use(async (config) => {
   if (isSkipUrl(config.url)) return config;
 
   const accessToken = await getAccessTokens();
-
-  // 토큰이 없을 때도 한 번은 찍어 로그인 상태를 구분할 수 있게 한다.
-  if (__DEV__ && accessToken !== loggedAccessToken) {
-    loggedAccessToken = accessToken;
-    console.log(
-      "[임시] accessToken:",
-      accessToken ?? "(없음 — 로그인하지 않은 상태)",
-    );
-  }
 
   if (!accessToken) {
     throw new axios.CanceledError(`${config.url} 요청 취소: 로그인 상태 아님`);
