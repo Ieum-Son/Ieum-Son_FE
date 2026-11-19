@@ -56,7 +56,8 @@ export interface ResultMessage {
   target: string;
   predicted: string;
   confidence: number;
-  correct: boolean;
+  /** null이면 모델 라벨이 아직 설정되지 않은 경우다. */
+  correct: boolean | null;
   wordId: number | null;
   recorded: boolean;
   passed: boolean | null;

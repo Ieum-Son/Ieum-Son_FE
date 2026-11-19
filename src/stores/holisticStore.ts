@@ -58,6 +58,14 @@ export const useHolisticStore = create<HolisticStore>((set, get) => ({
   stop: () => {
     set({ isRecording: false });
 
+    if (__DEV__ && frames.length > 1) {
+      const spanMs = frames[frames.length - 1].at - frames[0].at;
+
+      console.log(
+        `[holistic] ${frames.length}장 / ${(spanMs / 1000).toFixed(1)}초 = ${((frames.length * 1000) / spanMs).toFixed(1)}fps`,
+      );
+    }
+
     // resampleFrames가 새 배열을 만들어 주므로 따로 복사하지 않는다.
     return resampleFrames(frames);
   },

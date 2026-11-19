@@ -3,6 +3,7 @@ import {
   POSE_LANDMARK_COUNT,
   TARGET_FRAME_COUNT,
   type HolisticFrame,
+  type Landmark,
 } from "@/apis/studySocket/type";
 
 export interface TimedHolisticFrame {
@@ -10,6 +11,24 @@ export interface TimedHolisticFrame {
   /** 한 녹화 안에서만 비교하는 상대 시각(ms). 서버로는 보내지 않는다. */
   at: number;
 }
+
+/** 좌표를 소수 4자리로 줄여 attempt JSON을 작게 만든다. */
+const round = (value: number) => Math.round(value * 10000) / 10000;
+
+const roundLandmark = (landmark: Landmark): Landmark => ({
+  x: round(landmark.x),
+  y: round(landmark.y),
+  z: round(landmark.z),
+  ...(landmark.visibility === undefined
+    ? {}
+    : { visibility: round(landmark.visibility) }),
+});
+
+const roundFrame = (frame: HolisticFrame): HolisticFrame => ({
+  pose: frame.pose.map(roundLandmark),
+  left: frame.left.map(roundLandmark),
+  right: frame.right.map(roundLandmark),
+});
 
 /**
  * 서버는 포즈 33개, 손은 21개 아니면 빈 배열을 전제한다.
@@ -46,17 +65,19 @@ export const resampleFrames = (
   const timed = sanitizeFrames(input);
 
   // 두 장 아래로는 간격이라는 게 없다. 그대로 넘기고 서버 판단에 맡긴다.
-  if (timed.length < 2 || count < 2) return timed.map(({ frame }) => frame);
+  if (timed.length < 2 || count < 2) {
+    return timed.map(({ frame }) => roundFrame(frame));
+  }
 
   const start = timed[0].at;
   const span = timed[timed.length - 1].at - start;
 
   // 시각이 같거나 거꾸로 들어왔으면 믿을 수 없으니 등분 인덱스로만 고른다.
   if (!(span > 0)) {
-    return Array.from(
-      { length: count },
-      (_, index) =>
+    return Array.from({ length: count }, (_, index) =>
+      roundFrame(
         timed[Math.round((index * (timed.length - 1)) / (count - 1))].frame,
+      ),
     );
   }
 
@@ -75,7 +96,7 @@ export const resampleFrames = (
       cursor += 1;
     }
 
-    picked.push(timed[cursor].frame);
+    picked.push(roundFrame(timed[cursor].frame));
   }
 
   return picked;

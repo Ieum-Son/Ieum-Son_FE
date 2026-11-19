@@ -74,7 +74,17 @@ export const useHolisticRecorderNative = () => {
     isRecordingValue.value = false;
     setIsRecording(false);
 
-    return resampleFrames(framesRef.current);
+    const captured = framesRef.current;
+
+    if (__DEV__ && captured.length > 1) {
+      const spanMs = captured[captured.length - 1].at - captured[0].at;
+
+      console.log(
+        `[holistic] ${captured.length}장 / ${(spanMs / 1000).toFixed(1)}초 = ${((captured.length * 1000) / spanMs).toFixed(1)}fps`,
+      );
+    }
+
+    return resampleFrames(captured);
   }, [isRecordingValue]);
 
   const reset = useCallback(() => {

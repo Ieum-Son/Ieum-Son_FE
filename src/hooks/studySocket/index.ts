@@ -281,5 +281,10 @@ export const useStudySocket = ({
     return true;
   }, []);
 
-  return { status, session, result, errorMessage, sendAttempt };
+  const clearResult = useCallback(() => {
+    setResult(null);
+    setErrorMessage("");
+  }, []);
+
+  return { status, session, result, errorMessage, sendAttempt, clearResult };
 };

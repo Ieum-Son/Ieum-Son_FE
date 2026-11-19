@@ -8,6 +8,7 @@ import type {
 import {
   Camera,
   useCameraDevice,
+  useCameraFormat,
   useCameraPermission,
 } from "react-native-vision-camera";
 import styled from "styled-components/native";
@@ -22,6 +23,12 @@ export default function CameraPreview({
   isActive,
 }: CameraPreviewProps) {
   const device = useCameraDevice("front");
+  // MediaPipe 입력으로는 640x480이면 충분하다. 해상도가 높을수록 장마다 느려진다.
+  const format = useCameraFormat(device, [
+    { videoResolution: { width: 640, height: 480 } },
+    { fps: 30 },
+  ]);
+  const fps = Math.min(30, format?.maxFps ?? 30);
   const { hasPermission, requestPermission } = useCameraPermission();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -60,6 +67,8 @@ export default function CameraPreview({
   return (
     <Preview
       device={device}
+      format={format}
+      fps={fps}
       isActive={isActive}
       frameProcessor={frameProcessor}
       // 미리보기는 거울로 보여준다. 거울이 아니면 따라하기 어렵다.

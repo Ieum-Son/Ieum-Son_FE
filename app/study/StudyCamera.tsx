@@ -1,11 +1,11 @@
 import CameraStudyLayout from "@/components/Study/CameraStudy/CameraStudyLayout";
 import StudyStateScreen from "@/components/Study/StudyStateScreen";
+import { useStudySocketContext } from "@/contexts/StudySocketContext";
 import {
   getDailyProgressErrorMessage,
   useDailyProgress,
 } from "@/hooks/progress";
 import { useHolisticRecorder } from "@/hooks/useHolisticRecorder";
-import { useStudySocket } from "@/hooks/studySocket";
 import { toBareSignLabel } from "@/utils/signLabel";
 import { goToNextStage } from "@/utils/studyNavigation";
 import {
@@ -14,6 +14,7 @@ import {
   getWordStep,
 } from "@/utils/studyProgress";
 import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 
 export default function StudyCamera() {
   const { wordIndex: wordIndexParam } = useLocalSearchParams<{
@@ -27,14 +28,26 @@ export default function StudyCamera() {
     refetch,
     isRefetching,
   } = useDailyProgress();
-  const { status, session, result, errorMessage, sendAttempt } = useStudySocket(
-    {
-      ticket: daily?.sessionTicket,
-      expiresAt: daily?.expiresAt,
-      onTicketExpired: () => refetch(),
-    },
-  );
+  const {
+    status,
+    session,
+    result,
+    errorMessage,
+    sendAttempt,
+    activate,
+    clearResult,
+  } = useStudySocketContext();
   const { frameProcessor, isRecording, start, stop } = useHolisticRecorder();
+
+  // 첫 카메라 화면에서 연결을 켠다. 이후 단어에서는 이미 연결돼 있어 아무 일도 없다.
+  useEffect(() => {
+    activate();
+  }, [activate]);
+
+  // 단어가 바뀌면 이전 단어의 결과를 지운다.
+  useEffect(() => {
+    clearResult();
+  }, [wordIndexParam, clearResult]);
 
   const toggleRecording = () => {
     if (!isRecording) {
@@ -45,6 +58,7 @@ export default function StudyCamera() {
     // 동작 시작부터 끝까지를 한 메시지로 보낸다. 나눠 보내지 않는다.
     sendAttempt(stop());
   };
+
   if (isPending) return <StudyStateScreen />;
 
   if (isError) {
@@ -91,7 +105,12 @@ export default function StudyCamera() {
     if (status === "scoring") return "동작을 확인하는 중이에요.";
     if (isRecognized) return "잘했어요! 다음으로 넘어가세요.";
 
-    if (result && !result.correct) {
+    // 모델 라벨이 아직 설정되지 않은 경우다. 오답으로 보지 않는다.
+    if (result && result.correct === null) {
+      return "지금은 인식할 수 없어요. 잠시 후 다시 시도해주세요.";
+    }
+
+    if (result && result.correct === false) {
       // predicted는 "가능1"처럼 변형 번호가 붙어 온다. 그대로 보여주지 않는다.
       return `'${toBareSignLabel(result.predicted)}'(으)로 인식했어요. 다시 해볼까요?`;
     }
@@ -105,7 +124,7 @@ export default function StudyCamera() {
       return "인식했지만 저장하지 못했어요. 한 번 더 해주세요.";
     }
 
-    return "화면 가운데에 얼굴을 맞추고, 학습한 수어를 따라해 보세요.\n동작이 완료되면 자동으로 인식됩니다.";
+    return "화면 가운데에 얼굴을 맞추고, 학습한 수어를 따라해 보세요.\n동작이 끝나면 버튼을 다시 눌러 주세요.";
   };
 
   return (
@@ -131,7 +150,12 @@ export default function StudyCamera() {
       isCameraActive={!isRecognized}
       onNext={
         isRecognized
-          ? () => goToNextStage(daily, { name: "word", index: wordIndex })
+          ? () =>
+              goToNextStage(
+                daily,
+                { name: "word", index: wordIndex },
+                "replace",
+              )
           : undefined
       }
     />
